@@ -33,4 +33,9 @@ public class PortaoGaragem extends Dispositivo {
     public String getTipo() {
         return "PortaoGaragem";
     }
+
+    @Override
+    public PortaoGaragem clone() {
+        return new PortaoGaragem(this);
+    }
 }

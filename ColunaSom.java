@@ -33,4 +33,9 @@ public class ColunaSom extends Dispositivo {
     public String getTipo() {
         return "ColunaSom";
     }
+
+    @Override
+    public ColunaSom clone() {
+        return new ColunaSom(this);
+    }
 }

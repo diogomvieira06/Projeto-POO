@@ -1,15 +1,17 @@
+import java.util.ArrayList;
+
 public class Casa {
-    private String endereco;
+    private String alcunha; // Nome que o utilizador dá para diferenciar as casas
     private int id;
     private ArrayList<Divisao> divisoes;
 
-    public Casa(String endereco, int id) {
-        this.endereco = endereco;
+    public Casa(String alcunha, int id) {
+        this.alcunha = alcunha;
         this.id = id;
         this.divisoes = new ArrayList<>();
     }
     public Casa(Casa c) {
-        this.endereco = c.endereco;
+        this.alcunha = c.alcunha;
         this.id = c.id;
         this.divisoes = new ArrayList<>();
         for (Divisao div : c.divisoes) {
@@ -17,16 +19,16 @@ public class Casa {
         }
     }
     public Casa() {
-        this.endereco = "";
+        this.alcunha = "";
         this.id = 0;
         this.divisoes = new ArrayList<>();
     }
 
-    public String getEndereco() {
-        return endereco;
+    public String getAlcunha() {
+        return alcunha;
     }
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public void setAlcunha(String alcunha) {
+        this.alcunha = alcunha;
     }
 
     public int getId() {

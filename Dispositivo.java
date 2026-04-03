@@ -70,5 +70,9 @@ public abstract class Dispositivo { // Abstract porque não vamos instanciar obj
         this.estado = Estado.DESLIGADO;
     }
 
+    public abstract Dispositivo clone(); // Método abstrato para clonar o dispositivo, cada subclasse vai implementar esse método para retornar uma cópia do seu tipo específico
+
+    public abstract String getTipo(); // Método abstrato para obter o tipo do dispositivo (Lampada, Tomada, etc...)
+                                      // Cada subclasse vai implementar esse método para retornar seu tipo específico
 
 }

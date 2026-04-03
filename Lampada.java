@@ -44,4 +44,9 @@ public class Lampada extends Dispositivo {
     public String getTipo() {
         return "Lampada";
     }
+
+    @Override
+    public Lampada clone() {
+        return new Lampada(this);
+    }
 }

@@ -33,4 +33,9 @@ public class Curtina extends Dispositivo {
     public String getTipo() {
         return "Curtina";
     }
+    
+    @Override
+    public Curtina clone() {
+        return new Curtina(this);
+    }
 }
