@@ -1,0 +1,26 @@
+FASE 3 — Interface em modo texto (menus)
+
+Descrição:
+Nesta fase deve ser criada a interface com menus em modo texto para
+permitir ao utilizador interagir com o sistema.
+
+Checklist:
+
+[ ] Criar menu principal
+
+[ ] Criar submenu Casas
+    [ ] criar casa
+    [ ] listar casas
+
+[ ] Criar submenu Divisões
+    [ ] adicionar divisão
+    [ ] listar divisões
+
+[ ] Criar submenu Dispositivos
+    [ ] criar dispositivo
+    [ ] ligar dispositivo
+    [ ] desligar dispositivo
+
+[ ] Validar entradas do utilizador
+
+[ ] Garantir que o programa não crasha com inputs inválidos

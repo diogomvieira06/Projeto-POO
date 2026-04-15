@@ -1,0 +1,20 @@
+FASE 7 — Escalonamentos
+
+Descrição:
+Nesta fase devem ser criadas regras baseadas em tempo.
+
+Checklist:
+
+[ ] Criar classe Escalonamento
+
+[ ] Definir hora de execução
+
+[ ] Criar lista de ações
+
+[ ] Implementar pelo menos 4 escalonamentos
+
+Exemplos:
+    [ ] ligar luz às 08:00
+    [ ] abrir cortinas às 07:30
+
+[ ] Simular passagem do tempo

@@ -1,0 +1,19 @@
+FASE 8 — Cenários
+
+Descrição:
+Nesta fase devem ser criados cenários que executam múltiplas ações.
+
+Checklist:
+
+[ ] Criar classe Cenario
+
+[ ] Definir lista de ações
+
+[ ] Implementar cenários obrigatórios:
+
+    [ ] Sair de casa
+    [ ] Jantar com amigos
+    [ ] Deitar
+    [ ] Acordar
+
+[ ] Testar execução dos cenários

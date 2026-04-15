@@ -1,0 +1,46 @@
+FASE 1 — Criação das entidades base
+
+Descrição:
+Nesta fase devem ser criadas as classes fundamentais do sistema, incluindo
+Dispositivo (classe base), subclasses de dispositivos, Casa, Divisão e
+Utilizador. O objetivo é conseguir criar objetos e associá-los corretamente.
+
+Checklist:
+
+[ ] Criar enum Estado (LIGADO, DESLIGADO)
+
+[ ] Criar classe abstrata Dispositivo
+    [ ] id automático (static incremental)
+    [ ] marca
+    [ ] modelo
+    [ ] consumoPorHora
+    [ ] estado (enum)
+    [ ] métodos ligar() e desligar()
+    [ ] getters e setters
+    [ ] toString()
+
+[ ] Criar subclasses de Dispositivo
+    [ ] Lampada (intensidade)
+    [ ] ColunaSom (volume)
+    [ ] Cortina ou Tomada (abertura ou estado simples)
+
+[ ] Criar classe Divisao
+    [ ] nome
+    [ ] lista de dispositivos
+    [ ] adicionarDispositivo()
+    [ ] removerDispositivo()
+    [ ] listarDispositivos()
+
+[ ] Criar classe Casa
+    [ ] nome
+    [ ] lista de divisões
+    [ ] adicionarDivisao()
+    [ ] procurarDivisao()
+    [ ] listarDivisoes()
+
+[ ] Criar classe Utilizador
+    [ ] nome
+    [ ] tipo (ADMIN/NORMAL)
+    [ ] getters e setters
+
+[ ] Testar criação manual de objetos no Main

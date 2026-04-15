@@ -1,0 +1,17 @@
+FASE 9 — Sugestões automáticas
+
+Descrição:
+Nesta fase o sistema deve analisar o histórico de ações e sugerir
+automação ou escalonamentos.
+
+Checklist:
+
+[ ] Guardar histórico de ações
+
+[ ] Identificar padrões repetidos
+
+[ ] Gerar sugestões automáticas
+
+[ ] Permitir ao utilizador aceitar sugestões
+
+[ ] Adicionar automaticamente ao sistema

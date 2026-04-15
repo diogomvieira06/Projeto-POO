@@ -1,0 +1,20 @@
+FASE 6 — Automações
+
+Descrição:
+Nesta fase devem ser implementadas automações baseadas em condições.
+
+Checklist:
+
+[ ] Criar classe Automacao
+
+[ ] Criar interface Condicao
+
+[ ] Criar classe Acao
+
+[ ] Implementar pelo menos 2 automações
+
+Exemplos:
+    [ ] ligar luz quando luminosidade baixa
+    [ ] fechar cortinas quando chove
+
+[ ] Testar ativação automática

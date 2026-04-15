@@ -1,0 +1,18 @@
+FASE 10 — Relatório e documentação
+
+Descrição:
+Nesta fase deve ser preparado o relatório final do projeto.
+
+Checklist:
+
+[ ] Criar diagrama UML final
+
+[ ] Descrever arquitetura do sistema
+
+[ ] Explicar decisões tomadas
+
+[ ] Adicionar exemplos de utilização
+
+[ ] Rever código e limpar comentários desnecessários
+
+[ ] Preparar ficheiro de estado para apresentação

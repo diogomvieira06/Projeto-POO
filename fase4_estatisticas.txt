@@ -1,0 +1,21 @@
+FASE 4 — Estatísticas do sistema
+
+Descrição:
+Nesta fase devem ser criados métodos que permitam analisar os dados
+existentes no sistema.
+
+Checklist:
+
+[ ] Implementar cálculo da casa que mais consome
+
+[ ] Implementar cálculo dos 3 dispositivos mais usados
+    [ ] por tempo
+    [ ] por número de ativações
+
+[ ] Implementar cálculo das 3 divisões com mais dispositivos
+
+[ ] Criar métodos de consulta adicionais
+    [ ] listar dispositivos por casa
+    [ ] listar dispositivos por divisão
+
+[ ] Testar resultados com dados reais

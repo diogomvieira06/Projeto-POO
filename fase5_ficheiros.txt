@@ -1,0 +1,20 @@
+FASE 5 — Gravar e carregar ficheiros
+
+Descrição:
+Nesta fase o sistema deve permitir guardar o estado atual e carregá-lo
+novamente.
+
+Checklist:
+
+[ ] Implementar gravação em ficheiro binário
+
+[ ] Implementar leitura do ficheiro
+
+[ ] Garantir que todos os objetos são serializáveis
+
+[ ] Testar:
+    [ ] guardar estado
+    [ ] fechar programa
+    [ ] carregar estado
+
+[ ] Garantir que os IDs continuam corretos após carregar
