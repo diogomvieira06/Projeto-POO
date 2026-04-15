@@ -7,9 +7,9 @@ a lógica principal do sistema.
 
 Checklist:
 
-[ ] Criar classe DomusControl
+[X] Criar classe DomusControl
 
-[ ] Criar listas internas
+[X] Criar listas internas
     [ ] lista de casas
     [ ] lista de utilizadores
 

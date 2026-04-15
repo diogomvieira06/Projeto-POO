@@ -9,7 +9,7 @@ Checklist:
 
 [ ] Criar enum Estado (LIGADO, DESLIGADO)
 
-[ ] Criar classe abstrata Dispositivo
+[X] Criar classe abstrata Dispositivo
     [ ] id automático (static incremental)
     [ ] marca
     [ ] modelo
@@ -19,26 +19,26 @@ Checklist:
     [ ] getters e setters
     [ ] toString()
 
-[ ] Criar subclasses de Dispositivo
+[X] Criar subclasses de Dispositivo
     [ ] Lampada (intensidade)
     [ ] ColunaSom (volume)
     [ ] Cortina ou Tomada (abertura ou estado simples)
 
-[ ] Criar classe Divisao
+[X] Criar classe Divisao
     [ ] nome
     [ ] lista de dispositivos
     [ ] adicionarDispositivo()
     [ ] removerDispositivo()
     [ ] listarDispositivos()
 
-[ ] Criar classe Casa
+[X] Criar classe Casa
     [ ] nome
     [ ] lista de divisões
     [ ] adicionarDivisao()
     [ ] procurarDivisao()
     [ ] listarDivisoes()
 
-[ ] Criar classe Utilizador
+[X] Criar classe Utilizador
     [ ] nome
     [ ] tipo (ADMIN/NORMAL)
     [ ] getters e setters
