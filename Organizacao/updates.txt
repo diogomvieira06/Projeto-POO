@@ -1,0 +1,13 @@
+para ja usamos ArrayList para organizar os dados, mas no futuro vale a pena continuar a usar assim ? podemos passar para hashtables p.e
+
+na curtina, temos como atributo "nivel de abertura", usamos isso numa escala de 0-100(fiz as cenas com essa escala, mas nao ha stress se n for essa escala pq dps muda se)
+
+no portao de garagem temos o atributo "nivel de abertura", faz sentido isso ser assim ? nao seria melhor ter do genero {FECHADO, ABERTO} ? 
+digo isto pq na vida real normalmente o portao ou esta aberto ou esta fechado
+
+
+->falta completar o metodo "criarCasa"(na classe DomusControl), podemos meter agora codigo de maneira a associar um utilizador como administrador, falta nos fazer varias cenas nesse metodo
+
+->falta adicionar a opçao no menu para associar um utilizador a uma determinada casa/casas
+
+FASE 2 E 3 DO PROJETO JA ESTA QUASE FEITA

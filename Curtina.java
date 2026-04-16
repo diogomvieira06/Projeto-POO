@@ -1,5 +1,5 @@
 public class Curtina extends Dispositivo {
-    private int nivel_abertura;
+    private int nivel_abertura;// 0 a 100, onde 0 é completamente fechada e 100 é completamente aberta
 
     public Curtina(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {
         super(id, marca, modelo, consumo_Por_Hora_Wh);

@@ -13,21 +13,21 @@ Checklist:
     [ ] lista de casas
     [ ] lista de utilizadores
 
-[ ] Criar métodos de gestão
+[X] Criar métodos de gestão
     [ ] adicionarCasa()
     [ ] adicionarUtilizador()
     [ ] listarCasas()
     [ ] listarUtilizadores()
 
-[ ] Criar métodos para associar objetos
+[X] Criar métodos para associar objetos
     [ ] adicionarDivisao a uma Casa
     [ ] adicionarDispositivo a uma Divisao
 
-[ ] Criar métodos para operar dispositivos
+[X] Criar métodos para operar dispositivos
     [ ] ligarDispositivo(id)
     [ ] desligarDispositivo(id)
 
-[ ] Testar fluxo completo:
+[X] Testar fluxo completo:
     [ ] criar casa
     [ ] criar divisão
     [ ] adicionar dispositivo
