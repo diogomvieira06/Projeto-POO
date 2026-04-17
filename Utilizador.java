@@ -3,28 +3,28 @@ import java.util.*;
 public class Utilizador {
     private int id;
     private String nome;
-    private ArrayList<Casa> casasAdmistradas;
-    private ArrayList<Casa> casasUtilizador;
+    private HashMap<Integer, Casa> casasAdministradas;
+    private HashMap<Integer, Casa> casasUtilizador;
 
     public Utilizador(int id, String nome){
         this.id = id;
         this.nome = nome;
-        this.casasAdmistradas = new ArrayList<>();
-        this.casasUtilizador = new ArrayList<>();
+        this.casasAdministradas = new HashMap<>();
+        this.casasUtilizador = new HashMap<>();
     }
 
     public Utilizador(){
         this.id = 0;
         this.nome = "";
-        this.casasAdmistradas = new ArrayList<>();
-        this.casasUtilizador = new ArrayList<>();
+        this.casasAdministradas = new HashMap<>();
+        this.casasUtilizador = new HashMap<>();
     }
 
     public Utilizador(Utilizador u){
         this.id = u.id;
         this.nome = u.nome;
-        this.casasAdmistradas = new ArrayList<>(u.casasAdmistradas);
-        this.casasUtilizador = new ArrayList<>(u.casasUtilizador);
+        this.casasAdministradas = new HashMap<>(u.casasAdministradas);
+        this.casasUtilizador = new HashMap<>(u.casasUtilizador);
     }
 
     //getters
@@ -36,12 +36,12 @@ public class Utilizador {
         return this.nome;
     }
 
-    public ArrayList<Casa> getCasasAdmistradas(){
-        return this.casasAdmistradas;//dps meter com clone
+    public HashMap<Integer, Casa> getCasasAdmistradas(){
+        return new HashMap<>(casasAdministradas);
     }
 
-    public ArrayList<Casa> getCasasUtilizador(){
-        return this.casasUtilizador;
+    public HashMap<Integer, Casa> getCasasUtilizador(){
+        return new HashMap<>(casasUtilizador);
     }
 
     //setters
@@ -53,44 +53,44 @@ public class Utilizador {
         this.nome = n;
     }
 
-    public void setCasasAdmistradas(ArrayList<Casa> casasAdmistradas){
-        this.casasAdmistradas = casasAdmistradas;
+    public void setCasasAdmistradas(HashMap<Integer, Casa> casasAdministradas){
+        this.casasAdministradas = new HashMap<>(casasAdministradas);
     }
 
-    public void setCasasUtilizador(ArrayList<Casa> casasUtilizador){
-        this.casasUtilizador = casasUtilizador;
+    public void setCasasUtilizador(HashMap<Integer, Casa> casasUtilizador){
+        this.casasUtilizador = new HashMap<>(casasUtilizador);
     }
 
 
 
     //adicionar casa admistrada
-    public void adicionarCasaAdmistrada(Casa c){
-        if(!this.casasAdmistradas.contains(c)) this.casasAdmistradas.add(c);
+    public void adicionarCasaAdministrada(Casa c){
+        this.casasAdministradas.put(c.getId(), c);
     }
 
     //adicionar casa utilizador
     public void adicionarCasaUtilizador(Casa c){
-        if(!this.casasUtilizador.contains(c)) this.casasUtilizador.add(c);
+        this.casasUtilizador.put(c.getId(), c);
     }
 
     //remover casa admistrada
     public void removerCasaAdmistrada(Casa c){
-        this.casasAdmistradas.remove(c);
+        this.casasAdministradas.remove(c.getId());
     }
 
     //remover casa Utilizador
     public void removerCasaUtilizador(Casa c){
-        this.casasUtilizador.remove(c);
+        this.casasUtilizador.remove(c.getId());
     }
 
     //ver se um utilizador pode admistrar uma dada casa
     public boolean podeAdmistrarCasa(Casa c){
-        return this.casasAdmistradas.contains(c);
+        return this.casasAdministradas.containsKey(c.getId());
     }
 
     //ver se um utilizador tem acesso a uma dada casa
     public boolean podeUsarCasa(Casa c){
-        return (this.casasUtilizador.contains(c) || this.casasAdmistradas.contains(c));//um utilizador pode usar uma casa se for um utilizador ou um admistrador dessa casa
+        return (this.casasUtilizador.containsKey(c.getId()) || this.casasAdministradas.containsKey(c.getId()));//um utilizador pode usar uma casa se for um utilizador ou um admistrador dessa casa
     }
 
 
@@ -99,7 +99,7 @@ public class Utilizador {
         return "Utilizador{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", casasAdministradas=" + casasAdmistradas.size() +  // Mostra só o número para não poluir
+                ", casasAdministradas=" + casasAdministradas.size() +  // Mostra só o número para não poluir
                 ", casasUtilizador=" + casasUtilizador.size() +
                 '}';
 }

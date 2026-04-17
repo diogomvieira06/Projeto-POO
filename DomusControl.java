@@ -1,68 +1,102 @@
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class DomusControl {
-    
-    private static ArrayList<Utilizador> utilizadores = new ArrayList<>();
-    private static ArrayList<Casa> casas = new ArrayList<>();
 
-    private static int proximoIdUtilizador = 1;
-    private static int proximoIdCasa = 1;
-    private static int proximoIdDivisao = 1;
-    private static int proximoIdDispositivo = 1;
+    private HashMap<Integer, Utilizador> utilizadores = new HashMap<>();
+    private HashMap<Integer, Casa> casas = new HashMap<>();
+
+    private int proximoIdUtilizador = 1;
+    private int proximoIdCasa = 1;
+    private int proximoIdDivisao = 1;
+    private int proximoIdDispositivo = 1;
 
     public int aumentarIdDispositivo() {
         return proximoIdDispositivo++;
     }
 
-    public void criarUtilizador(String nome){
+    public Utilizador criarUtilizador(String nome) {
         int id = proximoIdUtilizador++;
-        utilizadores.add(new Utilizador(id, nome));
-        System.out.println("Utilizador criado com sucesso! Id atribuido: " + id);
+        Utilizador u = new Utilizador(id, nome);
+        utilizadores.put(id, u);
+        System.out.println("Utilizador criado com sucesso! ID atribuído: " + id);
+        return u;
     }
 
-    public void criarCasa(String alcunha){
+    public Casa criarCasa(String alcunha) {
         int id = proximoIdCasa++;
-        casas.add(new Casa(alcunha, id));
-        System.out.println("Casa criada com sucesso, Id atribuido: " + id);
+        Casa casa = new Casa(alcunha, id);
+        casas.put(id, casa);
+        System.out.println("Casa criada com sucesso, ID atribuído: " + id);
+        return casa;
     }
 
-    public Casa encontrarCasaPorId(int id){
-        for(Casa c : casas){
-            if(c.getId() == id) return c;
-        }
-        return null;
+    public Casa encontrarCasaPorId(int id) {
+        return casas.get(id);
     }
 
-    public void listarCasas() {
-        for (Casa c : casas) {
-            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
-        }
+    public Divisao encontrarDivisaoPorId(Casa casa, int id) {
+        if (casa == null) return null;
+        return casa.obterDivisaoPorId(id);
     }
 
-    public void criarDivisao(Casa casa, String nomeDivisao){
+    public Dispositivo encontrarDispositivoPorId(Divisao divisao, int id) {
+        if (divisao == null) return null;
+        return divisao.obterDispositivoPorId(id);
+    }
+
+    public void criarDivisao(Casa casa, String nomeDivisao) {
+        if (casa == null) return;
         int idDivisao = proximoIdDivisao++;
         Divisao divisao = new Divisao(nomeDivisao, idDivisao);
         casa.adicionarDivisao(divisao);
-        System.out.println("Divisão criada com sucesso! Id atribuido: " + idDivisao);
+        System.out.println("Divisão criada com sucesso! ID atribuído: " + idDivisao);
     }
 
-    public Divisao encontrarDivisaoPorId(Casa casa, int id){
-        for(Divisao d : casa.getDivisoes()){
-            if(d.getId() == id) return d;
+    public void adicionarDispositivo(Divisao divisao, Dispositivo dispositivo) {
+        if (divisao == null || dispositivo == null) return;
+        divisao.adicionarDispositivo(dispositivo);
+    }
+
+    public void associarCasaAdministrador(int idUtilizador, int idCasa) {
+        Utilizador u = encontrarUtilizadorPorId(idUtilizador);
+        Casa casa = encontrarCasaPorId(idCasa);
+        if (u != null && casa != null) {
+            u.adicionarCasaAdministrada(casa);
+            System.out.println("Casa associada como administrada.");
         }
-        return null;
     }
 
-    public void listarUtilizadores(){
-        for(Utilizador u : utilizadores){
+    public void associarCasaUtilizador(int idUtilizador, int idCasa) {
+        Utilizador u = encontrarUtilizadorPorId(idUtilizador);
+        Casa casa = encontrarCasaPorId(idCasa);
+        if (u != null && casa != null) {
+            u.adicionarCasaUtilizador(casa);
+            System.out.println("Casa associada como utilizador.");
+        }
+    }
+
+    public void listarUtilizadores() {
+        for (Utilizador u : utilizadores.values()) {
             System.out.println("ID: " + u.getId() + " - Nome: " + u.getNome());
         }
     }
 
-    public Dispositivo encontrarDispositivoPorId(Divisao divisao, int id){
-        for(Dispositivo d : divisao.getDispositivos()){
-            if(d.getId() == id) return d;
+    public void listarCasas() {
+        for (Casa c : casas.values()) {
+            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
         }
-        return null;
+    }
+
+    public Utilizador encontrarUtilizadorPorId(int id) {
+        return utilizadores.get(id);
+    }
+
+    public Collection<Utilizador> getUtilizadores() {
+        return utilizadores.values();
+    }
+
+    public Collection<Casa> getCasas() {
+        return casas.values();
     }
 }
