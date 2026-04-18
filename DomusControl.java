@@ -13,11 +13,22 @@ public class DomusControl {
     public int aumentarIdDispositivo() {
         return proximoIdDispositivo++;
     }
+    public int aumentarIdDivisao() {
+        return proximoIdDivisao++;
+    }
+    public int aumentarIdCasa() {
+        return proximoIdCasa++;
+    }
+    public int aumentarIdUtilizador() {
+        return proximoIdUtilizador++;
+    }
 
-    public void criarUtilizador(String nome){
+    public Utilizador criarUtilizador(String nome){
         int id = proximoIdUtilizador++;
-        utilizadores.add(new Utilizador(id, nome));
+        Utilizador utilizador = new Utilizador(id, nome);
+        utilizadores.add(utilizador);
         System.out.println("Utilizador criado com sucesso! Id atribuido: " + id);
+        return utilizador;
     }
 
     public void criarCasa(String alcunha){
@@ -64,5 +75,38 @@ public class DomusControl {
             if(d.getId() == id) return d;
         }
         return null;
+    }
+
+    public void adicionarCasaAAdministrador(Utilizador administrador, Casa casa){
+        administrador.adicionarCasaAdmistrada(casa);
+    }
+
+    public void removerCasaDeAdministrador(Utilizador administrador, Casa casa){
+        administrador.removerCasaAdmistrada(casa);
+    }
+
+    public void adicionarCasaAUtilizador(Utilizador utilizador, Casa casa){
+        utilizador.adicionarCasaUtilizador(casa);
+    }
+
+    public void removerCasaDeUtilizador(Utilizador utilizador, Casa casa){
+        utilizador.removerCasaUtilizador(casa);
+    }
+
+    public void listarCasasdeUtilizador(Utilizador utilizador){
+        System.out.println("Casas associadas ao utilizador " + utilizador.getNome() + ":");
+        for(Casa c : utilizador.getCasasUtilizador()){
+            if (utilizador.getCasasAdmistradas().contains(c)) {
+                continue; // Pula as casas onde o utilizador é administrador, para evitar duplicação
+            }
+            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
+        }
+    }
+
+    public void listarCasasdeAdministrador(Utilizador utilizador){
+        System.out.println("Casas administradas pelo utilizador " + utilizador.getNome() + ":");
+        for(Casa c : utilizador.getCasasAdmistradas()){
+            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
+        }
     }
 }

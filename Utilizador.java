@@ -66,6 +66,7 @@ public class Utilizador {
     //adicionar casa admistrada
     public void adicionarCasaAdmistrada(Casa c){
         if(!this.casasAdmistradas.contains(c)) this.casasAdmistradas.add(c);
+        if(!this.casasUtilizador.contains(c)) this.casasUtilizador.add(c); //um administrador tem acesso a uma casa, logo é um utilizador dessa casa
     }
 
     //adicionar casa utilizador
@@ -102,7 +103,5 @@ public class Utilizador {
                 ", casasAdministradas=" + casasAdmistradas.size() +  // Mostra só o número para não poluir
                 ", casasUtilizador=" + casasUtilizador.size() +
                 '}';
-}
-
-
+    }
 }
