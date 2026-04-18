@@ -36,7 +36,7 @@ public class Utilizador {
         return this.nome;
     }
 
-    public HashMap<Integer, Casa> getCasasAdmistradas(){
+    public HashMap<Integer, Casa> getCasasAdministradas(){
         return new HashMap<>(casasAdministradas);
     }
 
