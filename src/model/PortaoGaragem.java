@@ -1,19 +1,22 @@
-public class Curtina extends Dispositivo {
-    private int nivel_abertura;// 0 a 100, onde 0 é completamente fechada e 100 é completamente aberta
+package src.model;
 
-    public Curtina(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {
+
+public class PortaoGaragem extends Dispositivo {
+    private int nivel_abertura;
+
+    public PortaoGaragem(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {
         super(id, marca, modelo, consumo_Por_Hora_Wh);
         this.nivel_abertura = nivel_abertura;
     }
 
-    public Curtina() {
+    public PortaoGaragem() {
         super();
         this.nivel_abertura = 0;
     }
 
-    public Curtina(Curtina c) {
-        super(c); // Chama o construtor de cópia da classe base
-        this.nivel_abertura = c.nivel_abertura;
+    public PortaoGaragem(PortaoGaragem p) {
+        super(p); // Chama o construtor de cópia da classe base
+        this.nivel_abertura = p.nivel_abertura;
     }
 
     public int getNivelAbertura() {
@@ -31,11 +34,11 @@ public class Curtina extends Dispositivo {
 
     @Override
     public String getTipo() {
-        return "Curtina";
+        return "PortaoGaragem";
     }
-    
+
     @Override
-    public Curtina clone() {
-        return new Curtina(this);
+    public PortaoGaragem clone() {
+        return new PortaoGaragem(this);
     }
 }

@@ -1,3 +1,6 @@
+package src.model;
+
+
 public class Lampada extends Dispositivo {
     private int intensidade_Luminosidade;
     private String cor_Luz;

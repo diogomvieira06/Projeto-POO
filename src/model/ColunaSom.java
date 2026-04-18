@@ -1,3 +1,6 @@
+package src.model;
+
+
 public class ColunaSom extends Dispositivo {
     private int intensidade_Volume;
 

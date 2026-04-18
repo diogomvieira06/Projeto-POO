@@ -15,3 +15,12 @@ FASE 2 E 3 DO PROJETO JA ESTA QUASE FEITA
 
 logo no inicio, meter a opçao de login de utilizador, e dps criar um utilizador e um administrador
 
+
+
+CRIEI MAKEFILE, OS COMANDOS SAO ESTES : 
+-> make compile
+->make run
+->make clean
+
+ou tmb 
+->make rebuild(limpa e volta a correr)

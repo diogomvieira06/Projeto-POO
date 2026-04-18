@@ -1,5 +1,7 @@
-import java.util.Collection;
-import java.util.HashMap;
+package src.controller;
+import src.model.*;
+
+import java.util.*;
 
 public class DomusControl {
 

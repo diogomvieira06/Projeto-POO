@@ -1,4 +1,10 @@
+package src.view;
+
 import java.util.*;
+import src.controller.DomusControl;
+import src.model.*;
+
+
 
 public class Main {
     private static Scanner sc = new Scanner(System.in); // Scanner para ler a entrada do utilizador

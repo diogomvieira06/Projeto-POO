@@ -1,3 +1,6 @@
+package src.model;
+
+
 public abstract class Dispositivo { // Abstract porque não vamos instanciar objetos diretamente dessa classe, mas sim de suas subclasses (Lampada, Curtinas, etc...)
     private int id;
     private String marca;

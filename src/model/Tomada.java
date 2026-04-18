@@ -1,3 +1,6 @@
+package src.model;
+
+
 public class Tomada extends Dispositivo {
 
     public Tomada(int id, String marca, String modelo, double consumo_Por_Hora_Wh) {
