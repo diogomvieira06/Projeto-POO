@@ -128,7 +128,7 @@ public class DomusControl {
     public void listarCasasdeUtilizador(Utilizador utilizador){
         System.out.println("Casas associadas ao utilizador " + utilizador.getNome() + ":");
         for(Casa c : utilizador.getCasasUtilizador().values()){
-            if (utilizador.getCasasAdmistradas().containsKey(c.getId())) {
+            if (utilizador.getCasasAdministradas().containsKey(c.getId())) {
                 continue; // Pula as casas onde o utilizador é administrador, para evitar duplicação
             }
             System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
@@ -137,7 +137,7 @@ public class DomusControl {
 
     public void listarCasasdeAdministrador(Utilizador utilizador){
         System.out.println("Casas administradas pelo utilizador " + utilizador.getNome() + ":");
-        for(Casa c : utilizador.getCasasAdmistradas().values()){
+        for(Casa c : utilizador.getCasasAdministradas().values()){
             System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
         }
     }
