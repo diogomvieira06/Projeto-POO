@@ -110,7 +110,7 @@ public class DomusControl {
     }
 
     public void adicionarCasaAAdministrador(Utilizador administrador, Casa casa){
-        administrador.adicionarCasaAdmistrada(casa);
+        administrador.adicionarCasaAdministrada(casa);
     }
 
     public void removerCasaDeAdministrador(Utilizador administrador, Casa casa){
@@ -127,8 +127,8 @@ public class DomusControl {
 
     public void listarCasasdeUtilizador(Utilizador utilizador){
         System.out.println("Casas associadas ao utilizador " + utilizador.getNome() + ":");
-        for(Casa c : utilizador.getCasasUtilizador()){
-            if (utilizador.getCasasAdmistradas().contains(c)) {
+        for(Casa c : utilizador.getCasasUtilizador().values()){
+            if (utilizador.getCasasAdmistradas().containsKey(c.getId())) {
                 continue; // Pula as casas onde o utilizador é administrador, para evitar duplicação
             }
             System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
@@ -137,7 +137,7 @@ public class DomusControl {
 
     public void listarCasasdeAdministrador(Utilizador utilizador){
         System.out.println("Casas administradas pelo utilizador " + utilizador.getNome() + ":");
-        for(Casa c : utilizador.getCasasAdmistradas()){
+        for(Casa c : utilizador.getCasasAdmistradas().values()){
             System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
         }
     }
