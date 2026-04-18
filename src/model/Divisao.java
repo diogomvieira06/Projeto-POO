@@ -1,9 +1,9 @@
 package src.model;
-
-
+import java.io.Serializable;
 import java.util.*;
 
-public class Divisao {
+public class Divisao implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String nome;
     private int id;
     //private ArrayList<Dispositivo> dispositivos;

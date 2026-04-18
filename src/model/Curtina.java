@@ -2,6 +2,7 @@ package src.model;
 
 
 public class Curtina extends Dispositivo {
+    private static final long serialVersionUID = 1L;
     private int nivel_abertura;// 0 a 100, onde 0 é completamente fechada e 100 é completamente aberta
 
     public Curtina(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {

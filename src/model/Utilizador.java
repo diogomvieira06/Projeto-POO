@@ -1,9 +1,11 @@
 package src.model;
 
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Utilizador {
+public class Utilizador implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String nome;
     private HashMap<Integer, Casa> casasAdministradas;

@@ -1,7 +1,10 @@
 package src.model;
+import java.io.Serializable;
 
 
-public abstract class Dispositivo { // Abstract porque não vamos instanciar objetos diretamente dessa classe, mas sim de suas subclasses (Lampada, Curtinas, etc...)
+public abstract class Dispositivo implements Serializable { // Abstract porque não vamos instanciar objetos diretamente dessa classe, mas sim de suas subclasses (Lampada, Curtinas, etc...)
+    private static final long serialVersionUID = 1L; // Para serializar o objeto, criado o ID de versao e garantir compatibilidade
+
     private int id;
     private String marca;
     private String modelo;

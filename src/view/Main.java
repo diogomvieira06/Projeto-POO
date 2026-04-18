@@ -4,591 +4,268 @@ import java.util.*;
 import src.controller.DomusControl;
 import src.model.*;
 
-
-
 public class Main {
-    private static Scanner sc = new Scanner(System.in); // Scanner para ler a entrada do utilizador
+    private static Scanner sc = new Scanner(System.in);
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         DomusControl domusControl = new DomusControl();
-        //Criação de alguns objetos para teste
-        Lampada lampada1 = new Lampada(1, "Philips", "Hue", 10, 80, "Branco");
-        Tomada tomada1 = new Tomada(2, "TP-Link", "Kasa", 5);
-        Curtina cortina1 = new Curtina(3, "Ikea", "Tradfri", 8, 50);
-        ColunaSom coluna1 = new ColunaSom(4, "Bose", "SoundLink", 15, 70);
-        Divisao sala = new Divisao("Sala", 1);
-        sala.adicionarDispositivo(lampada1);
-        sala.adicionarDispositivo(tomada1);
-        sala.adicionarDispositivo(cortina1);
-        sala.adicionarDispositivo(coluna1);
-        Lampada lampada2 = new Lampada(5, "Philips", "Hue", 10, 60, "Amarelo");
-        Tomada tomada2 = new Tomada(6, "TP-Link", "Kasa", 5);
-        Divisao quarto = new Divisao("Quarto", 2);
-        quarto.adicionarDispositivo(lampada2);
-        quarto.adicionarDispositivo(tomada2);
-        domusControl.criarCasa("Casa do uti1-a");
-        domusControl.criarCasa("Casa do uti1-b");
-        domusControl.criarCasa("Casa do uti2-a");
-        domusControl.criarCasa("Casa do uti2-b");
 
-        Casa casa1 = domusControl.encontrarCasaPorId(1);
-        Casa casa2 = domusControl.encontrarCasaPorId(2);
-        Casa casa3 = domusControl.encontrarCasaPorId(3);
-        Casa casa4 = domusControl.encontrarCasaPorId(4);
-
-        if (casa1 != null) {
-            casa1.adicionarDivisao(sala);
-            casa1.adicionarDivisao(quarto);
+        // 1. CARREGAMENTO OU SEED
+        DomusControl carregado = DomusControl.carregarEstado("estado_projeto.dat");
+        if (carregado != null) {
+            domusControl = carregado;
+            System.out.println("Estado anterior carregado com sucesso!\n");
+        } else {
+            System.out.println("Iniciando de raiz. Criando configuração de teste...");
+            inicializarDadosTeste(domusControl);
         }
 
-        Lampada lampada3 = new Lampada(7, "Xiaomi", "Yeelight", 9, 75, "Neutro");
-        Tomada tomada3 = new Tomada(8, "Meross", "MSS310", 6);
-        Divisao cozinha = new Divisao("Cozinha", 3);
-        cozinha.adicionarDispositivo(lampada3);
-        cozinha.adicionarDispositivo(tomada3);
-        if (casa2 != null) {
-            casa2.adicionarDivisao(cozinha);
-        }
-
-        ColunaSom coluna2 = new ColunaSom(9, "JBL", "Flip", 12, 55);
-        Divisao escritorio = new Divisao("Escritório", 4);
-        escritorio.adicionarDispositivo(coluna2);
-        if (casa3 != null) {
-            casa3.adicionarDivisao(escritorio);
-        }
-
-        Utilizador uti1 = domusControl.criarUtilizador("uti1");
-        Utilizador uti2 = domusControl.criarUtilizador("uti2");
-
-        if (casa1 != null) {
-            domusControl.adicionarCasaAAdministrador(uti1, casa1);
-            domusControl.adicionarCasaAUtilizador(uti2, casa1);
-        }
-        if (casa2 != null) {
-            domusControl.adicionarCasaAAdministrador(uti1, casa2);
-            domusControl.adicionarCasaAUtilizador(uti2, casa2);
-        }
-        if (casa3 != null) {
-            domusControl.adicionarCasaAAdministrador(uti2, casa3);
-            domusControl.adicionarCasaAUtilizador(uti1, casa3);
-        }
-        if (casa4 != null) {
-            domusControl.adicionarCasaAAdministrador(uti2, casa4);
-            domusControl.adicionarCasaAUtilizador(uti1, casa4);
-        }
-
-
-        boolean sair = false;
-        System.out.println("Bem-vindo ao DomusControl!");
-        boolean administrador_bool = false;
-
+        // 2. LOGIN COM CICLO INFINITO (ROBUSTEZ)
         Utilizador utilizador_atual = null;
-        
+        while (utilizador_atual == null) {
+            System.out.println("Bem-vindo ao DomusControl!");
+            System.out.print("Introduza o seu ID de Utilizador (ou 0 para encerrar): ");
+            int idLogin = lerInteiro();
 
-        System.out.println("Nome de Utilizador: ");
-        String nomeUtilizador = sc.nextLine();
-        if(nomeUtilizador.equals("uti1")){
-            utilizador_atual = uti1;// Teste, depois implementar um método para encontrar o utilizador por nome
-            System.out.println("Bem-vindo, uti1!");
-        }
-        else if(nomeUtilizador.equals("uti2")){
-            utilizador_atual = uti2;// Teste, depois implementar um método para encontrar o utilizador por nome
-            System.out.println("Bem-vindo, uti2!");
-        }
-        else {
-            System.out.println("Utilizador não reconhecido.");
-            return; // Encerra o programa se o utilizador não for reconhecido
-        }
-        
-        while(!sair){
-            if (administrador_bool) {
-                
-                System.out.println("\n--- DomusControl ---");
-                System.out.println("1. Criar utilizador");
-                System.out.println("2. Criar casa");
-                System.out.println("3. Criar divisão");
-                System.out.println("4. Adicionar dispositivo");
-                System.out.println("5. Listar utilizadores");
-                System.out.println("6. Listar casas");
-                System.out.println("7. Ligar/desligar dispositivo");
-                System.out.println("0. Sair");
-                System.out.print("Opção: ");
-    
-                int opcao = sc.nextInt();
-                sc.nextLine(); // Consumir o \n após ler o número
-                switch (opcao) {
-                    case 1 -> {
-                        System.out.print("Nome do utilizador: ");
-                        String nomeNovoUtilizador = sc.nextLine();
-                        while (true) {
-                            System.out.println("Quer associar uma casa a este utilizador?");
-                            System.out.println("1. Sim (Administrador)");
-                            System.out.println("2. Sim (Utilizador Normal)");
-                            System.out.println("3. Não");
-                            System.out.print("Opção: ");
-                            int tipoUtilizador = sc.nextInt();
-                            sc.nextLine(); // Consumir o \n após ler o número
-                            if (tipoUtilizador == 3) {
-                                domusControl.criarUtilizador(nomeNovoUtilizador);
-                                break; // Sai do loop se a opção for voltar
-                            } else if (tipoUtilizador == 1) {
-                                System.out.println("Que casa quer associar?");
-                                domusControl.listarCasas();
-                                System.out.print("ID da casa a adicionar: ");
-                                int idCasa = sc.nextInt();
-                                sc.nextLine(); // Consumir o \n após ler o número
-                                Casa casa = domusControl.encontrarCasaPorId(idCasa);
-                                if (casa != null) {
-                                    Utilizador utilizador = domusControl.criarUtilizador(nomeNovoUtilizador);
-                                    domusControl.adicionarCasaAAdministrador(utilizador, casa);
-                                } else {
-                                    System.out.println("Casa não encontrada!");
-                                }
-                            } else if (tipoUtilizador == 2) {
-                                System.out.println("Que casa quer associar?");
-                                domusControl.listarCasas();
-                                System.out.print("ID da casa a adicionar: ");
-                                int idCasa = sc.nextInt();
-                                sc.nextLine(); // Consumir o \n após ler o número
-                                Casa casa = domusControl.encontrarCasaPorId(idCasa);
-                                if (casa != null) {
-                                    Utilizador utilizador = domusControl.criarUtilizador(nomeNovoUtilizador);
-                                    domusControl.adicionarCasaAUtilizador(utilizador, casa);
-                                } else {
-                                    System.out.println("Casa não encontrada!");
-                                }
-                            } else {
-                                System.out.println("Opção inválida");
-                            }
-                        }
-                    }
-                    case 2 -> {
-                        System.out.print("Alcunha da casa: ");
-                        String alcunha = sc.nextLine();
-                        domusControl.criarCasa(alcunha);
-                    }
-                    case 3 -> {
-                        System.out.println("ID da casa onde quer criar a divisão: ");
-                        int idCasa = sc.nextInt();
-                        sc.nextLine(); // Consumir o \n após ler o número
-                        Casa casa = domusControl.encontrarCasaPorId(idCasa);//ve se ja existe a casa
-                        if (casa != null) {
-                            System.out.print("Nome da divisão: ");
-                            String nomeDivisao = sc.nextLine();
-                            domusControl.criarDivisao(casa, nomeDivisao);
-                        }
-                        else {
-                            System.out.println("Casa não encontrada!");
-                            System.out.println("Lista das suas casas:");
-                            domusControl.listarCasas();
-                        }
-                    }
-                    case 4 -> {
-                        System.out.print("ID da casa onde quer adicionar o dispositivo: ");
-                        int idCasa = sc.nextInt();
-                        sc.nextLine(); // Consumir o \n após ler o número
-                        Casa casa = domusControl.encontrarCasaPorId(idCasa);
-    
-                        if (casa != null) {
-                            System.out.print("ID da divisão onde quer adicionar o dispositivo: ");
-                            int idDivisao = sc.nextInt();
-                            sc.nextLine(); // Consumir o \n após ler o número
-                            Divisao divisao = domusControl.encontrarDivisaoPorId(casa, idDivisao);
-    
-                            if (divisao != null) {
-                                System.out.println("Tipos de dispositivo:");
-                                System.out.println("1. Lâmpada");
-                                System.out.println("2. Tomada");
-                                System.out.println("3. Cortina");
-                                System.out.println("4. Coluna de Som");
-                                System.out.print("Escolha o tipo de dispositivo: ");
-                                int tipoDispositivo = sc.nextInt();
-                                sc.nextLine(); // Consumir o \n após ler o número
-    
-                                if(tipoDispositivo < 1 || tipoDispositivo > 4){
-                                    System.out.println("Tipo inválido");
-                                    return;//volta ao menu principal
-                                }                                            
-    
-                                System.out.print("Marca do dispositivo: ");
-                                String marca = sc.next();
-                                System.out.print("Modelo do dispositivo: ");
-                                String modelo = sc.next();
-                                System.out.print("Consumo por hora (Wh): ");
-                                double consumo = sc.nextDouble();
-                
-                                Dispositivo dispositivo = null;
-                                int idDispositivo = domusControl.aumentarIdDispositivo(); // Talvez provisorio
-                
-                                //Criar o dispositivo com base no tipo escolhido
-                                switch(tipoDispositivo){
-                                    //LAMPADA
-                                    case 1 : {
-                                        System.out.print("Intensidade de luminosidade (0-100): ");
-                                        int intensidade = sc.nextInt();
-                                        System.out.print("Cor da luz: ");
-                                        String corLuz = sc.next();
-                                        dispositivo = new Lampada(idDispositivo, marca, modelo, consumo, intensidade, corLuz);
-                                        break;
-                                    }
-                
-                                    //TOMADA
-                                    case 2 : {
-                                        dispositivo = new Tomada(idDispositivo, marca, modelo, consumo);
-                                        break;
-                                    }
-                
-                                    //CORTINA
-                                    case 3 : {
-                                        System.out.print("Nivel de abertura (0-100): ");
-                                        int nivelAbertura = sc.nextInt();
-                                        dispositivo = new Curtina(idDispositivo, marca, modelo, consumo, nivelAbertura);
-                                        break;
-                                    }
-                
-                                    //COLUNA DE SOM
-                                    case 4 : {
-                                        System.out.print("Intensidade do volume (0-100): ");
-                                        int intensidadeVolume = sc.nextInt();
-                                        dispositivo = new ColunaSom(idDispositivo, marca, modelo, consumo, intensidadeVolume);
-                                        break;
-                                    }
-                
-                                    //PORTAO DE GARAGEM
-                                    case 5 : {
-                                        System.out.print("Nivel de abertura (0-100): ");
-                                        int nivelAbertura = sc.nextInt();
-                                        dispositivo = new PortaoGaragem(idDispositivo, marca, modelo, consumo, nivelAbertura);
-                                        break;
-                                    }
-                                }
-                                //Aqu adicionamos o dispositivo à divisão escolhida
-                                divisao.adicionarDispositivo(dispositivo);
-                                System.out.println("Dispositivo adicionado com sucesso! Id atribuido: " + idDispositivo);
-                            
-                            } else {
-                                System.out.println("Divisão não encontrada!");
-                            }
-                        } else {
-                            System.out.println("Casa não encontrada!");
-                            System.out.println("Lista das suas casas:");
-                            domusControl.listarCasas();
-                        }
-                    }
-                    case 5 -> {
-                        System.out.println("Lista dos utilizadores:");
-                        domusControl.listarUtilizadores();
-        
-                    }
-                    case 6 -> {
-                        System.out.println("Lista das suas casas:");
-                        domusControl.listarCasas();
-                    }
-                    case 7 -> {
-                        System.out.print("Id da casa onde está o dispositivo: ");
-                        int idCasa = sc.nextInt();
-                        sc.nextLine(); // Consumir o \n após ler o número
-                        Casa casa = domusControl.encontrarCasaPorId(idCasa);
-                
-                        if(casa != null){
-                            System.out.print("Id da divisão onde está o dispositivo: ");
-                            int idDivisao = sc.nextInt();
-                            sc.nextLine(); // Consumir o \n após ler o número
-                            Divisao divisao = domusControl.encontrarDivisaoPorId(casa, idDivisao);
-                
-                            if(divisao != null){
-                                System.out.print("Id do dispositivo que quer controlar: ");
-                                int idDispositivo = sc.nextInt();
-                                sc.nextLine(); // Consumir o \n após ler o número
-                                Dispositivo dispositivo = domusControl.encontrarDispositivoPorId(divisao, idDispositivo);//ver melhor dps, falta o consumo por hora e tal
-                
-                                if(dispositivo != null){
-                                    System.out.println("1. Ligar dispositivo");
-                                    System.out.println("2. Desligar dispositivo");
-                                    System.out.print("Opção: ");
-                                    int opcao2 = sc.nextInt();
-                
-                                    if(opcao2 == 1){
-                                        dispositivo.ligarDispositivo();
-                                        System.out.println("Dispositivo ligado com sucesso!");
-                                    } else if(opcao2 == 2){
-                                        dispositivo.desligarDispositivo();
-                                        System.out.println("Dispositivo desligado com sucesso!");
-                                    } else {
-                                        System.out.println("Opção inválida");
-                                    }
-                                } else {
-                                    System.out.println("Dispositivo não encontrado");
-                                }
-                            } else {
-                                System.out.println("Divisão não encontrada");
-                            }
-                        } else {
-                            System.out.println("Casa não encontrada");
-                        }
-                    }// ver melhor dps
-                    case 0 -> sair = true;
-                    default -> System.out.println("Opção inválida ");
-                }
+            if (idLogin == 0) {
+                System.out.println("A encerrar o programa...");
+                return;
             }
-            else {
-                System.out.println("\n\n\n--- DomusControl ---\n");// utilizar este menu///////////////////////////////////////////////////////////////////////////
-                System.out.println("1. Gestão de Casas");
-                System.out.println("2. Criar Casa");
-                System.out.println("3. Automações a todas as casas disponíveis");
-                System.out.println("0. Sair");
-                System.out.print("Opção: ");
-    
-                int opcao = sc.nextInt();
-                sc.nextLine(); // Consumir o \n após ler o número
-                System.out.print("\n");
-                switch (opcao) {
-                    case 1 -> {
-                        while(true){
-                            domusControl.listarCasasdeAdministrador(utilizador_atual);
-                            System.out.println("");
-                            domusControl.listarCasasdeUtilizador(utilizador_atual);
-                            System.out.println("\n0. Para voltar");
-                            System.out.print("Id da casa que quer gerir: ");
-                            int idCasa = sc.nextInt();
-                            sc.nextLine(); // Consumir o \n após ler o número
-                            if(idCasa == 0) break;
-                            Casa casa = domusControl.encontrarCasaPorId(idCasa);
-                            if (casa != null) {
-                                System.out.print("\n");
-                                System.out.println("Casa selecionada: " + casa.getAlcunha());
-                                //imprimir pessoas que tem acesso a essa casa
-                                System.out.println("\n" + domusControl.listarPessoasComAcessoACasa(casa));//ver melhor dps
-                                // Aqui podemos adicionar mais opções para gerir a casa, como listar divisões, controlar dispositivos
-                                while (true) {
-                                    System.out.println("Divisões: ");
-                                    casa.listarDivisoes();
-                                    System.out.println("");
-                                    System.out.println("=====OPÇÕES=====");
-                                    System.out.println("1. Gerir divisões.");//quando clicar 1, aparecer uma lista das divisoes, e so dps e que consegue escolher a divisao q quer gerir
-                                    System.out.println("0. Para voltar\n");
-                                    System.out.print("Opção : ");
-                                    int opçao = sc.nextInt();
-                                    System.out.print("\n");
-                                    sc.nextLine(); // Consumir o \n após ler o número
-                                    if(opçao == 1) {
-                                        System.out.println("Divisões: ");
-                                        casa.listarDivisoes();
-                                        System.out.print("\nId da divisão que quer gerir: ");
-                                        int idDivisao = sc.nextInt();
-                                        sc.nextLine(); // Consumir o \n após ler o número
-    
-                                        Divisao divisao = domusControl.encontrarDivisaoPorId(casa, idDivisao);
-                                        if (divisao != null) {
-                                            while (true) {
-                                                System.out.println("\n--- Gerir Divisão: " + divisao.getNome() + " ---");
-                                                System.out.println("1. Adicionar dispositivo");
-                                                System.out.println("2. Remover dispositivo");
-                                                System.out.println("3. Alterar dispositivo");
-                                                System.out.println("0. Voltar");
-                                                System.out.println("\nDispositivos na divisão:");
-                                                divisao.listarDispositivos();
-                                                System.out.print("\nOpção: ");
-                                                int opcaoDivisao = sc.nextInt();
-                                                sc.nextLine(); // Consumir o \n após ler o número
-                                                
-                                                switch (opcaoDivisao) {
-                                                    case 1 -> {  // Adicionar dispositivo
-                                                        System.out.println("Tipos de dispositivo:");
-                                                        System.out.println("1. Lâmpada");
-                                                        System.out.println("2. Tomada");
-                                                        System.out.println("3. Cortina");
-                                                        System.out.println("4. Coluna de Som");
-                                                        System.out.println("5. Portão de Garagem");
-                                                        System.out.print("Escolha o tipo: ");
-                                                        int tipo = sc.nextInt();
-                                                        sc.nextLine();
-                                                        
-                                                        if (tipo < 1 || tipo > 5) {
-                                                            System.out.println("Tipo inválido.");
-                                                            break;
-                                                        }
-                                                        
-                                                        System.out.print("Marca: ");
-                                                        String marca = sc.nextLine();
-                                                        System.out.print("Modelo: ");
-                                                        String modelo = sc.nextLine();
-                                                        System.out.print("Consumo por hora (Wh): ");
-                                                        double consumo = sc.nextDouble();
-                                                        sc.nextLine();
-                                                        
-                                                        Dispositivo dispositivo = null;
-                                                        int idDispositivo = domusControl.aumentarIdDispositivo();
-                                                        
-                                                        switch (tipo) {
-                                                            case 1 -> {
-                                                                System.out.print("Intensidade (0-100): ");
-                                                                int intensidade = sc.nextInt();
-                                                                sc.nextLine();
-                                                                System.out.print("Cor da luz: ");
-                                                                String cor = sc.nextLine();
-                                                                dispositivo = new Lampada(idDispositivo, marca, modelo, consumo, intensidade, cor);
-                                                            }
-                                                            case 2 -> dispositivo = new Tomada(idDispositivo, marca, modelo, consumo);
-                                                            case 3 -> {
-                                                                System.out.print("Nível de abertura (0-100): ");
-                                                                int nivel = sc.nextInt();
-                                                                sc.nextLine();
-                                                                dispositivo = new Curtina(idDispositivo, marca, modelo, consumo, nivel);
-                                                            }
-                                                            case 4 -> {
-                                                                System.out.print("Volume (0-100): ");
-                                                                int volume = sc.nextInt();
-                                                                sc.nextLine();
-                                                                dispositivo = new ColunaSom(idDispositivo, marca, modelo, consumo, volume);
-                                                            }
-                                                            case 5 -> {
-                                                                System.out.print("Nível de abertura (0-100): ");
-                                                                int nivel = sc.nextInt();
-                                                                sc.nextLine();
-                                                                dispositivo = new PortaoGaragem(idDispositivo, marca, modelo, consumo, nivel);
-                                                            }
-                                                        }
-                                                        
-                                                        if (dispositivo != null) {
-                                                            divisao.adicionarDispositivo(dispositivo);
-                                                            System.out.println("Dispositivo adicionado! ID: " + idDispositivo);
-                                                        }
-                                                    }
-                                                    
-                                                    //REMOVER DISPOSITIVO
-                                                    case 2 -> {  
-                                                        System.out.println("Dispositivos na divisão:");
-                                                        divisao.listarDispositivos();
-                                                        System.out.print("ID do dispositivo a remover: ");
-                                                        int idDispRemover = sc.nextInt();
-                                                        sc.nextLine();
-                                                        
-                                                        Dispositivo disp = divisao.obterDispositivoPorId(idDispRemover);
-                                                        if (disp != null) {
-                                                            divisao.removerDispositivo(disp);
-                                                            System.out.println("Dispositivo removido.");
-                                                        } else {
-                                                            System.out.println("Dispositivo não encontrado.");
-                                                        }
-                                                    }
-                                                    
-                                                    case 3 -> {  // Alterar dispositivo (ligar/desligar ou ajustar)
-                                                        System.out.println("Dispositivos na divisão:");
-                                                        divisao.listarDispositivos();
-                                                        System.out.print("ID do dispositivo a alterar: ");
-                                                        int idDispAlterar = sc.nextInt();
-                                                        sc.nextLine();
-                                                        
-                                                        Dispositivo disp = divisao.obterDispositivoPorId(idDispAlterar);
-                                                        if (disp != null) {
-                                                            System.out.println("1. Ligar/Desligar");
-                                                            System.out.println("2. Ajustar parâmetros (se aplicável)");
-                                                            System.out.print("Opção: ");
-                                                            int opcaoAlterar = sc.nextInt();
-                                                            sc.nextLine();
-                                                            
-                                                            if (opcaoAlterar == 1) {
-                                                                if (disp.getEstado().equals("LIGADO")) {
-                                                                    disp.desligarDispositivo();
-                                                                    System.out.println("Dispositivo desligado.");
-                                                                } else {
-                                                                    disp.ligarDispositivo();
-                                                                    System.out.println("Dispositivo ligado.");
-                                                                }
-                                                            } else if (opcaoAlterar == 2) {
-                                                                // Ajustes específicos por tipo (exemplo para lâmpada)
-                                                                if (disp instanceof Lampada) {
-                                                                    Lampada lamp = (Lampada) disp;
-                                                                    System.out.print("Nova intensidade (0-100): ");
-                                                                    int novaIntensidade = sc.nextInt();
-                                                                    sc.nextLine();
-                                                                    lamp.setIntensidade_Luminosidade(novaIntensidade);
-                                                                    System.out.println("Intensidade ajustada.");
-                                                                } else {
-                                                                    System.out.println("Este dispositivo não suporta ajustes.");
-                                                                }
-                                                            } else {
-                                                                System.out.println("Opção inválida.");
-                                                            }
-                                                        } else {
-                                                            System.out.println("Dispositivo não encontrado.");
-                                                        }
-                                                    }
-                                                    
-                                                    case 0 -> {  // Voltar
-                                                        break;  // Sai do loop da divisão
-                                                    }
-                                                    
-                                                    default -> System.out.println("Opção inválida.");
-                                                }
-                                                
-                                                if (opcaoDivisao == 0) break;  // Sai do submenu se for 0
-                                            }
-                                        } else {
-                                            System.out.println("Divisão não encontrada.");
-                                        }
-                                    } else {
-                                        System.out.println("Casa não encontrada!");
-                                    }
-                                }
-                            } else {
-                                System.out.println("Casa não encontrada!");
-                            }
-                        }
-                        
-                    }
-                    //CRIAR CASA
-                    case 2 -> {
-                        System.out.print("Id da casa onde está o dispositivo: ");
-                        int idCasa = sc.nextInt();
-                        sc.nextLine(); // Consumir o \n após ler o número
-                        Casa casa = domusControl.encontrarCasaPorId(idCasa);
-                
-                        if(casa != null){
-                            System.out.print("Id da divisão onde está o dispositivo: ");
-                            int idDivisao = sc.nextInt();
-                            sc.nextLine(); // Consumir o \n após ler o número
-                            Divisao divisao = domusControl.encontrarDivisaoPorId(casa, idDivisao);
-                
-                            if(divisao != null){
-                                System.out.print("Id do dispositivo que quer controlar: ");
-                                int idDispositivo = sc.nextInt();
-                                sc.nextLine(); // Consumir o \n após ler o número
-                                Dispositivo dispositivo = domusControl.encontrarDispositivoPorId(divisao, idDispositivo);//ver melhor dps, falta o consumo por hora e tal
-                
-                                if(dispositivo != null){
-                                    System.out.println("1. Ligar dispositivo");
-                                    System.out.println("2. Desligar dispositivo");
-                                    System.out.print("Opção: ");
-                                    int opcao2 = sc.nextInt();
-                
-                                    if(opcao2 == 1){
-                                        dispositivo.ligarDispositivo();
-                                        System.out.println("Dispositivo ligado com sucesso!");
-                                    } else if(opcao2 == 2){
-                                        dispositivo.desligarDispositivo();
-                                        System.out.println("Dispositivo desligado com sucesso!");
-                                    } else {
-                                        System.out.println("Opção inválida");
-                                    }
-                                } else {
-                                    System.out.println("Dispositivo não encontrado");
-                                }
-                            } else {
-                                System.out.println("Divisão não encontrada");
-                            }
-                        } else {
-                            System.out.println("Casa não encontrada");
-                        }
-                    }
-                    case 0 -> sair = true;
-                    default -> System.out.println("Opção inválida ");
-                }
 
+            utilizador_atual = domusControl.encontrarUtilizadorPorId(idLogin);
+
+            if (utilizador_atual == null) {
+                System.out.println("Erro: Utilizador com ID " + idLogin + " não encontrado. Tente novamente.");
             }
-        }    
-        sc.close(); // Fechar o Scanner ao final do programa
+        }
+        System.out.println("Sessão iniciada como: " + utilizador_atual.getNome());
+
+        // 3. MENU PRINCIPAL
+        boolean sair = false;
+        while (!sair) {
+            exibirMenuPrincipal();
+            int opcao = lerInteiro();
+
+            switch (opcao) {
+                case 1 -> submenuCasas(utilizador_atual, domusControl);
+                case 2 -> {
+                    System.out.print("Alcunha da nova casa: ");
+                    String alcunha = sc.nextLine();
+                    Casa nova = domusControl.criarCasa(alcunha);
+                    domusControl.adicionarCasaAAdministrador(utilizador_atual, nova);
+                    System.out.println("Casa criada com sucesso!");
+                }
+                case 3 -> menuAutomacao(utilizador_atual, domusControl);
+                case 0 -> sair = true;
+                default -> System.out.println("Erro: Opção '" + opcao + "' inválida.");
+            }
+        }
+
+        // 4. PERSISTÊNCIA
+        try {
+            domusControl.guardarEstado("estado_projeto.dat");
+            System.out.println("Estado guardado com sucesso. Até à próxima!");
+        } catch (Exception e) {
+            System.out.println("Erro crítico ao gravar dados.");
+        }
+        sc.close();
+    }
+
+    // --- SUBMENUS ---
+
+    private static void submenuCasas(Utilizador u, DomusControl dc) {
+        while (true) {
+            System.out.println("\n--- AS MINHAS CASAS ---");
+            dc.listarCasasdeAdministrador(u);
+            dc.listarCasasdeUtilizador(u);
+            System.out.print("\nID da casa para aceder (0 para voltar): ");
+            int id = lerInteiro();
+
+            if (id == 0) break;
+
+            Casa casa = dc.encontrarCasaPorId(id);
+            if (casa != null && u.podeUsarCasa(casa)) {
+                menuInternoCasa(casa, u, dc);
+            } else {
+                System.out.println("Erro: Acesso negado ou ID de casa inválido.");
+            }
+        }
+    }
+
+    private static void menuInternoCasa(Casa casa, Utilizador u, DomusControl dc) {
+        boolean eAdmin = u.podeAdmistrarCasa(casa);
+        while (true) {
+            System.out.println("\n--- CASA: " + casa.getAlcunha() + " ---");
+            System.out.println("Perfil: " + (eAdmin ? "ADMINISTRADOR" : "UTILIZADOR"));
+
+            System.out.println("\nDivisões nesta casa:");
+            casa.listarDivisoes();
+
+            System.out.println("\n1. Selecionar Divisão (Entrar)");
+            System.out.println("2. Ver Estado Global (Consumo e Dispositivos)");
+            if (eAdmin) System.out.println("3. Adicionar Nova Divisão (Admin)");
+            System.out.println("0. Voltar");
+
+            System.out.print("Opção: ");
+            int opt = lerInteiro();
+            if (opt == 0) break;
+
+            switch (opt) {
+                case 1 -> {
+                    System.out.print("ID da divisão para entrar: ");
+                    int idDiv = lerInteiro();
+                    Divisao div = dc.encontrarDivisaoPorId(casa, idDiv);
+                    if (div != null) menuDispositivos(div, eAdmin, dc);
+                    else System.out.println("Erro: Divisão não encontrada.");
+                }
+                case 2 -> dc.listarEstadoGlobalCasa(casa);
+                case 3 -> {
+                    if (eAdmin) {
+                        System.out.print("Nome da nova divisão: ");
+                        dc.criarDivisao(casa, sc.nextLine());
+                    } else System.out.println("Erro: Permissões insuficientes.");
+                }
+                default -> System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+    private static void menuDispositivos(Divisao div, boolean eAdmin, DomusControl dc) {
+        while (true) {
+            System.out.println("\n--- DIVISÃO: " + div.getNome() + " ---");
+
+            // VISUALIZAÇÃO DOS DISPOSITIVOS (REQUISITO 8.1 e 9.0)
+            System.out.println("Dispositivos instalados:");
+            div.listarDispositivos();
+
+            System.out.println("\n1. Operar Dispositivo (Ligar/Desligar)");
+            if (eAdmin) {
+                System.out.println("2. Adicionar Dispositivo (Admin)");
+                System.out.println("3. Remover Dispositivo (Admin)");
+            }
+            System.out.println("0. Voltar");
+
+            System.out.print("Opção: ");
+            int opt = lerInteiro();
+            if (opt == 0) break;
+
+            switch (opt) {
+                case 1 -> {
+                    System.out.print("ID do dispositivo: ");
+                    int idD = lerInteiro();
+                    Dispositivo d = div.obterDispositivoPorId(idD);
+                    if (d != null) {
+                        if (d.getEstado().equals("LIGADO")) d.desligarDispositivo();
+                        else d.ligarDispositivo();
+                        System.out.println("Novo estado de " + d.getModelo() + ": " + d.getEstado());
+                    } else System.out.println("Erro: Dispositivo não encontrado.");
+                }
+                case 2 -> { if (eAdmin) adicionarDispositivoSubmenu(div, dc); }
+                case 3 -> {
+                    if (eAdmin) {
+                        System.out.print("ID para remover: ");
+                        int idR = lerInteiro();
+                        Dispositivo r = div.obterDispositivoPorId(idR);
+                        if (r != null) {
+                            div.removerDispositivo(r);
+                            System.out.println("Dispositivo removido.");
+                        } else System.out.println("Erro: ID inválido.");
+                    }
+                }
+                default -> System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+    private static void adicionarDispositivoSubmenu(Divisao div, DomusControl dc) {
+        System.out.println("\n1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão");
+        System.out.print("Tipo: ");
+        int tipo = lerInteiro();
+        if (tipo < 1 || tipo > 5) { System.out.println("Tipo inválido."); return; }
+
+        System.out.print("Marca: "); String marca = sc.nextLine();
+        System.out.print("Modelo: "); String modelo = sc.nextLine();
+        System.out.print("Consumo (Wh): "); double cons = lerDouble();
+
+        int idNovo = dc.aumentarIdDispositivo();
+        Dispositivo novo = null;
+
+        switch (tipo) {
+            case 1 -> novo = new Lampada(idNovo, marca, modelo, cons, 80, "Branco");
+            case 2 -> novo = new Tomada(idNovo, marca, modelo, cons);
+            case 3 -> novo = new Curtina(idNovo, marca, modelo, cons, 0);
+            case 4 -> novo = new ColunaSom(idNovo, marca, modelo, cons, 50);
+            case 5 -> novo = new PortaoGaragem(idNovo, marca, modelo, cons, 0);
+        }
+        if (novo != null) {
+            div.adicionarDispositivo(novo);
+            System.out.println("Sucesso: " + novo.getClass().getSimpleName() + " adicionada com ID " + idNovo);
+        }
+    }
+
+    // --- VALIDAÇÃO DE INPUTS (ROBUSTEZ - REQUISITO 8.0) ---
+
+    private static int lerInteiro() {
+        while (true) {
+            try {
+                return Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.print("Erro: Introduza um número inteiro: ");
+            }
+        }
+    }
+
+    private static double lerDouble() {
+        while (true) {
+            try {
+                return Double.parseDouble(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.print("Erro: Introduza um valor decimal (ex: 15.5): ");
+            }
+        }
+    }
+
+    private static void exibirMenuPrincipal() {
+        System.out.println("\n--- MENU PRINCIPAL ---");
+        System.out.println("1. Gestão de Casas");
+        System.out.println("2. Criar Nova Casa");
+        System.out.println("3. Automações (Modo ECO)");
+        System.out.println("0. Sair e Gravar");
+        System.out.print("Escolha: ");
+    }
+
+    private static void menuAutomacao(Utilizador u, DomusControl dc) {
+        System.out.println("\n--- MODO ECO ---");
+        dc.listarCasasdeAdministrador(u);
+        dc.listarCasasdeUtilizador(u);
+        System.out.print("ID da casa: ");
+        int id = lerInteiro();
+
+        Casa casa = dc.encontrarCasaPorId(id);
+        if (casa != null && u.podeUsarCasa(casa)) {
+            for (Divisao d : casa.getDivisoes().values()) {
+                for (Dispositivo disp : d.getDispositivos().values()) disp.desligarDispositivo();
+            }
+            System.out.println("Modo ECO aplicado em " + casa.getAlcunha());
+        } else System.out.println("Erro: Acesso negado.");
+    }
+
+    private static void inicializarDadosTeste(DomusControl dc) {
+        dc.criarUtilizador("uti1");
+        dc.criarUtilizador("uti2");
+        dc.criarCasa("Casa do uti1");
+        dc.criarCasa("Casa do uti2");
+        Casa c1 = dc.encontrarCasaPorId(1);
+        Casa c2 = dc.encontrarCasaPorId(3);
+        Utilizador u1 = dc.encontrarUtilizadorPorId(1);
+        Utilizador u2 = dc.encontrarUtilizadorPorId(2);
+
+        if (c1 != null) dc.criarDivisao(c1, "Sala");
+        if (c2 != null) dc.criarDivisao(c2, "Quarto");
+
+        dc.adicionarCasaAAdministrador(u1, c1);
+        dc.adicionarCasaAUtilizador(u1, c2);
+        dc.adicionarCasaAAdministrador(u2, c2);
+        dc.adicionarCasaAUtilizador(u2, c1);
     }
 }

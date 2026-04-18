@@ -2,6 +2,7 @@ package src.model;
 
 
 public class ColunaSom extends Dispositivo {
+    private static final long serialVersionUID = 1L;
     private int intensidade_Volume;
 
     public ColunaSom(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int intensidade_Volume) {

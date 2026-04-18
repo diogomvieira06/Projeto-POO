@@ -8,19 +8,20 @@ Checklist:
 
 [X] Criar menu principal
 
-[ ] Criar submenu Casas -> FAZER AGORA
-    [ ] criar casa
-    [ ] listar casas
+[ X ] Criar submenu Casas -> FAZER AGORA
+    [ X ] criar casa
+    [ X ] listar casas
 
-[ ] Criar submenu Divisões
-    [ ] adicionar divisão
-    [ ] listar divisões
+[ X ] Criar submenu Divisões
+    [ X ] adicionar divisão
+    [ X ] listar divisões
 
 [X] Criar submenu Dispositivos
     [X] criar dispositivo
     [X] ligar dispositivo
     [X] desligar dispositivo
+    [X] listar dispositivos
 
-[ ] Validar entradas do utilizador
+[ X ] Validar entradas do utilizador
 
-[ ] Garantir que o programa não crasha com inputs inválidos
+[ X ] Garantir que o programa não crasha com inputs inválidos

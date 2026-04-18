@@ -2,6 +2,7 @@ package src.model;
 
 
 public class PortaoGaragem extends Dispositivo {
+    private static final long serialVersionUID = 1L;
     private int nivel_abertura;
 
     public PortaoGaragem(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {

@@ -2,6 +2,7 @@ package src.model;
 
 
 public class Tomada extends Dispositivo {
+    private static final long serialVersionUID = 1L;
 
     public Tomada(int id, String marca, String modelo, double consumo_Por_Hora_Wh) {
         super(id, marca, modelo, consumo_Por_Hora_Wh);

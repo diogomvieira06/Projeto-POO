@@ -2,6 +2,7 @@ package src.model;
 
 
 public class Lampada extends Dispositivo {
+    private static final long serialVersionUID = 1L;
     private int intensidade_Luminosidade;
     private String cor_Luz;
 
