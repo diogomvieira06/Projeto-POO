@@ -11,3 +11,7 @@ digo isto pq na vida real normalmente o portao ou esta aberto ou esta fechado
 ->falta adicionar a opçao no menu para associar um utilizador a uma determinada casa/casas
 
 FASE 2 E 3 DO PROJETO JA ESTA QUASE FEITA
+
+
+logo no inicio, meter a opçao de login de utilizador, e dps criar um utilizador e um administrador
+
