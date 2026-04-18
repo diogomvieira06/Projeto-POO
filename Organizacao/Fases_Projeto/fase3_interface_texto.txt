@@ -6,9 +6,9 @@ permitir ao utilizador interagir com o sistema.
 
 Checklist:
 
-[ ] Criar menu principal
+[X] Criar menu principal
 
-[ ] Criar submenu Casas
+[ ] Criar submenu Casas -> FAZER AGORA
     [ ] criar casa
     [ ] listar casas
 
@@ -16,10 +16,10 @@ Checklist:
     [ ] adicionar divisão
     [ ] listar divisões
 
-[ ] Criar submenu Dispositivos
-    [ ] criar dispositivo
-    [ ] ligar dispositivo
-    [ ] desligar dispositivo
+[X] Criar submenu Dispositivos
+    [X] criar dispositivo
+    [X] ligar dispositivo
+    [X] desligar dispositivo
 
 [ ] Validar entradas do utilizador
 

@@ -539,6 +539,7 @@ public class Main {
                         }
                         
                     }
+                    //CRIAR CASA
                     case 2 -> {
                         System.out.print("Id da casa onde está o dispositivo: ");
                         int idCasa = sc.nextInt();
