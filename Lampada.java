@@ -23,7 +23,7 @@ public class Lampada extends Dispositivo {
     public int getIntesidade_Luminosidade() {
         return intensidade_Luminosidade;
     }
-    public void setIntesidade_Luminosidade(int intensidade_Luminosidade) {
+    public void setIntensidade_Luminosidade(int intensidade_Luminosidade) {
         if (intensidade_Luminosidade < 0) {
             this.intensidade_Luminosidade = 0; // Define a intensidade mínima como 0
         } else if (intensidade_Luminosidade > 100) {

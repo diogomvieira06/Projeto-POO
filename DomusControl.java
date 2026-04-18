@@ -141,4 +141,15 @@ public class DomusControl {
             System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
         }
     }
+
+    //Quero que so imprima os nomes das pessoas que tem acesso a essa casa, sem diferenciar se são administradores ou utilizadores
+    public Utilizador listarPessoasComAcessoACasa(Casa casa){
+        System.out.println("Pessoas com acesso à casa " + casa.getAlcunha() + ":");
+        for(Utilizador u : utilizadores.values()){
+            if (u.podeUsarCasa(casa)) {
+                System.out.println("- " + u.getNome());
+            }
+        }
+        return null;
+    }
 }

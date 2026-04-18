@@ -59,7 +59,7 @@ public class Divisao {
 
     public void listarDispositivos() {
         for (Dispositivo d : dispositivos.values()) {
-            System.out.println(d.getTipo() + " - " + d.getMarca() + " " + d.getModelo());
+            System.out.println(d.getTipo() + " - " + d.getMarca() + " " + d.getModelo() + " , ID -> " + d.getId());//nao esta a aparecer o id(texto),porque
         }
     }
 
