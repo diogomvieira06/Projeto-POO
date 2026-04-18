@@ -66,6 +66,7 @@ public class Utilizador {
     //adicionar casa admistrada
     public void adicionarCasaAdministrada(Casa c){
         this.casasAdministradas.put(c.getId(), c);
+        this.casasUtilizador.put(c.getId(), c); //um utilizador que é administrador de uma casa também é um utilizador dessa casa
     }
 
     //adicionar casa utilizador
@@ -102,7 +103,5 @@ public class Utilizador {
                 ", casasAdministradas=" + casasAdministradas.size() +  // Mostra só o número para não poluir
                 ", casasUtilizador=" + casasUtilizador.size() +
                 '}';
-}
-
-
+    }
 }

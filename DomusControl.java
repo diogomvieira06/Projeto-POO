@@ -14,6 +14,15 @@ public class DomusControl {
     public int aumentarIdDispositivo() {
         return proximoIdDispositivo++;
     }
+    public int aumentarIdDivisao() {
+        return proximoIdDivisao++;
+    }
+    public int aumentarIdCasa() {
+        return proximoIdCasa++;
+    }
+    public int aumentarIdUtilizador() {
+        return proximoIdUtilizador++;
+    }
 
     public Utilizador criarUtilizador(String nome) {
         int id = proximoIdUtilizador++;
@@ -98,5 +107,38 @@ public class DomusControl {
 
     public Collection<Casa> getCasas() {
         return casas.values();
+    }
+
+    public void adicionarCasaAAdministrador(Utilizador administrador, Casa casa){
+        administrador.adicionarCasaAdministrada(casa);
+    }
+
+    public void removerCasaDeAdministrador(Utilizador administrador, Casa casa){
+        administrador.removerCasaAdmistrada(casa);
+    }
+
+    public void adicionarCasaAUtilizador(Utilizador utilizador, Casa casa){
+        utilizador.adicionarCasaUtilizador(casa);
+    }
+
+    public void removerCasaDeUtilizador(Utilizador utilizador, Casa casa){
+        utilizador.removerCasaUtilizador(casa);
+    }
+
+    public void listarCasasdeUtilizador(Utilizador utilizador){
+        System.out.println("Casas associadas ao utilizador " + utilizador.getNome() + ":");
+        for(Casa c : utilizador.getCasasUtilizador().values()){
+            if (utilizador.getCasasAdmistradas().containsKey(c.getId())) {
+                continue; // Pula as casas onde o utilizador é administrador, para evitar duplicação
+            }
+            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
+        }
+    }
+
+    public void listarCasasdeAdministrador(Utilizador utilizador){
+        System.out.println("Casas administradas pelo utilizador " + utilizador.getNome() + ":");
+        for(Casa c : utilizador.getCasasAdmistradas().values()){
+            System.out.println("ID: " + c.getId() + " - Alcunha: " + c.getAlcunha());
+        }
     }
 }
