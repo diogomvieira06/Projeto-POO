@@ -102,16 +102,23 @@ public class Menu {
                                     System.out.print("ID do utilizador a remover: ");
                                     int idRem = InputValidator.lerInteiro();
                                     Utilizador uRem = dc.encontrarUtilizadorPorId(idRem);
+
+                                    int total_administadores = dc.contarAdministradoresCasa(casa);
+                                    if (total_administadores <= 1 && u_atual.getId() == idRem) {
+                                        System.out.println("Erro: Você é o único administrador desta casa. Adicione outro administrador antes de remover seu acesso.");
+                                        continue; // Impede que o último administrador remova a si mesmo
+                                    }
                                     if (uRem != null && uRem.podeUsarCasa(casa)) {
                                         dc.removerCasaDeUtilizador(uRem, casa);
-                                        System.out.println("Utilizador removido com sucesso.");
+                                        if (u_atual.getId() == idRem) {
+                                            System.out.println("Aviso: Você removeu seu próprio acesso a esta casa. Voltando ao menu principal...");
+                                            return; // Volta para o menu principal se o utilizador remover a si mesmo
+                                        }
+                                        else System.out.println("Utilizador removido com sucesso.");
                                     } else {
                                         System.out.println("Erro: ID de utilizador inválido ou utilizador não tem acesso à casa.");
                                     }
-                                    if(u_atual.getId() == idRem) {
-                                        System.out.println("Aviso: Você removeu seu próprio acesso a esta casa. Voltando ao menu principal...");
-                                        return; // Volta para o menu principal se o utilizador remover a si mesmo
-                                    }
+
                                 }
                                 case 4 -> {
                                     System.out.println("Lista de Administradores disponíveis:");
@@ -130,15 +137,22 @@ public class Menu {
                                     System.out.print("ID do administrador a remover: ");
                                     int idAdminRem = InputValidator.lerInteiro();
                                     Utilizador uAdminRem = dc.encontrarUtilizadorPorId(idAdminRem);
+
+                                    int total_administadores = dc.contarAdministradoresCasa(casa);
+                                    if (total_administadores <= 1 && u_atual.getId() == idAdminRem) {
+                                        System.out.println("Erro: Você é o único administrador desta casa. Adicione outro administrador antes de remover seu acesso.");
+                                        continue; // Impede que o último administrador remova a si mesmo
+                                    }
                                     if (uAdminRem != null && uAdminRem.serAdmin(casa)) {
                                         dc.removerPermissoesAdmin(uAdminRem, casa);
-                                        System.out.println("Administrador removido com sucesso.");
-                                    } else {
-                                        System.out.println("Erro: ID de utilizador inválido ou utilizador não é administrador da casa.");
+                                        if (u_atual.getId() == idAdminRem) {
+                                            System.out.println("Aviso: Você removeu suas permissões de administrador desta casa. Voltando ao menu principal...");
+                                            return; // Volta para o menu principal se o utilizador remover a si mesmo
+                                        }
+                                        else System.out.println("Administrador removido com sucesso.");
                                     }
-                                    if(u_atual.getId() == idAdminRem) {
-                                        System.out.println("Aviso: Você removeu seu próprio acesso a esta casa. Voltando ao menu principal...");
-                                        return; // Volta para o menu principal se o utilizador remover a si mesmo
+                                    else {
+                                        System.out.println("Erro: ID de utilizador inválido ou utilizador não é administrador da casa.");
                                     }
                                 }
                                 default -> System.out.println("Opção inválida.");

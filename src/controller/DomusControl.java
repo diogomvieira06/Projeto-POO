@@ -222,4 +222,14 @@ public class DomusControl implements Serializable {
             }
         }
     }
+
+    public int contarAdministradoresCasa(Casa casa) {
+        int count = 0;
+        for (Utilizador u : utilizadores.values()) {
+            if (u.serAdmin(casa)) {
+                count++;
+            }
+        }
+        return count;
+    }
 }
