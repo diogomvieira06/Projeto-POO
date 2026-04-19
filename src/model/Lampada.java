@@ -56,6 +56,7 @@ public class Lampada extends Dispositivo {
 
     @Override
     public String getDetalhesEspecificos(){
-        return " | Intensidade: " + this.intensidade_Luminosidade + "%" + " | Cor: " + this.cor_Luz;
+        if("LIGADO".equals(this.getEstado()))return " | Intensidade: " + this.intensidade_Luminosidade + "%" + " | Cor: " + this.cor_Luz;
+        else return " | Cor: " + this.cor_Luz;
     }
 }

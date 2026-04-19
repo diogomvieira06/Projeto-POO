@@ -45,6 +45,7 @@ public class ColunaSom extends Dispositivo {
 
     @Override
     public String getDetalhesEspecificos(){
-        return " | Intensidade: " + this.intensidade_Volume + "%";
+        if("LIGADO".equals(this.getEstado()))return " | Volume: " + this.intensidade_Volume + "%";
+        else return "";
     }
 }

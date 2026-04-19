@@ -10,6 +10,7 @@ public class Menu {
         System.out.println("1. Gestão de Casas");
         System.out.println("2. Criar Nova Casa");
         System.out.println("3. Automações (Modo ECO)");
+        System.out.println("4. Ligar Todos os Dispositivos de uma Casa");
         System.out.println("0. Sair e Gravar");
         System.out.print("Escolha: ");
     }
@@ -281,5 +282,21 @@ public class Menu {
             }
             System.out.println("Modo ECO aplicado em " + casa.getAlcunha());
         } else System.out.println("Erro: Acesso negado.");
+    }
+
+    public static void menuLigarDispositivo(Utilizador u, DomusControl dc){
+            System.out.println("\n--- LIGAR DISPOSITIVO ---");
+            dc.listarCasasdeAdministrador(u);
+            dc.listarCasasdeUtilizador(u);
+            System.out.print("ID da casa: ");
+            int id = InputValidator.lerInteiro();
+    
+            Casa casa = dc.encontrarCasaPorId(id);
+            if (casa != null && u.podeUsarCasa(casa)) {
+                for (Divisao d : casa.getDivisoes().values()) {
+                    for (Dispositivo disp : d.getDispositivos().values()) disp.ligarDispositivo();
+                }
+                System.out.println("Todos os dispositivos em " + casa.getAlcunha() + " foram ligados.");
+            } else System.out.println("Erro: Acesso negado.");
     }
 }

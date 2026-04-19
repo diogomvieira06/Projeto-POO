@@ -58,6 +58,7 @@ public class Main {
                     System.out.println("Casa criada com sucesso!");
                 }
                 case 3 -> Menu.menuAutomacao(utilizador_atual, domusControl);
+                case 4 -> Menu.menuLigarDispositivo(utilizador_atual, carregado);
                 case 0 -> sair = true;
                 default -> System.out.println("Erro: Opção '" + opcao + "' inválida.");
             }

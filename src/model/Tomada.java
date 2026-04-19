@@ -26,4 +26,10 @@ public class Tomada extends Dispositivo {
     public Tomada clone() {
         return new Tomada(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        if("LIGADO".equals(this.getEstado()))return " | Consumo por Hora: " + this.getConsumo_Por_Hora_Wh() + "Wh";
+        else return "";
+    }
 }

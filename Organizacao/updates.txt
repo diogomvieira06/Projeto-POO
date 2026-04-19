@@ -22,3 +22,11 @@ CRIEI MAKEFILE, OS COMANDOS SAO ESTES :
 
 ou tmb 
 ->make rebuild(limpa e volta a correr)
+
+----------------------------------------------------------------------------------------------------
+Domingo(19/4)
+->faz sentido termos o portao de garagem com {LIGADO, DESLIGADO} ??
+pq no terminal temos isto(tive a testar o codigo) : [Sala] (PortaoGaragem) Genie Garage Door Opener (ID: 23) -> ESTADO: DESLIGADO | Nível de Abertura: 0%
+e acho estranho termos "DESLIGADO"
+
+meti tmb as uma feature de ligar todos os dispositivos da casa, era so para testar uma cena ent por enquanto deixem estar assim com essa feature
