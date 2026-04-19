@@ -58,7 +58,7 @@ public class Utilizador implements Serializable {
         this.nome = n;
     }
 
-    public void setCasasAdmistradas(HashMap<Integer, Casa> casasAdministradas){
+    public void setCasasAdministradas(HashMap<Integer, Casa> casasAdministradas){
         this.casasAdministradas = new HashMap<>(casasAdministradas);
     }
 
@@ -68,7 +68,7 @@ public class Utilizador implements Serializable {
 
 
 
-    //adicionar casa admistrada
+    //adicionar casa administrada
     public void adicionarCasaAdministrada(Casa c){
         this.casasAdministradas.put(c.getId(), c);
         this.casasUtilizador.put(c.getId(), c); //um utilizador que é administrador de uma casa também é um utilizador dessa casa
@@ -79,24 +79,27 @@ public class Utilizador implements Serializable {
         this.casasUtilizador.put(c.getId(), c);
     }
 
-    //remover casa admistrada
-    public void removerCasaAdmistrada(Casa c){
+    //remover casa administrada
+    public void removerCasaAdministrada(Casa c){
         this.casasAdministradas.remove(c.getId());
     }
 
     //remover casa Utilizador
     public void removerCasaUtilizador(Casa c){
+        if (this.casasAdministradas.containsKey(c.getId())) {//se for administrador, ao remover como utilizador, também remove como administrador
+            this.casasAdministradas.remove(c.getId());
+        }
         this.casasUtilizador.remove(c.getId());
     }
 
-    //ver se um utilizador pode admistrar uma dada casa
-    public boolean podeAdmistrarCasa(Casa c){
+    //ver se um utilizador pode administrar uma dada casa
+    public boolean podeAdministrarCasa(Casa c){
         return this.casasAdministradas.containsKey(c.getId());
     }
 
     //ver se um utilizador tem acesso a uma dada casa
     public boolean podeUsarCasa(Casa c){
-        return (this.casasUtilizador.containsKey(c.getId()) || this.casasAdministradas.containsKey(c.getId()));//um utilizador pode usar uma casa se for um utilizador ou um admistrador dessa casa
+        return (this.casasUtilizador.containsKey(c.getId()) || this.casasAdministradas.containsKey(c.getId()));//um utilizador pode usar uma casa se for um utilizador ou um administrador dessa casa
     }
 
 
@@ -108,5 +111,12 @@ public class Utilizador implements Serializable {
                 ", casasAdministradas=" + casasAdministradas.size() +  // Mostra só o número para não poluir
                 ", casasUtilizador=" + casasUtilizador.size() +
                 '}';
+    }
+
+    public boolean serAdmin(Casa c) { // Se este utilizador é administrador da casa c
+        return this.casasAdministradas.containsKey(c.getId());
+    }
+    public boolean serUtilizador(Casa c) { // Se este utilizador é um utilizador normal da casa c (não administrador)
+        return this.casasUtilizador.containsKey(c.getId()) && !this.serAdmin(c);
     }
 }

@@ -120,8 +120,8 @@ public class DomusControl implements Serializable {
         administrador.adicionarCasaAdministrada(casa);
     }
 
-    public void removerCasaDeAdministrador(Utilizador administrador, Casa casa){
-        administrador.removerCasaAdmistrada(casa);
+    public void removerPermissoesAdmin(Utilizador administrador, Casa casa){
+        administrador.removerCasaAdministrada(casa);
     }
 
     public void adicionarCasaAUtilizador(Utilizador utilizador, Casa casa){
@@ -153,8 +153,13 @@ public class DomusControl implements Serializable {
     public void listarPessoasComAcessoACasa(Casa casa){
         System.out.println("Pessoas com acesso à casa " + casa.getAlcunha() + ":");
         for(Utilizador u : utilizadores.values()){
-            if (u.podeUsarCasa(casa)) {
-                System.out.println("- " + u.getNome());
+            if (u.serAdmin(casa)) {
+                System.out.println("[ADMIN] " + u.getId() + " - " + u.getNome());
+            }
+        }
+        for(Utilizador u : utilizadores.values()){
+            if (u.serUtilizador(casa)) {
+                System.out.println("[UTILIZADOR] " + u.getId() + " - " + u.getNome());
             }
         }
     }
@@ -195,4 +200,26 @@ public class DomusControl implements Serializable {
         }
     }
 
+    public void removerDivisao(Casa casa, Divisao divisao) {
+        if (casa != null && divisao != null) {
+            casa.removerDivisao(divisao);
+            System.out.println("Divisão removida com sucesso.");
+        }
+    }
+
+    public void listarUtilizadoresDisponiveisAAdicionar(Casa casa) {
+        for (Utilizador u : utilizadores.values()) {
+            if (!u.podeUsarCasa(casa)) {
+                System.out.println("ID: " + u.getId() + " - Nome: " + u.getNome());
+            }
+        }
+    }
+
+    public void listarAdministradoresDisponiveisAAdicionar(Casa casa) {
+        for (Utilizador u : utilizadores.values()) {
+            if (!u.serAdmin(casa)) {
+                System.out.println("ID: " + u.getId() + " - Nome: " + u.getNome());
+            }
+        }
+    }
 }

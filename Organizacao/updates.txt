@@ -1,5 +1,3 @@
-para ja usamos ArrayList para organizar os dados, mas no futuro vale a pena continuar a usar assim ? podemos passar para hashtables p.e
-
 na curtina, temos como atributo "nivel de abertura", usamos isso numa escala de 0-100(fiz as cenas com essa escala, mas nao ha stress se n for essa escala pq dps muda se)
 
 no portao de garagem temos o atributo "nivel de abertura", faz sentido isso ser assim ? nao seria melhor ter do genero {FECHADO, ABERTO} ? 
