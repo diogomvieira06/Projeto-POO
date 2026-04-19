@@ -42,4 +42,9 @@ public class Curtina extends Dispositivo {
     public Curtina clone() {
         return new Curtina(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        return " | Nível de Abertura: " + this.nivel_abertura + "%";
+    }
 }

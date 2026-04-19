@@ -42,4 +42,9 @@ public class ColunaSom extends Dispositivo {
     public ColunaSom clone() {
         return new ColunaSom(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        return " | Intensidade: " + this.intensidade_Volume + "%";
+    }
 }

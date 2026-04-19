@@ -173,7 +173,8 @@ public class DomusControl implements Serializable {
             // Percorre todos os dispositivos de cada divisão [cite: 14]
             for (Dispositivo disp : d.getDispositivos().values()) {
                 System.out.println("[" + d.getNome() + "] " + "(" + disp.getTipo() + ") " + disp.getMarca() + " " + disp.getModelo() +
-                        " (ID: " + disp.getId() + ") -> ESTADO: " + disp.getEstado());
+                        " (ID: " + disp.getId() + ") -> ESTADO: " + disp.getEstado() + 
+                        disp.getDetalhesEspecificos());
                 temDispositivos = true;
             }
         }

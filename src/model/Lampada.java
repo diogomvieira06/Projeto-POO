@@ -53,4 +53,9 @@ public class Lampada extends Dispositivo {
     public Lampada clone() {
         return new Lampada(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        return " | Intensidade: " + this.intensidade_Luminosidade + "%" + " | Cor: " + this.cor_Luz;
+    }
 }

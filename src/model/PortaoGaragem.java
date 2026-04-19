@@ -42,4 +42,9 @@ public class PortaoGaragem extends Dispositivo {
     public PortaoGaragem clone() {
         return new PortaoGaragem(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        return " | Nível de Abertura: " + this.nivel_abertura + "%";
+    }
 }

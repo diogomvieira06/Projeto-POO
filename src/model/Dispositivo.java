@@ -81,4 +81,9 @@ public abstract class Dispositivo implements Serializable { // Abstract porque n
     public abstract String getTipo(); // Método abstrato para obter o tipo do dispositivo (Lampada, Tomada, etc...)
                                       // Cada subclasse vai implementar esse método para retornar seu tipo específico
 
+    //Para conseguir imprimir todos os atributos na classe DomusControl                                  
+    public String getDetalhesEspecificos(){
+        return "";
+    }
+
 }
