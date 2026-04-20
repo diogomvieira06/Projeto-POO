@@ -21,7 +21,7 @@ public class Tomada extends Dispositivo {
     public String getTipo() {
         return "Tomada";
     }
-    
+
     @Override
     public Tomada clone() {
         return new Tomada(this);

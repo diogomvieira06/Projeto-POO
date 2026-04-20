@@ -2,301 +2,271 @@ package src.view;
 
 import src.controller.DomusControl;
 import src.model.*;
+import java.util.*;
 
 public class Menu {
 
-    public static void exibirMenuPrincipal() {
-        System.out.println("\n--- MENU PRINCIPAL ---");
-        System.out.println("1. Gestão de Casas");
-        System.out.println("2. Criar Nova Casa");
-        System.out.println("3. Automações (Modo ECO)");
-        System.out.println("4. Ligar Todos os Dispositivos de uma Casa");
-        System.out.println("0. Sair e Gravar");
-        System.out.print("Escolha: ");
-    }
-
-    // --- SUBMENUS ---
-
-    public static void submenuCasas(Utilizador u_atual, DomusControl dc) {
+    public static void submenuCasas(Utilizador u, DomusControl dc) {
         while (true) {
-            System.out.println("\n--- AS MINHAS CASAS ---");
-            dc.listarCasasdeAdministrador(u_atual);
-            dc.listarCasasdeUtilizador(u_atual);
-            System.out.print("\nID da casa para aceder (0 para voltar): ");
+            StringBuilder info = new StringBuilder("AS MINHAS CASAS:\n\n");
+
+            info.append("[ADMINISTRADOR]\n");
+            if (u.getCasasAdministradas().isEmpty()) info.append(" > (Vazio)\n");
+            for (Casa c : u.getCasasAdministradas().values()) {
+                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+            }
+
+            info.append("\n[UTILIZADOR]\n");
+            boolean temUser = false;
+            for (Casa c : u.getCasasUtilizador().values()) {
+                if (!u.serAdmin(c)) {
+                    info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                    temUser = true;
+                }
+            }
+            if (!temUser) info.append(" > (Vazio)\n");
+
+            // Atualizamos as opções para incluir a remoção
+            String opts = "ID da casa para aceder\n" +
+                    "9. Remover uma Casa (Apenas Admin)\n" +
+                    "0. Voltar";
+
+            ConsoleUI.desenharDashboard("GESTÃO DE CASAS", info.toString(), opts);
+
+            System.out.print("\nEscolha: ");
             int id = InputValidator.lerInteiro();
 
             if (id == 0) break;
 
+            // Lógica de remoção
+            if (id == 9) {
+                System.out.print("ID da casa que deseja eliminar: ");
+                int idEliminar = InputValidator.lerInteiro();
+                Casa casaAEliminar = dc.encontrarCasaPorId(idEliminar);
+
+                // Verificação: a casa existe e eu sou o dono/admin?
+                if (casaAEliminar != null && u.serAdmin(casaAEliminar)) {
+                    System.out.print("Tem a certeza? Isto apagará todos os dispositivos! (s/n): ");
+                    if (InputValidator.lerLinha().equalsIgnoreCase("s")) {
+                        dc.eliminarCasaTotalmente(casaAEliminar);
+                    }
+                } else {
+                    System.out.println("Erro: Não encontrada ou não tem permissões de Admin.");
+                    InputValidator.lerLinha();
+                }
+                continue;
+            }
+
+            // Acesso normal à casa
             Casa casa = dc.encontrarCasaPorId(id);
-            if (casa != null && u_atual.podeUsarCasa(casa)) {
-                menuInternoCasa(casa, u_atual, dc);
-            } else {
-                System.out.println("Erro: Acesso negado ou ID de casa inválido.");
+            if (casa != null && u.podeUsarCasa(casa)) {
+                menuInternoCasa(casa, u, dc);
             }
         }
     }
 
-
-
-    public static void menuInternoCasa(Casa casa, Utilizador u_atual, DomusControl dc) {
-        boolean eAdmin = u_atual.podeAdministrarCasa(casa);
+    public static void menuInternoCasa(Casa casa, Utilizador u, DomusControl dc) {
+        boolean eAdmin = u.podeAdministrarCasa(casa);
         while (true) {
-            System.out.println("\n--- CASA: " + casa.getAlcunha() + " ---");
-            System.out.println("Perfil: " + (eAdmin ? "ADMINISTRADOR" : "UTILIZADOR"));
-
-            System.out.println("\nDivisões nesta casa:");
-            casa.listarDivisoes();
-
-            System.out.println("\n1. Ver Estado Global (Consumo e Dispositivos)");
-            System.out.println("2. Ver Lista de Utilizadores");
-            System.out.println("3. Selecionar Divisão (Entrar)");
-            if (eAdmin) { 
-                System.out.println("4. Adicionar Nova Divisão (Admin)");
-                System.out.println("5. Remover Divisão (Admin)");
+            StringBuilder info = new StringBuilder("HABITAÇÃO: " + casa.getAlcunha() + "\n");
+            info.append("PERFIL: ").append(eAdmin ? "ADMINISTRADOR" : "UTILIZADOR").append("\n\n");
+            info.append("DIVISÕES:\n");
+            for (Divisao d : casa.getDivisoes().values()) {
+                info.append(String.format(" [%d] %-15s (%d dispositivos)\n", d.getId(), d.getNome(), d.getDispositivos().size()));
             }
-            System.out.println("0. Voltar");
 
-            System.out.print("Opção: ");
+            String opts = "1. Ver Estado Global\n2. Gestão de Utilizadores\n3. Entrar em Divisão\n" +
+                    (eAdmin ? "4. Criar Divisão\n5. Remover Divisão\n" : "") + "0. Voltar";
+
+            ConsoleUI.desenharDashboard("PAINEL DA CASA", info.toString(), opts);
+            System.out.print("\nOpção: ");
             int opt = InputValidator.lerInteiro();
             if (opt == 0) break;
 
             switch (opt) {
-                case 1 -> dc.listarEstadoGlobalCasa(casa);
+                case 1 -> { dc.listarEstadoGlobalCasa(casa); System.out.println("\nEnter..."); InputValidator.lerLinha(); }
+                // --- CORRECÇÃO: Agora chama o novo submenu ---
+                case 2 -> submenuGestaoUtilizadores(casa, u, dc);
+                case 3 -> {
+                    System.out.print("ID Divisão: ");
+                    Divisao d = dc.encontrarDivisaoPorId(casa, InputValidator.lerInteiro());
+                    if (d != null) menuDispositivos(d, eAdmin, dc);
+                }
+                case 4 -> { if(eAdmin) { System.out.print("Nome: "); dc.criarDivisao(casa, InputValidator.lerLinha()); } }
+                case 5 -> {
+                    if (eAdmin) {
+                        System.out.print("ID Divisão para remover: ");
+                        Divisao rem = dc.encontrarDivisaoPorId(casa, InputValidator.lerInteiro());
+                        if (rem != null) dc.removerDivisao(casa, rem);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void submenuGestaoUtilizadores(Casa casa, Utilizador u_sessao, DomusControl dc) {
+        boolean eAdmin = u_sessao.serAdmin(casa); //
+        while (true) {
+            StringBuilder info = new StringBuilder("UTILIZADORES COM ACESSO A: " + casa.getAlcunha() + "\n\n");
+
+            // Listagem de utilizadores no corpo do quadrado
+            for (Utilizador uti : dc.getUtilizadores()) {
+                if (uti.serAdmin(casa)) {
+                    info.append(String.format(" [ADMIN]      ID: %d | %s\n", uti.getId(), uti.getNome()));
+                } else if (uti.serUtilizador(casa)) {
+                    info.append(String.format(" [UTILIZADOR] ID: %d | %s\n", uti.getId(), uti.getNome()));
+                }
+            }
+
+            String opts;
+            if (eAdmin) {
+                opts = "1. Criar Novo Utilizador\n" +
+                        "2. Adicionar Utilizador à Casa\n" +
+                        "3. Remover Utilizador da Casa\n" +
+                        "4. Tornar Administrador\n" +
+                        "5. Remover Permissões de Administrador\n" +
+                        "0. Voltar";
+            } else {
+                opts = "0. Voltar\n(Apenas Administradores podem gerir permissões)";
+            }
+
+            // Desenha o dashboard com as opções em lista vertical
+            ConsoleUI.desenharDashboard("GESTÃO DE UTILIZADORES", info.toString(), opts);
+
+            System.out.print("\nEscolha: ");
+            int opt = InputValidator.lerInteiro(); //
+            if (opt == 0) break;
+
+            if (!eAdmin) continue;
+
+            switch (opt) {
+                case 1 -> {
+                    System.out.print("Nome: ");
+                    dc.criarUtilizador(InputValidator.lerLinha());
+                }
                 case 2 -> {
-                    while (true) {
-                        dc.listarPessoasComAcessoACasa(casa);
-                        if (eAdmin) {
-                            System.out.println("\nOpções de gestão de utilizadores:");
-                            System.out.println("1. Criar novo utilizador");
-                            System.out.println("2. Adicionar Utilizador à Casa");
-                            System.out.println("3. Remover Utilizador da Casa");
-                            System.out.println("4. Adicionar Administrador à Casa");
-                            System.out.println("5. Remover Administrador da Casa");
-                            System.out.println("0. Voltar");
-
-                            System.out.print("Escolha: ");
-                            int userOpt = InputValidator.lerInteiro();
-                            if (userOpt == 0) break;
-
-                            switch (userOpt) {
-                                case 1 -> {
-                                    System.out.print("Nome do novo utilizador: ");
-                                    String nome = InputValidator.lerLinha();
-                                    Utilizador novo = dc.criarUtilizador(nome);
-                                    System.out.println("Novo utilizador criado com sucesso.");
-                                }
-                                
-                                case 2 -> {
-                                    System.out.println("Lista de Utilizadores disponíveis:");
-                                    dc.listarUtilizadoresDisponiveisAAdicionar(casa);
-                                    System.out.print("ID do utilizador a adicionar: ");
-                                    int idAdd = InputValidator.lerInteiro();
-                                    Utilizador uAdd = dc.encontrarUtilizadorPorId(idAdd);
-                                    if (uAdd != null && !uAdd.podeUsarCasa(casa)) {
-                                        dc.adicionarCasaAUtilizador(uAdd, casa);
-                                        System.out.println("Utilizador adicionado com sucesso.");
-                                    } else {
-                                        System.out.println("Erro: ID de utilizador inválido ou utilizador já tem acesso à casa.");
-                                    }
-                                }
-                                case 3 -> {
-                                    System.out.print("ID do utilizador a remover: ");
-                                    int idRem = InputValidator.lerInteiro();
-                                    Utilizador uRem = dc.encontrarUtilizadorPorId(idRem);
-
-                                    int total_administadores = dc.contarAdministradoresCasa(casa);
-                                    if (total_administadores <= 1 && u_atual.getId() == idRem) {
-                                        System.out.println("Erro: Você é o único administrador desta casa. Adicione outro administrador antes de remover seu acesso.");
-                                        continue; // Impede que o último administrador remova a si mesmo
-                                    }
-                                    if (uRem != null && uRem.podeUsarCasa(casa)) {
-                                        dc.removerCasaDeUtilizador(uRem, casa);
-                                        if (u_atual.getId() == idRem) {
-                                            System.out.println("Aviso: Você removeu seu próprio acesso a esta casa. Voltando ao menu principal...");
-                                            return; // Volta para o menu principal se o utilizador remover a si mesmo
-                                        }
-                                        else System.out.println("Utilizador removido com sucesso.");
-                                    } else {
-                                        System.out.println("Erro: ID de utilizador inválido ou utilizador não tem acesso à casa.");
-                                    }
-
-                                }
-                                case 4 -> {
-                                    System.out.println("Lista de Administradores disponíveis:");
-                                    dc.listarAdministradoresDisponiveisAAdicionar(casa);
-                                    System.out.print("ID do utilizador a tornar administrador: ");
-                                    int idAdminAdd = InputValidator.lerInteiro();
-                                    Utilizador uAdminAdd = dc.encontrarUtilizadorPorId(idAdminAdd);
-                                    if (uAdminAdd != null && !uAdminAdd.serAdmin(casa)) {
-                                        dc.adicionarCasaAAdministrador(uAdminAdd, casa);
-                                        System.out.println("Administrador adicionado com sucesso.");
-                                    } else {
-                                        System.out.println("Erro: ID de utilizador inválido ou utilizador já é administrador da casa.");
-                                    }
-                                }
-                                case 5 -> {
-                                    System.out.print("ID do administrador a remover: ");
-                                    int idAdminRem = InputValidator.lerInteiro();
-                                    Utilizador uAdminRem = dc.encontrarUtilizadorPorId(idAdminRem);
-
-                                    int total_administadores = dc.contarAdministradoresCasa(casa);
-                                    if (total_administadores <= 1 && u_atual.getId() == idAdminRem) {
-                                        System.out.println("Erro: Você é o único administrador desta casa. Adicione outro administrador antes de remover seu acesso.");
-                                        continue; // Impede que o último administrador remova a si mesmo
-                                    }
-                                    if (uAdminRem != null && uAdminRem.serAdmin(casa)) {
-                                        dc.removerPermissoesAdmin(uAdminRem, casa);
-                                        if (u_atual.getId() == idAdminRem) {
-                                            System.out.println("Aviso: Você removeu suas permissões de administrador desta casa. Voltando ao menu principal...");
-                                            return; // Volta para o menu principal se o utilizador remover a si mesmo
-                                        }
-                                        else System.out.println("Administrador removido com sucesso.");
-                                    }
-                                    else {
-                                        System.out.println("Erro: ID de utilizador inválido ou utilizador não é administrador da casa.");
-                                    }
-                                }
-                                default -> System.out.println("Opção inválida.");
-                            }
-                        } else {
-                            System.out.println("Pressione 0 para voltar.");
-                            int backOpt = InputValidator.lerInteiro();
-                            if (backOpt == 0) break;
-                            else System.out.println("Opção inválida.");
-                        }
+                    System.out.print("ID do Utilizador a adicionar: ");
+                    Utilizador add = dc.encontrarUtilizadorPorId(InputValidator.lerInteiro());
+                    if (add != null && !add.podeUsarCasa(casa)) {
+                        dc.adicionarCasaAUtilizador(add, casa);
                     }
                 }
                 case 3 -> {
-                    System.out.print("ID da divisão para entrar: ");
-                    int idDiv = InputValidator.lerInteiro();
-                    Divisao div = dc.encontrarDivisaoPorId(casa, idDiv);
-                    if (div != null) menuDispositivos(div, eAdmin, dc);
-                    else System.out.println("Erro: Divisão não encontrada.");
+                    System.out.print("ID a remover: ");
+                    int idRem = InputValidator.lerInteiro();
+                    Utilizador rem = dc.encontrarUtilizadorPorId(idRem);
+                    if (rem != null && rem.podeUsarCasa(casa)) {
+                        // Impede a remoção se for o último administrador
+                        if (dc.contarAdministradoresCasa(casa) <= 1 && rem.serAdmin(casa)) {
+                            System.out.println("Erro: Não pode remover o último administrador.");
+                            InputValidator.lerLinha();
+                        } else {
+                            dc.removerCasaDeUtilizador(rem, casa);
+                            if (rem.getId() == u_sessao.getId()) return;
+                        }
+                    }
                 }
                 case 4 -> {
-                    if (eAdmin) {
-                        System.out.print("Nome da nova divisão: ");
-                        dc.criarDivisao(casa, InputValidator.lerLinha());
-                    } else System.out.println("Erro: Permissões insuficientes.");
+                    System.out.print("ID para tornar Administrador: ");
+                    Utilizador adm = dc.encontrarUtilizadorPorId(InputValidator.lerInteiro());
+                    if (adm != null) dc.adicionarCasaAAdministrador(adm, casa);
                 }
                 case 5 -> {
-                    if (eAdmin) {
-                        System.out.print("ID da divisão para remover: ");
-                        int idRem = InputValidator.lerInteiro();
-                        Divisao rem = dc.encontrarDivisaoPorId(casa, idRem);
-                        if (rem != null) dc.removerDivisao(casa, rem);
-                        else System.out.println("Erro: ID de divisão inválido.");
-                    } else System.out.println("Erro: Permissões insuficientes.");
+                    System.out.print("ID para retirar privilégios de Admin: ");
+                    int idT = InputValidator.lerInteiro();
+                    Utilizador tir = dc.encontrarUtilizadorPorId(idT);
+                    if (tir != null && dc.contarAdministradoresCasa(casa) > 1) {
+                        dc.removerPermissoesAdmin(tir, casa);
+                    }
                 }
-                default -> System.out.println("Opção inválida.");
             }
         }
     }
 
     public static void menuDispositivos(Divisao div, boolean eAdmin, DomusControl dc) {
         while (true) {
-            System.out.println("\n--- DIVISÃO: " + div.getNome() + " ---");
+            StringBuilder info = new StringBuilder("DIVISÃO: " + div.getNome().toUpperCase() + "\n\n");
+            info.append(String.format("%-4s | %-12s | %-15s | %-10s | %s\n", "ID", "TIPO", "MODELO", "CONS.(Wh)", "ESTADO"));
+            info.append("----------------------------------------------------------------------\n");
 
-            // VISUALIZAÇÃO DOS DISPOSITIVOS (REQUISITO 8.1 e 9.0)
-            System.out.println("Dispositivos instalados:");
-            div.listarDispositivos();
-
-            System.out.println("\n1. Operar Dispositivo (Ligar/Desligar)");
-            if (eAdmin) {
-                System.out.println("2. Adicionar Dispositivo (Admin)");
-                System.out.println("3. Remover Dispositivo (Admin)");
+            for (Dispositivo d : div.getDispositivos().values()) {
+                info.append(String.format("%-4d | %-12s | %-15s | %-10.2f | %s\n",
+                        d.getId(), d.getTipo(), d.getModelo(), d.getConsumo_Por_Hora_Wh(), d.getEstado()));
             }
-            System.out.println("0. Voltar");
 
-            System.out.print("Opção: ");
+            String opts = "1. Alternar Estado (On/Off)\n" + (eAdmin ? "2. Adicionar\n3. Remover\n" : "") + "0. Voltar";
+            ConsoleUI.desenharDashboard("DISPOSITIVOS", info.toString(), opts);
+
+            System.out.print("\nEscolha: ");
             int opt = InputValidator.lerInteiro();
             if (opt == 0) break;
 
-            switch (opt) {
-                case 1 -> {
-                    System.out.print("ID do dispositivo: ");
-                    int idD = InputValidator.lerInteiro();
-                    Dispositivo d = div.obterDispositivoPorId(idD);
-                    if (d != null) {
-                        if (d.getEstado().equals("LIGADO")) d.desligarDispositivo();
-                        else d.ligarDispositivo();
-                        System.out.println("Novo estado de " + d.getModelo() + ": " + d.getEstado());
-                    } else System.out.println("Erro: Dispositivo não encontrado.");
+            if (opt == 1) {
+                System.out.print("ID: ");
+                Dispositivo d = div.obterDispositivoPorId(InputValidator.lerInteiro());
+                if (d != null) {
+                    if (d.getEstado().equals("LIGADO")) d.desligarDispositivo(); else d.ligarDispositivo();
                 }
-                case 2 -> { if (eAdmin) adicionarDispositivoSubmenu(div, dc); }
-                case 3 -> {
-                    if (eAdmin) {
-                        System.out.print("ID para remover: ");
-                        int idR = InputValidator.lerInteiro();
-                        Dispositivo r = div.obterDispositivoPorId(idR);
-                        if (r != null) {
-                            div.removerDispositivo(r);
-                            System.out.println("Dispositivo removido.");
-                        } else System.out.println("Erro: ID inválido.");
-                    }
-                }
-                default -> System.out.println("Opção inválida.");
+            } else if (opt == 2 && eAdmin) {
+                adicionarDispositivoSubmenu(div, dc);
+            } else if (opt == 3 && eAdmin) {
+                System.out.print("ID para remover: ");
+                Dispositivo r = div.obterDispositivoPorId(InputValidator.lerInteiro());
+                if (r != null) div.removerDispositivo(r);
             }
         }
     }
 
     public static void adicionarDispositivoSubmenu(Divisao div, DomusControl dc) {
-        System.out.println("\n1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão");
-        System.out.print("Tipo: ");
-        int tipo = InputValidator.lerInteiro();
-        if (tipo < 1 || tipo > 5) { System.out.println("Tipo inválido."); return; }
+        System.out.println("1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão");
+        int t = InputValidator.lerInteiro();
+        System.out.print("Marca: "); String ma = InputValidator.lerLinha();
+        System.out.print("Modelo: "); String mo = InputValidator.lerLinha();
+        System.out.print("Consumo: "); double c = InputValidator.lerDouble();
+        int id = dc.aumentarIdDispositivo();
 
-        System.out.print("Marca: "); String marca = InputValidator.lerLinha();
-        System.out.print("Modelo: "); String modelo = InputValidator.lerLinha();
-        System.out.print("Consumo (Wh): "); double cons = InputValidator.lerDouble();
-
-        int idNovo = dc.aumentarIdDispositivo();
-        Dispositivo novo = null;
-
-        switch (tipo) {
-            case 1 -> novo = new Lampada(idNovo, marca, modelo, cons, 80, "Branco");
-            case 2 -> novo = new Tomada(idNovo, marca, modelo, cons);
-            case 3 -> novo = new Curtina(idNovo, marca, modelo, cons, 0);
-            case 4 -> novo = new ColunaSom(idNovo, marca, modelo, cons, 50);
-            case 5 -> novo = new PortaoGaragem(idNovo, marca, modelo, cons, 0);
-        }
-        if (novo != null) {
-            div.adicionarDispositivo(novo);
-            System.out.println("Sucesso: " + novo.getClass().getSimpleName() + " adicionada com ID " + idNovo);
-        }
+        Dispositivo d = switch(t) {
+            case 1 -> new Lampada(id, ma, mo, c, 80, "Branco");
+            case 2 -> new Tomada(id, ma, mo, c);
+            case 3 -> new Curtina(id, ma, mo, c, 0);
+            case 4 -> new ColunaSom(id, ma, mo, c, 50);
+            case 5 -> new PortaoGaragem(id, ma, mo, c, 0);
+            default -> null;
+        };
+        if (d != null) div.adicionarDispositivo(d);
     }
 
-
-
     public static void menuAutomacao(Utilizador u, DomusControl dc) {
-        System.out.println("\n--- MODO ECO ---");
-        dc.listarCasasdeAdministrador(u);
-        dc.listarCasasdeUtilizador(u);
-        System.out.print("ID da casa: ");
-        int id = InputValidator.lerInteiro();
+        StringBuilder info = new StringBuilder("MODO ECO\n\nCasas disponíveis para automação:\n");
+        for (Casa c : u.getCasasUtilizador().values()) {
+            info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+        }
 
+        String opts = "Introduza o ID da casa para desligar tudo\n0. Cancelar";
+        ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
+
+        int id = InputValidator.lerInteiro();
         Casa casa = dc.encontrarCasaPorId(id);
         if (casa != null && u.podeUsarCasa(casa)) {
             for (Divisao d : casa.getDivisoes().values()) {
                 for (Dispositivo disp : d.getDispositivos().values()) disp.desligarDispositivo();
             }
-            System.out.println("Modo ECO aplicado em " + casa.getAlcunha());
-        } else System.out.println("Erro: Acesso negado.");
+        }
     }
 
-    public static void menuLigarDispositivo(Utilizador u, DomusControl dc){
-            System.out.println("\n--- LIGAR DISPOSITIVO ---");
-            dc.listarCasasdeAdministrador(u);
-            dc.listarCasasdeUtilizador(u);
-            System.out.print("ID da casa: ");
-            int id = InputValidator.lerInteiro();
-    
-            Casa casa = dc.encontrarCasaPorId(id);
-            if (casa != null && u.podeUsarCasa(casa)) {
-                for (Divisao d : casa.getDivisoes().values()) {
-                    for (Dispositivo disp : d.getDispositivos().values()) disp.ligarDispositivo();
-                }
-                System.out.println("Todos os dispositivos em " + casa.getAlcunha() + " foram ligados.");
-            } else System.out.println("Erro: Acesso negado.");
+    public static void menuLigarDispositivo(Utilizador u, DomusControl dc) {
+        StringBuilder info = new StringBuilder("LIGAR TUDO\n\nCasas disponíveis:\n");
+        for (Casa c : u.getCasasUtilizador().values()) {
+            info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+        }
+        ConsoleUI.desenharDashboard("LIGAR TUDO", info.toString(), "ID da casa para ligar tudo\n0. Cancelar");
+
+        int id = InputValidator.lerInteiro();
+        Casa casa = dc.encontrarCasaPorId(id);
+        if (casa != null && u.podeUsarCasa(casa)) {
+            for (Divisao d : casa.getDivisoes().values()) {
+                for (Dispositivo disp : d.getDispositivos().values()) disp.ligarDispositivo();
+            }
+        }
     }
 }

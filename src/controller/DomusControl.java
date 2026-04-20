@@ -173,7 +173,7 @@ public class DomusControl implements Serializable {
             // Percorre todos os dispositivos de cada divisão [cite: 14]
             for (Dispositivo disp : d.getDispositivos().values()) {
                 System.out.println("[" + d.getNome() + "] " + "(" + disp.getTipo() + ") " + disp.getMarca() + " " + disp.getModelo() +
-                        " (ID: " + disp.getId() + ") -> ESTADO: " + disp.getEstado() + 
+                        " (ID: " + disp.getId() + ") -> ESTADO: " + disp.getEstado() +
                         disp.getDetalhesEspecificos());
                 temDispositivos = true;
             }
@@ -232,5 +232,19 @@ public class DomusControl implements Serializable {
             }
         }
         return count;
+    }
+
+    public void eliminarCasaTotalmente(Casa casa) {
+        if (casa == null) return;
+
+        // 1. Percorre todos os utilizadores para limpar as referências a esta casa
+        for (Utilizador u : utilizadores.values()) {
+            u.removerCasaAdministrada(casa); //
+            u.removerCasaUtilizador(casa);     //
+        }
+
+        // 2. Remove a casa do registo central do sistema
+        casas.remove(casa.getId()); //
+        System.out.println("Casa '" + casa.getAlcunha() + "' foi eliminada com sucesso.");
     }
 }
