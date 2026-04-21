@@ -34,12 +34,20 @@ public class ConsoleUI {
 
     public static void desenharDashboard(String titulo, String info, String opcoes) {
         int[] dims = getTerminalDimensions();
-        int largura = dims[0] - 2; // Margem pequena
+        int largura = dims[0] - 2;
         int alturaTotal = dims[1];
 
-        // Calculamos alturas dinâmicas (ex: 50% para info, 25% para opções)
-        int alturaInfo = Math.max(5, (alturaTotal - 10) / 2);
-        int alturaOpts = Math.max(3, (alturaTotal - alturaInfo - 8));
+        // --- NOVA LÓGICA DE ALTURA ---
+        // Reservamos 7 linhas para molduras e títulos. O resto é dividido.
+        int linhasExtras = 8;
+        int disponivel = Math.max(15, alturaTotal - linhasExtras);
+
+        // As opções raramente precisam de mais de 5 ou 6 linhas
+        String[] numOpts = (opcoes == null ? "" : opcoes).split("\n");
+        int alturaOpts = Math.max(3, Math.min(numOpts.length, 6));
+
+        // A área de info fica com todo o resto do terminal
+        int alturaInfo = disponivel - alturaOpts;
 
         System.out.print(CLEAR_ALL);
         System.out.flush();

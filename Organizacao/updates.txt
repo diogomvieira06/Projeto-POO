@@ -1,3 +1,5 @@
+para ja usamos ArrayList para organizar os dados, mas no futuro vale a pena continuar a usar assim ? podemos passar para hashtables p.e
+
 na curtina, temos como atributo "nivel de abertura", usamos isso numa escala de 0-100(fiz as cenas com essa escala, mas nao ha stress se n for essa escala pq dps muda se)
 
 no portao de garagem temos o atributo "nivel de abertura", faz sentido isso ser assim ? nao seria melhor ter do genero {FECHADO, ABERTO} ? 
@@ -22,11 +24,3 @@ CRIEI MAKEFILE, OS COMANDOS SAO ESTES :
 
 ou tmb 
 ->make rebuild(limpa e volta a correr)
-
-----------------------------------------------------------------------------------------------------
-Domingo(19/4)
-->faz sentido termos o portao de garagem com {LIGADO, DESLIGADO} ??
-pq no terminal temos isto(tive a testar o codigo) : [Sala] (PortaoGaragem) Genie Garage Door Opener (ID: 23) -> ESTADO: DESLIGADO | Nível de Abertura: 0%
-e acho estranho termos "DESLIGADO"
-
-meti tmb as uma feature de ligar todos os dispositivos da casa, era so para testar uma cena ent por enquanto deixem estar assim com essa feature

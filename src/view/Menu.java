@@ -269,4 +269,74 @@ public class Menu {
             }
         }
     }
+
+    public static void menuEstatisticas(DomusControl dc) {
+        while (true) {
+            StringBuilder sb = new StringBuilder("RESUMO DE ESTATÍSTICAS\n\n");
+
+            // 1. Casa que mais consome
+            Casa topCasa = dc.casaQueMaisConsome();
+            sb.append("CASA QUE MAIS CONSOME:\n");
+            sb.append(topCasa != null ? " > " + topCasa.getAlcunha() : " > (Nenhuma)").append("\n\n");
+
+            // 2. Top 3 Divisões com mais dispositivos
+            sb.append("TOP 3 DIVISÕES (Mais Dispositivos):\n");
+            for (String s : dc.gettop3DivisoesComMaisDispositivos()) {
+                sb.append(" > ").append(s).append("\n");
+            }
+
+            // 3. ADICIONAR: Top 3 Dispositivos por Ativações
+            sb.append("\nTOP 3 DISPOSITIVOS (Por Ativações):\n");
+            List<Dispositivo> topAtiv = dc.getTop3Dispositivos(false);
+            if (topAtiv.isEmpty()) sb.append(" > (Sem dados de ativação)\n");
+            for (Dispositivo d : topAtiv) {
+                sb.append(String.format(" > %-15s | %d ativ.\n", d.getModelo(), d.getNumAtivacoes()));
+            }
+
+            // 4. ADICIONAR: Top 3 Dispositivos por Tempo
+            sb.append("\nTOP 3 DISPOSITIVOS (Por Tempo de Uso):\n");
+            List<Dispositivo> topTempo = dc.getTop3Dispositivos(true);
+            if (topTempo.isEmpty()) sb.append(" > (Sem dados de tempo)\n");
+            for (Dispositivo d : topTempo) {
+                sb.append(String.format(" > %-15s | %.2f horas\n", d.getModelo(), d.getTempoUsoHoras()));
+            }
+
+            // Menu de opções para o Dashboard
+            String opts = "1. Simular Passagem de Tempo (1h)\n" +
+                    "2. Consultar Dispositivos de uma Casa\n" +
+                    "0. Voltar";
+
+            ConsoleUI.desenharDashboard("CENTRAL DE ESTATÍSTICAS", sb.toString(), opts);
+            System.out.print("\nEscolha: ");
+            int opt = InputValidator.lerInteiro();
+
+            if (opt == 0) break;
+
+            if (opt == 1) {
+                // Lógica para simular tempo nos dispositivos ligados
+                for (Casa c : dc.getCasas()) {
+                    for (Divisao d : c.getDivisoes().values()) {
+                        for (Dispositivo disp : d.getDispositivos().values()) {
+                            disp.adicionarTempoUso(1.0);
+                        }
+                    }
+                }
+            } else if (opt == 2) {
+                System.out.print("ID da Casa para consultar: ");
+                int idC = InputValidator.lerInteiro();
+                Casa casa = dc.encontrarCasaPorId(idC);
+                if (casa != null) {
+                    StringBuilder lista = new StringBuilder("DISPOSITIVOS EM " + casa.getAlcunha() + ":\n\n");
+                    for (Divisao div : casa.getDivisoes().values()) {
+                        lista.append("[").append(div.getNome()).append("]\n");
+                        for (Dispositivo disp : div.getDispositivos().values()) {
+                            lista.append(" - ").append(disp.getModelo()).append(" (ID: ").append(disp.getId()).append(")\n");
+                        }
+                    }
+                    ConsoleUI.desenharDashboard("CONSULTA POR CASA", lista.toString(), "0. Voltar");
+                    InputValidator.lerInteiro();
+                }
+            }
+        }
+    }
 }

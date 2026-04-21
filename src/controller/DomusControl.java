@@ -247,4 +247,79 @@ public class DomusControl implements Serializable {
         casas.remove(casa.getId()); //
         System.out.println("Casa '" + casa.getAlcunha() + "' foi eliminada com sucesso.");
     }
+
+    // Casa que mais consome (Soma consumos de dispositivos ligados)
+    public Casa casaQueMaisConsome() {
+        Casa vencedora = null;
+        double maxConsumo = -1;
+
+        for (Casa c : casas.values()) {
+            double consumoAtual = 0;
+            for (Divisao d : c.getDivisoes().values()) {
+                for (Dispositivo disp : d.getDispositivos().values()) {
+                    if (disp.getEstado().equals("LIGADO")) {
+                        consumoAtual += disp.getConsumo_Por_Hora_Wh();
+                    }
+                }
+            }
+            if (consumoAtual > maxConsumo) {
+                maxConsumo = consumoAtual;
+                vencedora = c;
+            }
+        }
+        return vencedora;
+    }
+
+    // Top 3 Divisões com mais dispositivos
+    public List<String> gettop3DivisoesComMaisDispositivos() {
+        class DivInfo { String nome; int total; DivInfo(String n, int t) { nome = n; total = t; } }
+        List<DivInfo> lista = new ArrayList<>();
+
+        for (Casa c : casas.values()) {
+            for (Divisao d : c.getDivisoes().values()) {
+                lista.add(new DivInfo(c.getAlcunha() + " -> " + d.getNome(), d.getDispositivos().size()));
+            }
+        }
+        lista.sort((a, b) -> b.total - a.total);
+        return lista.stream().limit(3).map(di -> di.nome + " (" + di.total + " disp.)").toList();
+    }
+
+    // 3. Top 3 Dispositivos (por ativações ou tempo)
+    public List<Dispositivo> getTop3Dispositivos(boolean porTempo) {
+        List<Dispositivo> todos = new ArrayList<>();
+        for (Casa c : casas.values()) {
+            for (Divisao d : c.getDivisoes().values()) {
+                todos.addAll(d.getDispositivos().values());
+            }
+        }
+        if (porTempo) todos.sort((a, b) -> Double.compare(b.getTempoUsoHoras(), a.getTempoUsoHoras()));
+        else todos.sort((a, b) -> b.getNumAtivacoes() - a.getNumAtivacoes());
+
+        return todos.stream().limit(3).toList();
+    }
+
+    // Para satisfazer o requisito: "listar dispositivos por casa" devolvendo String
+    public String listarDispositivosCasaDashboard(Casa casa) {
+        if (casa == null) return "Casa não encontrada.";
+        StringBuilder sb = new StringBuilder();
+        for (Divisao d : casa.getDivisoes().values()) {
+            sb.append("[").append(d.getNome()).append("]\n");
+            for (Dispositivo disp : d.getDispositivos().values()) {
+                sb.append(String.format(" > ID: %d | %-12s | %s\n",
+                        disp.getId(), disp.getModelo(), disp.getEstado()));
+            }
+        }
+        return sb.toString();
+    }
+
+    // Método para simular a passagem de tempo em todo o sistema
+    public void passarTempoGlobal(double horas) {
+        for (Casa c : casas.values()) {
+            for (Divisao d : c.getDivisoes().values()) {
+                for (Dispositivo disp : d.getDispositivos().values()) {
+                    disp.adicionarTempoUso(horas); //
+                }
+            }
+        }
+    }
 }
