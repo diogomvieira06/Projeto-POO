@@ -164,26 +164,6 @@ public class DomusControl implements Serializable {
         }
     }
 
-    public void listarEstadoGlobalCasa(Casa casa) {
-        System.out.println("\n===== ESTADO GLOBAL: " + casa.getAlcunha() + " =====");
-        boolean temDispositivos = false;
-
-        // Percorre todas as divisões associadas à casa [cite: 14]
-        for (Divisao d : casa.getDivisoes().values()) {
-            // Percorre todos os dispositivos de cada divisão [cite: 14]
-            for (Dispositivo disp : d.getDispositivos().values()) {
-                System.out.println("[" + d.getNome() + "] " + "(" + disp.getTipo() + ") " + disp.getMarca() + " " + disp.getModelo() +
-                        " (ID: " + disp.getId() + ") -> ESTADO: " + disp.getEstado() +
-                        disp.getDetalhesEspecificos());
-                temDispositivos = true;
-            }
-        }
-
-        if (!temDispositivos) {
-            System.out.println("Esta casa ainda não possui dispositivos instalados.");
-        }
-    }
-
     public void guardarEstado(String nomeFicheiro) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new java.io.FileOutputStream(nomeFicheiro))) {
             oos.writeObject(this);

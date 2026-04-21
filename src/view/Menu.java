@@ -28,18 +28,29 @@ public class Menu {
 
             // Atualizamos as opções para incluir a remoção
             String opts = "ID da casa para aceder\n" +
+                    "1. Aceder a uma Casa\n" +
                     "9. Remover uma Casa (Apenas Admin)\n" +
                     "0. Voltar";
 
             ConsoleUI.desenharDashboard("GESTÃO DE CASAS", info.toString(), opts);
 
-            System.out.print("\nEscolha: ");
+            System.out.print("\nEscolha opção: ");
             int id = InputValidator.lerInteiro();
-
+            int id2;
             if (id == 0) break;
 
+            else if (id == 1) {
+                System.out.print("ID da casa para aceder: ");
+                id2 = InputValidator.lerInteiro();
+                            // Acesso normal à casa
+                Casa casa = dc.encontrarCasaPorId(id2);
+                if (casa != null && u.podeUsarCasa(casa)) {
+                    menuInternoCasa(casa, u, dc);
+            }
+            }
+
             // Lógica de remoção
-            if (id == 9) {
+            else if (id == 9) {
                 System.out.print("ID da casa que deseja eliminar: ");
                 int idEliminar = InputValidator.lerInteiro();
                 Casa casaAEliminar = dc.encontrarCasaPorId(idEliminar);
@@ -50,18 +61,15 @@ public class Menu {
                     if (InputValidator.lerLinha().equalsIgnoreCase("s")) {
                         dc.eliminarCasaTotalmente(casaAEliminar);
                     }
+                } else if (idEliminar == 0) { // Se não for 0, é porque tentou eliminar algo
+                continue; // Volta ao menu sem mostrar erro
                 } else {
-                    System.out.println("Erro: Não encontrada ou não tem permissões de Admin.");
-                    InputValidator.lerLinha();
+                    ConsoleUI.mostrarErro("Casa não encontrada ou sem permissões de Admin.");
                 }
-                continue;
             }
-
-            // Acesso normal à casa
-            Casa casa = dc.encontrarCasaPorId(id);
-            if (casa != null && u.podeUsarCasa(casa)) {
-                menuInternoCasa(casa, u, dc);
-            }
+            else {
+                ConsoleUI.mostrarErro("Opção inválida.");
+                }
         }
     }
 
@@ -84,7 +92,14 @@ public class Menu {
             if (opt == 0) break;
 
             switch (opt) {
-                case 1 -> { dc.listarEstadoGlobalCasa(casa); System.out.println("\nEnter..."); InputValidator.lerLinha(); }
+                case 1 -> {
+                    ConsoleUI.desenharDashboard(
+                            "ESTADO GLOBAL",
+                            montarEstadoGlobalCasa(casa),
+                            "Prima Enter para voltar"
+                    );
+                    InputValidator.lerLinha();
+                }
                 // --- CORRECÇÃO: Agora chama o novo submenu ---
                 case 2 -> submenuGestaoUtilizadores(casa, u, dc);
                 case 3 -> {
@@ -102,6 +117,37 @@ public class Menu {
                 }
             }
         }
+    }
+
+    private static String montarEstadoGlobalCasa(Casa casa) {
+        StringBuilder estado = new StringBuilder("CASA: ").append(casa.getAlcunha()).append("\n\n");
+        boolean temDispositivos = false;
+
+        for (Divisao divisao : casa.getDivisoes().values()) {
+            for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                estado.append("[")
+                        .append(divisao.getNome())
+                        .append("] (")
+                        .append(dispositivo.getTipo())
+                        .append(") ")
+                        .append(dispositivo.getMarca())
+                        .append(" ")
+                        .append(dispositivo.getModelo())
+                        .append(" (ID: ")
+                        .append(dispositivo.getId())
+                        .append(") -> ESTADO: ")
+                        .append(dispositivo.getEstado())
+                        .append(dispositivo.getDetalhesEspecificos())
+                        .append("\n");
+                temDispositivos = true;
+            }
+        }
+
+        if (!temDispositivos) {
+            estado.append("Esta casa ainda não possui dispositivos instalados.");
+        }
+
+        return estado.toString().stripTrailing();
     }
 
     public static void submenuGestaoUtilizadores(Casa casa, Utilizador u_sessao, DomusControl dc) {
@@ -133,7 +179,7 @@ public class Menu {
             // Desenha o dashboard com as opções em lista vertical
             ConsoleUI.desenharDashboard("GESTÃO DE UTILIZADORES", info.toString(), opts);
 
-            System.out.print("\nEscolha: ");
+            System.out.print("\nEscolha opção: ");
             int opt = InputValidator.lerInteiro(); //
             if (opt == 0) break;
 
@@ -145,10 +191,22 @@ public class Menu {
                     dc.criarUtilizador(InputValidator.lerLinha());
                 }
                 case 2 -> {
-                    System.out.print("ID do Utilizador a adicionar: ");
-                    Utilizador add = dc.encontrarUtilizadorPorId(InputValidator.lerInteiro());
-                    if (add != null && !add.podeUsarCasa(casa)) {
-                        dc.adicionarCasaAUtilizador(add, casa);
+                    while (true) {
+                        // Exibe apenas os utilizadores que não têm acesso à casa
+                        StringBuilder lista = new StringBuilder("UTILIZADORES DISPONÍVEIS PARA ADIÇÃO:\n\n");
+                        for (Utilizador uti : dc.getUtilizadores()) {
+                            if (!uti.podeUsarCasa(casa)) {
+                                lista.append(String.format("ID: %d | %s\n", uti.getId(), uti.getNome()));
+                            }
+                        }
+                        ConsoleUI.desenharDashboard("ADICIONAR UTILIZADOR", lista.toString(), "ID do Utilizador a adicionar\n0. Voltar");
+                        System.out.print("ID do Utilizador a adicionar: ");
+                        int idAdd = InputValidator.lerInteiro();
+                        if (idAdd == 0) break;
+                        Utilizador add = dc.encontrarUtilizadorPorId(idAdd);
+                        if (add != null && !add.podeUsarCasa(casa)) {
+                            dc.adicionarCasaAUtilizador(add, casa);
+                        }
                     }
                 }
                 case 3 -> {
@@ -158,8 +216,7 @@ public class Menu {
                     if (rem != null && rem.podeUsarCasa(casa)) {
                         // Impede a remoção se for o último administrador
                         if (dc.contarAdministradoresCasa(casa) <= 1 && rem.serAdmin(casa)) {
-                            System.out.println("Erro: Não pode remover o último administrador.");
-                            InputValidator.lerLinha();
+                            ConsoleUI.mostrarErro("Não pode remover o último administrador.");
                         } else {
                             dc.removerCasaDeUtilizador(rem, casa);
                             if (rem.getId() == u_sessao.getId()) return;
@@ -177,6 +234,13 @@ public class Menu {
                     Utilizador tir = dc.encontrarUtilizadorPorId(idT);
                     if (tir != null && dc.contarAdministradoresCasa(casa) > 1) {
                         dc.removerPermissoesAdmin(tir, casa);
+                    } else if (tir != null && tir.serAdmin(casa)) {
+                        ConsoleUI.mostrarErro("Não pode remover privilégios do último administrador.");
+                    } else if (tir != null && !tir.podeUsarCasa(casa)) {
+                        ConsoleUI.mostrarErro("Utilizador não encontrado.");
+                    }
+                    else {
+                        ConsoleUI.mostrarErro("Utilizador não é administrador desta casa.");
                     }
                 }
             }
@@ -197,7 +261,7 @@ public class Menu {
             String opts = "1. Alternar Estado (On/Off)\n" + (eAdmin ? "2. Adicionar\n3. Remover\n" : "") + "0. Voltar";
             ConsoleUI.desenharDashboard("DISPOSITIVOS", info.toString(), opts);
 
-            System.out.print("\nEscolha: ");
+            System.out.print("\nEscolha opção: ");
             int opt = InputValidator.lerInteiro();
             if (opt == 0) break;
 
@@ -270,7 +334,7 @@ public class Menu {
         }
     }
 
-    public static void menuEstatisticas(DomusControl dc) {
+    public static void menuEstatisticas(Utilizador u, DomusControl dc) {
         while (true) {
             StringBuilder sb = new StringBuilder("RESUMO DE ESTATÍSTICAS\n\n");
 
@@ -307,7 +371,7 @@ public class Menu {
                     "0. Voltar";
 
             ConsoleUI.desenharDashboard("CENTRAL DE ESTATÍSTICAS", sb.toString(), opts);
-            System.out.print("\nEscolha: ");
+            System.out.print("\nEscolha opção: ");
             int opt = InputValidator.lerInteiro();
 
             if (opt == 0) break;
@@ -322,6 +386,11 @@ public class Menu {
                     }
                 }
             } else if (opt == 2) {
+                StringBuilder sb2 = new StringBuilder("CONSULTA POR CASA\n\nCasas disponíveis:\n");
+                for (Casa c : u.getCasasUtilizador().values()) {
+                    sb2.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                }
+                ConsoleUI.desenharDashboard("CONSULTA POR CASA", sb2.toString(), "0. Voltar");
                 System.out.print("ID da Casa para consultar: ");
                 int idC = InputValidator.lerInteiro();
                 Casa casa = dc.encontrarCasaPorId(idC);

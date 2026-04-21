@@ -87,6 +87,13 @@ public class ConsoleUI {
         System.out.flush();
     }
 
+    public static void mostrarErro(String mensagem) {
+        String info = "⚠ ERRO\n\n" + mensagem;
+        String opcoes = "Prima Enter para continuar";
+        desenharDashboard("ERRO", info, opcoes);
+        InputValidator.lerLinha();
+    }
+
     private static void imprimirLinha(int largura, String inicio, String meio, String fim) {
         System.out.print(inicio);
         for (int i = 0; i < largura - 2; i++) System.out.print(meio);

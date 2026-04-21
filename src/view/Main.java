@@ -2,6 +2,7 @@ package src.view;
 
 import src.controller.DomusControl;
 import src.model.*;
+import java.util.Iterator;
 
 public class Main {
     public static void main(String[] args) {
@@ -34,7 +35,17 @@ public class Main {
         // 1. LOGIN COM DASHBOARD
         Utilizador utilizador_atual = null;
         while (utilizador_atual == null) {
-            String info = "Bem-vindo ao Sistema DomusControl.\nIdentifique-se para gerir a sua habitação inteligente.";
+            StringBuilder listaUtilizadores = new StringBuilder();
+            for (Utilizador utilizador : domusControl.getUtilizadores()) {
+                listaUtilizadores.append("[")
+                        .append(utilizador.getId())
+                        .append("] ")
+                        .append(utilizador.getNome())
+                        .append("\n");
+            }
+
+            String info = "Bem-vindo ao Sistema DomusControl.\nIdentifique-se para gerir a sua habitação inteligente.\n\nUtilizadores disponíveis:\n"
+                    + (listaUtilizadores.length() > 0 ? listaUtilizadores.toString().stripTrailing() : "(Sem utilizadores)"); // Exibe a lista de utilizadores ou uma mensagem caso não haja nenhum
             String opts = "Introduza o seu ID de utilizador\n(Ou digite 0 para encerrar o programa)";
 
             ConsoleUI.desenharDashboard("LOGIN", info, opts);
@@ -55,7 +66,7 @@ public class Main {
         boolean sair = false;
         while (!sair) {
             String info = "Sessão: " + utilizador_atual.getNome() + "\nO que deseja fazer hoje?";
-            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações (Modo ECO)\n4. Ligar Tudo\n5. Estatisticas\n0. Sair e Gravar";
+            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações (Modo ECO)\n4. Ligar Tudo\n5. Estatisticas\n6. Mudar Utilizador\n0. Sair e Gravar";
 
             ConsoleUI.desenharDashboard("MENU PRINCIPAL", info, opts);
             System.out.print("\nOpção: ");
@@ -71,20 +82,99 @@ public class Main {
                 }
                 case 3 -> Menu.menuAutomacao(utilizador_atual, domusControl);
                 case 4 -> Menu.menuLigarDispositivo(utilizador_atual, domusControl);
-                case 5 -> Menu.menuEstatisticas(domusControl);
+                case 5 -> Menu.menuEstatisticas(utilizador_atual, domusControl);
+                case 6 -> {
+                    // Mudar de utilizador: volta ao ecrã de login
+                    utilizador_atual = null;
+                    while (utilizador_atual == null) {
+                        StringBuilder listaUtilizadores = new StringBuilder();
+                        for (Utilizador utilizador : domusControl.getUtilizadores()) {
+                            listaUtilizadores.append("[")
+                                    .append(utilizador.getId())
+                                    .append("] ")
+                                    .append(utilizador.getNome())
+                                    .append("\n");
+                        }
+
+                        String info2 = "SELEÇÃO DE UTILIZADOR\n\nUtilizadores disponíveis:\n"
+                                + (listaUtilizadores.length() > 0 ? listaUtilizadores.toString().stripTrailing() : "(Sem utilizadores)");
+                        String opts2 = "Introduza o ID do utilizador para iniciar sessão\n(Ou digite 0 para encerrar o programa)";
+
+                        ConsoleUI.desenharDashboard("MUDAR UTILIZADOR", info2, opts2);
+
+                        System.out.print("\nID: ");
+                        int idLogin = InputValidator.lerInteiro();
+
+                        if (idLogin == 0) {
+                            sair = true;
+                            break;
+                        }
+
+                        utilizador_atual = domusControl.encontrarUtilizadorPorId(idLogin);
+                        if (utilizador_atual == null) {
+                            System.out.println("Erro: Utilizador não encontrado. Prima Enter...");
+                            InputValidator.lerLinha();
+                        }
+                    }
+                }
                 case 0 -> sair = true;
                 default -> { System.out.println("Opção inválida."); InputValidator.lerLinha(); }
             }
         }
 
-        domusControl.guardarEstado("estado_projeto.dat");
+        if (escolhaArranque == 1) {
+            // Se o utilizador escolheu carregar do ficheiro, volta a guardar para manter as alterações
+            domusControl.guardarEstado("estado_projeto.dat");
+        }
     }
 
     private static void inicializarDadosTeste(DomusControl dc) {
-        Utilizador u1 = dc.criarUtilizador("uti1");
-        Casa c1 = dc.criarCasa("Vivenda Flores");
+        Utilizador u1 = dc.criarUtilizador("Ana");
+        Utilizador u2 = dc.criarUtilizador("Bruno");
+        Utilizador u3 = dc.criarUtilizador("Carla");
+
+        Casa c1 = dc.criarCasa("Casa Jardim");
+        Casa c2 = dc.criarCasa("Casa Centro");
+        Casa c3 = dc.criarCasa("Casa Praia");
+
         dc.adicionarCasaAAdministrador(u1, c1);
+        dc.adicionarCasaAUtilizador(u2, c1);
+        dc.adicionarCasaAUtilizador(u3, c1);
+
+        dc.adicionarCasaAAdministrador(u2, c2);
+        dc.adicionarCasaAUtilizador(u1, c2);
+        dc.adicionarCasaAUtilizador(u3, c2);
+
+        dc.adicionarCasaAAdministrador(u3, c3);
+        dc.adicionarCasaAUtilizador(u1, c3);
+        dc.adicionarCasaAUtilizador(u2, c3);
+
         dc.criarDivisao(c1, "Sala");
+        dc.criarDivisao(c1, "Cozinha");
+        dc.criarDivisao(c1, "Quarto");
+
+        Iterator<Divisao> divisoesC1 = c1.getDivisoes().values().iterator();
+        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 10.0, 80, "Branco"));
+        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new Tomada(dc.aumentarIdDispositivo(), "Xiaomi", "Smart Plug", 5.0));
+        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new ColunaSom(dc.aumentarIdDispositivo(), "Sony", "SRS-XB13", 12.0, 40));
+
+        dc.criarDivisao(c2, "Sala");
+        dc.criarDivisao(c2, "Escritório");
+        dc.criarDivisao(c2, "Garagem");
+
+        Iterator<Divisao> divisoesC2 = c2.getDivisoes().values().iterator();
+        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 9.0, 70, "Amarelo"));
+        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new Curtina(dc.aumentarIdDispositivo(), "Somfy", "Curtina Pro", 20.0, 50));
+        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new PortaoGaragem(dc.aumentarIdDispositivo(), "Nice", "Robus", 45.0, 0));
+
+        dc.criarDivisao(c3, "Sala");
+        dc.criarDivisao(c3, "Suite");
+        dc.criarDivisao(c3, "Varanda");
+
+        Iterator<Divisao> divisoesC3 = c3.getDivisoes().values().iterator();
+        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new ColunaSom(dc.aumentarIdDispositivo(), "JBL", "Flip", 15.0, 55));
+        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new Tomada(dc.aumentarIdDispositivo(), "TP-Link", "Tapo", 6.0));
+        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new Lampada(dc.aumentarIdDispositivo(), "Osram", "Smart+", 11.0, 90, "Branco Frio"));
     }
 
     private static void gerarCenarioReal(DomusControl dc) {
