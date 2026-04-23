@@ -32,3 +32,13 @@ pq no terminal temos isto(tive a testar o codigo) : [Sala] (PortaoGaragem) Genie
 e acho estranho termos "DESLIGADO"
 
 meti tmb as uma feature de ligar todos os dispositivos da casa, era so para testar uma cena ent por enquanto deixem estar assim com essa feature
+
+
+encontrei um bug: 
+
+O que acontece:
+
+Em src/view/Menu.java, o ecrã mostra só as casas do utilizador (parece correto).
+Mas depois, em src/view/Menu.java, o programa procura a casa pelo ID global.
+A validação em src/view/Menu.java só verifica se a casa existe, não se o utilizador tem acesso.
+Resultado: se o utilizador adivinhar um ID válido, consegue consultar essa casa.

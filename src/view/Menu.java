@@ -46,7 +46,9 @@ public class Menu {
                 Casa casa = dc.encontrarCasaPorId(id2);
                 if (casa != null && u.podeUsarCasa(casa)) {
                     menuInternoCasa(casa, u, dc);
-            }
+                } else {
+                    ConsoleUI.mostrarErro("Casa não encontrada ou sem acesso.");
+                }  
             }
 
             // Lógica de remoção
@@ -301,6 +303,12 @@ public class Menu {
     }
 
     public static void menuAutomacao(Utilizador u, DomusControl dc) {
+        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
+            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
+            return;
+        }
+
+
         StringBuilder info = new StringBuilder("MODO ECO\n\nCasas disponíveis para automação:\n");
         for (Casa c : u.getCasasUtilizador().values()) {
             info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
@@ -319,6 +327,12 @@ public class Menu {
     }
 
     public static void menuLigarDispositivo(Utilizador u, DomusControl dc) {
+        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
+            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
+            return;
+        }
+
+
         StringBuilder info = new StringBuilder("LIGAR TUDO\n\nCasas disponíveis:\n");
         for (Casa c : u.getCasasUtilizador().values()) {
             info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
@@ -335,6 +349,12 @@ public class Menu {
     }
 
     public static void menuEstatisticas(Utilizador u, DomusControl dc) {
+
+        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
+            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
+            return;
+        }
+        
         while (true) {
             StringBuilder sb = new StringBuilder("RESUMO DE ESTATÍSTICAS\n\n");
 
@@ -381,7 +401,7 @@ public class Menu {
                 for (Casa c : dc.getCasas()) {
                     for (Divisao d : c.getDivisoes().values()) {
                         for (Dispositivo disp : d.getDispositivos().values()) {
-                            disp.adicionarTempoUso(1.0);
+                            disp.adicionarTempoUso(1.0);// este metodo so adiciona tempo se o dispositivo estiver ligado, esta definido na classe Dispositivo
                         }
                     }
                 }
@@ -394,7 +414,7 @@ public class Menu {
                 System.out.print("ID da Casa para consultar: ");
                 int idC = InputValidator.lerInteiro();
                 Casa casa = dc.encontrarCasaPorId(idC);
-                if (casa != null) {
+                if (casa != null && u.podeUsarCasa(casa)) {
                     StringBuilder lista = new StringBuilder("DISPOSITIVOS EM " + casa.getAlcunha() + ":\n\n");
                     for (Divisao div : casa.getDivisoes().values()) {
                         lista.append("[").append(div.getNome()).append("]\n");
@@ -404,7 +424,7 @@ public class Menu {
                     }
                     ConsoleUI.desenharDashboard("CONSULTA POR CASA", lista.toString(), "0. Voltar");
                     InputValidator.lerInteiro();
-                }
+                } 
             }
         }
     }

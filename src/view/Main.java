@@ -65,6 +65,7 @@ public class Main {
         // 2. MENU PRINCIPAL
         boolean sair = false;
         while (!sair) {
+            boolean temCasas = !utilizador_atual.getCasasUtilizador().isEmpty() || !utilizador_atual.getCasasAdministradas().isEmpty();
             String info = "Sessão: " + utilizador_atual.getNome() + "\nO que deseja fazer hoje?";
             String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações (Modo ECO)\n4. Ligar Tudo\n5. Estatisticas\n6. Mudar Utilizador\n0. Sair e Gravar";
 
@@ -82,7 +83,13 @@ public class Main {
                 }
                 case 3 -> Menu.menuAutomacao(utilizador_atual, domusControl);
                 case 4 -> Menu.menuLigarDispositivo(utilizador_atual, domusControl);
-                case 5 -> Menu.menuEstatisticas(utilizador_atual, domusControl);
+                case 5 -> {
+                    if (temCasas) {
+                        ConsoleUI.mostrarErro("Sem permissões: não tem casas associadas.");
+                    } else {
+                        Menu.menuEstatisticas(utilizador_atual, domusControl);
+                    }
+                }
                 case 6 -> {
                     // Mudar de utilizador: volta ao ecrã de login
                     utilizador_atual = null;
