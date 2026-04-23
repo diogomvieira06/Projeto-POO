@@ -25,7 +25,7 @@ ou tmb
 
 ----------------------------------------------------------------------------------------------------
 Domingo(19/4)
-->faz sentido termos o portao de garagem com {LIGADO, DESLIGADO} ??
+->faz sentido termos o portao de garagem com {LIGADO, DESLIGADO}, A MESMA CENA COM A CURTINA ??
 pq no terminal temos isto(tive a testar o codigo) : [Sala] (PortaoGaragem) Genie Garage Door Opener (ID: 23) -> ESTADO: DESLIGADO | Nível de Abertura: 0%
 e acho estranho termos "DESLIGADO"
 
