@@ -6,15 +6,15 @@ novamente.
 
 Checklist:
 
-[ ] Implementar gravação em ficheiro binário
+[ X ] Implementar gravação em ficheiro binário
 
-[ ] Implementar leitura do ficheiro
+[ X ] Implementar leitura do ficheiro
 
-[ ] Garantir que todos os objetos são serializáveis
+[ X ] Garantir que todos os objetos são serializáveis
 
-[ ] Testar:
-    [ ] guardar estado
-    [ ] fechar programa
-    [ ] carregar estado
+[ X ] Testar:
+    [ X ] guardar estado
+    [ X ] fechar programa
+    [ X ] carregar estado
 
-[ ] Garantir que os IDs continuam corretos após carregar
+[ X ] Garantir que os IDs continuam corretos após carregar

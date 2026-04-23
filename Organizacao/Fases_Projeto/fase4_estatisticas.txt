@@ -6,16 +6,16 @@ existentes no sistema.
 
 Checklist:
 
-[ ] Implementar cálculo da casa que mais consome
+[ X ] Implementar cálculo da casa que mais consome
 
-[ ] Implementar cálculo dos 3 dispositivos mais usados
-    [ ] por tempo
-    [ ] por número de ativações
+[ X ] Implementar cálculo dos 3 dispositivos mais usados
+    [ X ] por tempo
+    [ X ] por número de ativações
 
-[ ] Implementar cálculo das 3 divisões com mais dispositivos
+[ X ] Implementar cálculo das 3 divisões com mais dispositivos
 
-[ ] Criar métodos de consulta adicionais
-    [ ] listar dispositivos por casa
-    [ ] listar dispositivos por divisão
+[ X ] Criar métodos de consulta adicionais
+    [ X ] listar dispositivos por casa
+    [ X ] listar dispositivos por divisão
 
-[ ] Testar resultados com dados reais
+[ X ] Testar resultados com dados reais

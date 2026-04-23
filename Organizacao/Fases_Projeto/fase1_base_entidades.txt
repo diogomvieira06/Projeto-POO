@@ -7,7 +7,7 @@ Utilizador. O objetivo é conseguir criar objetos e associá-los corretamente.
 
 Checklist:
 
-[X] Criar enum Estado (LIGADO, DESLIGADO)
+[ ] Criar enum Estado (LIGADO, DESLIGADO)
 
 [X] Criar classe abstrata Dispositivo
     [ ] id automático (static incremental)
@@ -43,4 +43,4 @@ Checklist:
     [ ] tipo (ADMIN/NORMAL)
     [ ] getters e setters
 
-[X] Testar criação manual de objetos no Main
+[ ] Testar criação manual de objetos no Main
