@@ -93,8 +93,27 @@ public class Automacao implements Serializable{
         this.ativa = false;
     }
 
-    //executar
-    //deveExcutar
+    // Verifica se a automação deve ser executada com base na condição e no estado de ativação
+    public boolean deveExecutar(DomusControl dc){
+        return this.ativa && this.condicao != null && this.condicao.verificar(dc);
+    }
+
+    // Retorna true se a automação foi executada, false caso contrário
+    public boolean executar(DomusControl dc){
+        if(!deveExecutar(dc) || this.acao == null) return false;
+        this.acao.executar(dc);
+        this.ultimaExecucao = System.currentTimeMillis();
+        return true;
+    }
+
+    public long getUltimaExecucao() {
+        return this.ultimaExecucao;
+    }
+
+    @Override
+    public Automacao clone() {
+        return new Automacao(this);
+    }
 
     @Override
     public String toString(){

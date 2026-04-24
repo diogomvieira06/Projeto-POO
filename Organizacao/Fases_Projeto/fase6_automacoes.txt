@@ -5,11 +5,11 @@ Nesta fase devem ser implementadas automações baseadas em condições.
 
 Checklist:
 
-[ ] Criar classe Automacao
+[X] Criar classe Automacao
 
-[ ] Criar interface Condicao
+[X] Criar interface Condicao
 
-[ ] Criar classe Acao
+[X] Criar classe Acao
 
 [ ] Implementar pelo menos 2 automações
 
