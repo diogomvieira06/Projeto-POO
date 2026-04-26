@@ -46,6 +46,11 @@ public class DomusControl implements Serializable {
         System.out.println("Casa criada com sucesso, ID atribuído: " + id);
         return casa;
     }
+    public void removerUtilizador(Utilizador u) {
+        if (u == null) return;
+        // Remove o utilizador do registo central do sistema
+        utilizadores.remove(u.getId()); //
+    }
 
     public Casa encontrarCasaPorId(int id) {
         return casas.get(id);

@@ -46,9 +46,7 @@ public class Menu {
                 Casa casa = dc.encontrarCasaPorId(id2);
                 if (casa != null && u.podeUsarCasa(casa)) {
                     menuInternoCasa(casa, u, dc);
-                } else {
-                    ConsoleUI.mostrarErro("Casa não encontrada ou sem acesso.");
-                }  
+            }
             }
 
             // Lógica de remoção
@@ -190,7 +188,10 @@ public class Menu {
             switch (opt) {
                 case 1 -> {
                     System.out.print("Nome: ");
-                    dc.criarUtilizador(InputValidator.lerLinha());
+                    String nome = InputValidator.lerLinha();
+                    if (nome.equals("0")) break;
+                    Utilizador novo = dc.criarUtilizador(nome);
+                    dc.adicionarCasaAUtilizador(novo, casa);
                 }
                 case 2 -> {
                     while (true) {
@@ -224,11 +225,26 @@ public class Menu {
                             if (rem.getId() == u_sessao.getId()) return;
                         }
                     }
+                    // Se utilizador nao tiver casas removemos o utilizador
+                    if (rem != null && rem.getCasasUtilizador().isEmpty() && rem.getCasasAdministradas().isEmpty()) {
+                        dc.removerUtilizador(rem);
+                    }
                 }
                 case 4 -> {
                     System.out.print("ID para tornar Administrador: ");
                     Utilizador adm = dc.encontrarUtilizadorPorId(InputValidator.lerInteiro());
-                    if (adm != null) dc.adicionarCasaAAdministrador(adm, casa);
+                    if (adm != null && !adm.podeUsarCasa(casa)) {
+                        dc.adicionarCasaAUtilizador(adm, casa); // Se não tinha acesso, damos acesso normal primeiro
+                        dc.adicionarCasaAAdministrador(adm, casa); // Depois concedemos privilégios de admin
+                    }
+                    else if (adm != null && adm.podeUsarCasa(casa) && !adm.serAdmin(casa)) {
+                        dc.adicionarCasaAAdministrador(adm, casa);
+                    } else if (adm != null && adm.serAdmin(casa)) {
+                        ConsoleUI.mostrarErro("Utilizador já é administrador desta casa.");
+                    }
+                     else {
+                        ConsoleUI.mostrarErro("Utilizador não encontrado.");
+                    }   
                 }
                 case 5 -> {
                     System.out.print("ID para retirar privilégios de Admin: ");
@@ -303,21 +319,37 @@ public class Menu {
     }
 
     public static void menuAutomacao(Utilizador u, DomusControl dc) {
-        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
-            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
-            return;
-        }
-
-
-        StringBuilder info = new StringBuilder("MODO ECO\n\nCasas disponíveis para automação:\n");
+        StringBuilder info = new StringBuilder("Automações\n\nCasas disponíveis para automação:\n");
         for (Casa c : u.getCasasUtilizador().values()) {
             info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
         }
 
-        String opts = "Introduza o ID da casa para desligar tudo\n0. Cancelar";
+        String opts = "1. Estado Noite\n2. Estado Chuva\n0. Cancelar\n";
         ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
 
         int id = InputValidator.lerInteiro();
+        switch (id) {
+            case 0 -> {return;}
+            case 1 -> {
+                System.out.print("ID da casa para mudar modo Noite: ");
+                int id3 = InputValidator.lerInteiro();
+                if (id3 == 0) return;
+                //mostrar erro a dizer que falta implementar, e voltar a pedir o ID da casa para ativar a automação
+                ConsoleUI.mostrarErro("FALTA IMPLEMENTAR MODO NOITE");
+                }
+            case 2 -> {
+                System.out.print("ID da casa para mudar modo Chuva: ");
+                int id4 = InputValidator.lerInteiro();
+                if (id4 == 0) return;
+                //mostrar erro a dizer que falta implementar, e voltar a pedir o ID da casa para ativar a automação
+                ConsoleUI.mostrarErro("FALTA IMPLEMENTAR MODO CHUVA");
+            }
+            default -> {
+                ConsoleUI.mostrarErro("Opção inválida.");
+                System.out.print("Introduza um ID válido ou 0 para cancelar: ");
+                id = InputValidator.lerInteiro();
+            }
+        }
         Casa casa = dc.encontrarCasaPorId(id);
         if (casa != null && u.podeUsarCasa(casa)) {
             for (Divisao d : casa.getDivisoes().values()) {
@@ -327,12 +359,6 @@ public class Menu {
     }
 
     public static void menuLigarDispositivo(Utilizador u, DomusControl dc) {
-        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
-            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
-            return;
-        }
-
-
         StringBuilder info = new StringBuilder("LIGAR TUDO\n\nCasas disponíveis:\n");
         for (Casa c : u.getCasasUtilizador().values()) {
             info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
@@ -348,13 +374,23 @@ public class Menu {
         }
     }
 
-    public static void menuEstatisticas(Utilizador u, DomusControl dc) {
-
-        if(u == null || (u.getCasasUtilizador().isEmpty() && u.getCasasAdministradas().isEmpty())) {
-            ConsoleUI.mostrarErro("Sem acesso:\n Este menu é apenas para utilizadores com casas associadas.");
-            return;
+    public static void menuDesligarDispositivo(Utilizador u, DomusControl dc) {
+        StringBuilder info = new StringBuilder("DESLIGAR TUDO\n\nCasas disponíveis:\n");
+        for (Casa c : u.getCasasUtilizador().values()) {
+            info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
         }
-        
+        ConsoleUI.desenharDashboard("DESLIGAR TUDO", info.toString(), "ID da casa para desligar tudo\n0. Cancelar");
+
+        int id = InputValidator.lerInteiro();
+        Casa casa = dc.encontrarCasaPorId(id);
+        if (casa != null && u.podeUsarCasa(casa)) {
+            for (Divisao d : casa.getDivisoes().values()) {
+                for (Dispositivo disp : d.getDispositivos().values()) disp.desligarDispositivo();
+            }
+        }
+    }
+
+    public static void menuEstatisticas(Utilizador u, DomusControl dc) {
         while (true) {
             StringBuilder sb = new StringBuilder("RESUMO DE ESTATÍSTICAS\n\n");
 
@@ -401,7 +437,7 @@ public class Menu {
                 for (Casa c : dc.getCasas()) {
                     for (Divisao d : c.getDivisoes().values()) {
                         for (Dispositivo disp : d.getDispositivos().values()) {
-                            disp.adicionarTempoUso(1.0);// este metodo so adiciona tempo se o dispositivo estiver ligado, esta definido na classe Dispositivo
+                            disp.adicionarTempoUso(1.0);
                         }
                     }
                 }
@@ -414,7 +450,7 @@ public class Menu {
                 System.out.print("ID da Casa para consultar: ");
                 int idC = InputValidator.lerInteiro();
                 Casa casa = dc.encontrarCasaPorId(idC);
-                if (casa != null && u.podeUsarCasa(casa)) {
+                if (casa != null) {
                     StringBuilder lista = new StringBuilder("DISPOSITIVOS EM " + casa.getAlcunha() + ":\n\n");
                     for (Divisao div : casa.getDivisoes().values()) {
                         lista.append("[").append(div.getNome()).append("]\n");
@@ -424,7 +460,7 @@ public class Menu {
                     }
                     ConsoleUI.desenharDashboard("CONSULTA POR CASA", lista.toString(), "0. Voltar");
                     InputValidator.lerInteiro();
-                } 
+                }
             }
         }
     }

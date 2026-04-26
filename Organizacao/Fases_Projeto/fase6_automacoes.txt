@@ -11,10 +11,10 @@ Checklist:
 
 [X] Criar classe Acao
 
-[ ] Implementar pelo menos 2 automações
+[ ] Implementar pelo menos 2 automações 
 
 Exemplos:
-    [ ] ligar luz quando luminosidade baixa
-    [ ] fechar cortinas quando chove
+    [ ] ligar luz quando luminosidade baixa (Chamei de modo Noite)
+    [ ] fechar cortinas quando chove (Chamei de modo Chuva)
 
 [ ] Testar ativação automática

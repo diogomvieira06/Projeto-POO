@@ -42,11 +42,11 @@ public class ConsoleUI {
         int linhasExtras = 8;
         int disponivel = Math.max(15, alturaTotal - linhasExtras);
 
-        // As opções raramente precisam de mais de 5 ou 6 linhas
+        // Mostra todas as opções fornecidas, sem limite de linhas
         String[] numOpts = (opcoes == null ? "" : opcoes).split("\n");
-        int alturaOpts = Math.max(3, Math.min(numOpts.length, 6));
+        int alturaOpts = Math.max(3, numOpts.length);
 
-        // A área de info fica com todo o resto do terminal
+        // A área de info fica com o resto do terminal
         int alturaInfo = disponivel - alturaOpts;
 
         System.out.print(CLEAR_ALL);
