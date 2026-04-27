@@ -2,6 +2,7 @@ package src.automacao;
 import java.io.Serializable;
 
 import src.controller.*;//DomusControl
+import src.model.*;
 
 public abstract class Acao implements Serializable{
     private static final long serialVersionUID = 1L;
@@ -41,4 +42,24 @@ public abstract class Acao implements Serializable{
                 '}';
     }
 
+
+    public static Acao fecharCortinas(int idCasa){
+        return new Acao("Fechar Cortinas"){
+            public void executar(DomusControl dc){
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if(casa == null) return;
+                for(Divisao divisao : casa.getDivisoes().values()){
+                    for(Dispositivo dispositivo : divisao.getDispositivos().values()){
+                        if(dispositivo instanceof Curtina c){
+                            c.setNivelAbertura(0);//fechou
+                        }
+                    }
+                }
+            }
+            public Acao clone(){
+                return fecharCortinas(idCasa);
+            }
+        };
+
+    }
 }

@@ -1,5 +1,6 @@
 package src.controller;
 import src.model.*;
+import src.automacao.*;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,11 +13,13 @@ public class DomusControl implements Serializable {
 
     private HashMap<Integer, Utilizador> utilizadores = new HashMap<>();
     private HashMap<Integer, Casa> casas = new HashMap<>();
+    private HashMap<Integer, Automacao> automacoes = new HashMap<>();
 
     private int proximoIdUtilizador = 1;
     private int proximoIdCasa = 1;
     private int proximoIdDivisao = 1;
     private int proximoIdDispositivo = 1;
+    private int proximoIdAutomacao = 1;
 
     public int aumentarIdDispositivo() {
         return proximoIdDispositivo++;
@@ -307,4 +310,26 @@ public class DomusControl implements Serializable {
             }
         }
     }
+
+
+    //AUTOMACAO
+    public void criarAutomacaoFecharCortinasChuva(int idCasa, int idDivisao, int idSensor) {
+    int id = proximoIdAutomacao++;
+    Automacao auto = new Automacao(
+        id,
+        "Fechar Cortinas Quando Chover",
+        true,
+        Condicao.detetarChuva(idCasa, idDivisao, idSensor),
+        Acao.fecharCortinas(idCasa)
+    );
+    automacoes.put(id, auto);
+}
+
+    public void executarAutomacoes() {
+        for (Automacao a : automacoes.values()) {
+            a.executar(this);
+        }
+    }
+
+
 }
