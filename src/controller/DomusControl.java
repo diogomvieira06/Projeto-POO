@@ -189,6 +189,12 @@ public class DomusControl implements Serializable {
         }
     }
 
+    // Método para garantir que o HashMap de automações é inicializado mesmo que a classe seja carregada de um estado serializado antigo
+    private void readObject(java.io.ObjectInputStream ois) throws java.io.IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        if (automacoes == null) automacoes = new HashMap<>();
+    }
+
     public void removerDivisao(Casa casa, Divisao divisao) {
         if (casa != null && divisao != null) {
             casa.removerDivisao(divisao);
@@ -329,6 +335,14 @@ public class DomusControl implements Serializable {
         for (Automacao a : automacoes.values()) {
             a.executar(this);
         }
+    }
+
+    public Collection<Automacao> getAutomacoes(){
+        return automacoes.values();
+    }
+
+    public Automacao encontrarAutomacaoPorId(int id) {
+        return automacoes.get(id).clone();//ns se vale a pena meter clone, mas tmb n esta mal(VER DPS)
     }
 
 

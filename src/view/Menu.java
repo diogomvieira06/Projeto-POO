@@ -3,6 +3,7 @@ package src.view;
 import src.controller.DomusControl;
 import src.model.*;
 import java.util.*;
+import src.automacao.*;
 
 public class Menu {
 
@@ -313,47 +314,58 @@ public class Menu {
             case 3 -> new Curtina(id, ma, mo, c, 0);
             case 4 -> new ColunaSom(id, ma, mo, c, 50);
             case 5 -> new PortaoGaragem(id, ma, mo, c, 0);
+            case 6 -> new SensorAgua(id, ma, mo, c, 0, false);//VER MELHOR PARA VER SE VALE A PENA TER A OPÇAO DE ADICIONAR SENSOR DE AGUA AQUI, OU SE DEVE FICAR APENAS PARA AUTOMACOES
             default -> null;
         };
         if (d != null) div.adicionarDispositivo(d);
     }
 
     public static void menuAutomacao(Utilizador u, DomusControl dc) {
-        StringBuilder info = new StringBuilder("Automações\n\nCasas disponíveis para automação:\n");
-        for (Casa c : u.getCasasUtilizador().values()) {
-            info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
-        }
+        while (true) {
+            // Corpo: lista casas e automações existentes
+            StringBuilder info = new StringBuilder("CASAS DISPONÍVEIS:\n");
+            for (Casa c : u.getCasasUtilizador().values()) {
+                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+            }
+            info.append("\nAUTOMAÇÕES CRIADAS:\n");
+            if (dc.getAutomacoes().isEmpty()) {
+                info.append(" > (Nenhuma)\n");
+            }
+            for (Automacao a : dc.getAutomacoes()) {
+                info.append(String.format(" > [%d] %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
+            }
 
-        String opts = "1. Estado Noite\n2. Estado Chuva\n0. Cancelar\n";
-        ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
+            String opts = "1. Criar Automação (Fechar Cortinas/Chuva)\n" +
+                      "2. Simular Estado de Chuva num Sensor\n" +
+                      "3. Executar Todas as Automações\n" +
+                      "0. Voltar";
 
-        int id = InputValidator.lerInteiro();
-        switch (id) {
-            case 0 -> {return;}
-            case 1 -> {
-                System.out.print("ID da casa para mudar modo Noite: ");
-                int id3 = InputValidator.lerInteiro();
-                if (id3 == 0) return;
-                //mostrar erro a dizer que falta implementar, e voltar a pedir o ID da casa para ativar a automação
-                ConsoleUI.mostrarErro("FALTA IMPLEMENTAR MODO NOITE");
+            ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
+            System.out.print("\nEscolha opção: ");
+            int opt = InputValidator.lerInteiro();
+            if (opt == 0) break;
+
+            switch (opt) {
+                case 1 -> {
+                    System.out.print("ID da Casa: ");    int idC = InputValidator.lerInteiro();
+                    System.out.print("ID da Divisão: "); int idD = InputValidator.lerInteiro();
+                    System.out.print("ID do Sensor: ");  int idS = InputValidator.lerInteiro();
+                    dc.criarAutomacaoFecharCortinasChuva(idC, idD, idS);
                 }
-            case 2 -> {
-                System.out.print("ID da casa para mudar modo Chuva: ");
-                int id4 = InputValidator.lerInteiro();
-                if (id4 == 0) return;
-                //mostrar erro a dizer que falta implementar, e voltar a pedir o ID da casa para ativar a automação
-                ConsoleUI.mostrarErro("FALTA IMPLEMENTAR MODO CHUVA");
-            }
-            default -> {
-                ConsoleUI.mostrarErro("Opção inválida.");
-                System.out.print("Introduza um ID válido ou 0 para cancelar: ");
-                id = InputValidator.lerInteiro();
-            }
-        }
-        Casa casa = dc.encontrarCasaPorId(id);
-        if (casa != null && u.podeUsarCasa(casa)) {
-            for (Divisao d : casa.getDivisoes().values()) {
-                for (Dispositivo disp : d.getDispositivos().values()) disp.desligarDispositivo();
+                case 2 -> {
+                    System.out.print("ID da Casa: ");    int idC = InputValidator.lerInteiro();
+                    System.out.print("ID da Divisão: "); int idD = InputValidator.lerInteiro();
+                    System.out.print("ID do Sensor: ");  int idS = InputValidator.lerInteiro();
+                    Casa casa = dc.encontrarCasaPorId(idC);
+                    if (casa != null) {
+                        Divisao div = dc.encontrarDivisaoPorId(casa, idD);
+                        Dispositivo disp = dc.encontrarDispositivoPorId(div, idS);
+                        if (disp instanceof SensorAgua sensor) {
+                            sensor.setEmChuva(!sensor.isEmChuva());
+                        }
+                    }
+                }
+                case 3 -> dc.executarAutomacoes();
             }
         }
     }
