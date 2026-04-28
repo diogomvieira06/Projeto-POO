@@ -319,13 +319,13 @@ public class DomusControl implements Serializable {
 
 
     //AUTOMACAO
-    public void criarAutomacaoFecharCortinasChuva(int idCasa, int idDivisao, int idSensor) {
+    public void criarAutomacaoFecharCortinasChuva(int idCasa) {
     int id = proximoIdAutomacao++;
     Automacao auto = new Automacao(
         id,
         "Fechar Cortinas Quando Chover",
         true,
-        Condicao.detetarChuva(idCasa, idDivisao, idSensor),
+        Condicao.detetarChuvaCasa(idCasa),
         Acao.fecharCortinas(idCasa)
     );
     automacoes.put(id, auto);
