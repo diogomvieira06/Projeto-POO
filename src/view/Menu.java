@@ -301,7 +301,7 @@ public class Menu {
     }
 
     public static void adicionarDispositivoSubmenu(Divisao div, DomusControl dc) {
-        System.out.println("1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão");
+        System.out.println("1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão | 6.Sensor de Água");
         int t = InputValidator.lerInteiro();
         System.out.print("Marca: "); String ma = InputValidator.lerLinha();
         System.out.print("Modelo: "); String mo = InputValidator.lerLinha();
@@ -335,7 +335,9 @@ public class Menu {
                 info.append(String.format(" > [%d] %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
             }
 
-            String opts = "1. Escolha uma casa\n" +
+            String opts = "1. Criar Automação (Fechar cortinas)\n" +
+                          "2. Simular/ Parar chuva numa casa\n" + 
+                          "3. Executar todas as automações\n" +
                           "0. Voltar para trás\n";
 
             ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
@@ -356,43 +358,26 @@ public class Menu {
                     ConsoleUI.mostrarErro("Casa não encontrada.");
             }
 
-            /*String opts = "1. Criar Automação (Fechar Cortinas/Chuva)\n" +
-                      "2. Simular Estado de Chuva num Sensor\n" +
-                      "3. Executar Todas as Automações\n" +
-                      "0. Voltar";
-
-            ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
-            System.out.print("\nEscolha opção: ");
-            int opt = InputValidator.lerInteiro();
-            if (opt == 0) break;
-
-            switch (opt) {
-                case 1 -> {
-                    StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
-                    for (Casa c : u.getCasasUtilizador().values())
-                        infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
-                    ConsoleUI.desenharDashboard("CRIAR AUTOMAÇÃO", infoCasa.toString(), "ID da Casa\n0. Cancelar");
-                    System.out.print("ID da Casa: ");
-                    int idCasa = InputValidator.lerInteiro();
-                    if (idCasa == 0) continue;
-                    if (dc.encontrarCasaPorId(idCasa) != null)
-                        dc.criarAutomacaoFecharCortinasChuva(idCasa);
-                    else
-                        ConsoleUI.mostrarErro("Casa não encontrada.");
+            if (opt == 2) {
+                // Simular/parar chuva — basta alternar o estado de chuva dos sensores de água da casa selecionada
+                StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
+                for (Casa c : u.getCasasUtilizador().values())
+                    infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                ConsoleUI.desenharDashboard("SIMULAR CHUVA", infoCasa.toString(), "ID da Casa\n0. Cancelar");
+                System.out.print("ID da Casa: ");
+                int idCasa = InputValidator.lerInteiro();
+                if (idCasa == 0) continue;
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa != null) {
+                    for (Divisao d : casa.getDivisoes().values())
+                        for (Dispositivo disp : d.getDispositivos().values())
+                            if (disp instanceof SensorAgua sensor)
+                                sensor.setEmChuva(!sensor.isEmChuva());
                 }
-                case 2 -> {
-                    System.out.print("ID da Casa: ");
-                    int idCasa = InputValidator.lerInteiro();
-                    Casa casa = dc.encontrarCasaPorId(idCasa);
-                    if (casa != null) {
-                        for (Divisao d : casa.getDivisoes().values())
-                            for (Dispositivo disp : d.getDispositivos().values())
-                                if (disp instanceof SensorAgua sensor)
-                                    sensor.setEmChuva(!sensor.isEmChuva());
-                    }
-                }
-                case 3 -> dc.executarAutomacoes();
-            }*/
+            } else if (opt == 3) {
+                dc.executarAutomacoes();
+            }
+
         }
     }
 

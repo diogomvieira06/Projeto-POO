@@ -29,7 +29,7 @@ public class ConsoleUI {
         } catch (Exception e) {
             // Fallback se o comando falhar
         }
-        return new int[]{85, 24};
+        return new int[]{120, 24};
     }
 
     public static void desenharDashboard(String titulo, String info, String opcoes) {
