@@ -42,3 +42,6 @@ Em src/view/Menu.java, o ecrã mostra só as casas do utilizador (parece correto
 Mas depois, em src/view/Menu.java, o programa procura a casa pelo ID global.
 A validação em src/view/Menu.java só verifica se a casa existe, não se o utilizador tem acesso.
 Resultado: se o utilizador adivinhar um ID válido, consegue consultar essa casa.
+
+
+ver se consigo alterar o nivel de abertura da curtina, em vez de estar so a opçao de ligar/Desligar

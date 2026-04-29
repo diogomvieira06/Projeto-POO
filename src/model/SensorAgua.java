@@ -71,4 +71,9 @@ public class SensorAgua extends Dispositivo {
     public SensorAgua clone(){
         return new SensorAgua(this);
     }
+
+    @Override
+    public String getDetalhesEspecificos(){
+        return " | Chuva: " + (emChuva ? "Sim": "Não");
+    }
 }

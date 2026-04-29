@@ -69,6 +69,22 @@ public class DomusControl implements Serializable {
         return divisao.obterDispositivoPorId(id);
     }
 
+    /* 
+    //getter para obter sensor de agua
+    //ver melhor se precisamos ou nao
+    public SensorAgua encontrarSensorAguaPorId(Casa casa, int id) {
+        if (casa == null) return null;
+        for (Divisao divisao : casa.getDivisoes().values()) {
+            for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                if (dispositivo instanceof SensorAgua sensor && sensor.getId() == id) {
+                    return sensor;
+                }
+            }
+        }
+        return null;
+    }
+    */
+
     public void criarDivisao(Casa casa, String nomeDivisao) {
         if (casa == null) return;
         int idDivisao = proximoIdDivisao++;

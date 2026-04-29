@@ -331,6 +331,22 @@ public class Menu {
             if (dc.getAutomacoes().isEmpty()) {
                 info.append(" > (Nenhuma)\n");
             }
+
+            //meter no menu se existe chuva ou nao
+            info.append("\nESTADO DE CHUVA POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean chuva = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof SensorAgua sensor && sensor.isEmChuva()){
+                            chuva = true;
+                        }
+                    }
+                    info.append(String.format(" > %s: %s\n", c.getAlcunha(), chuva ? "Está a chover" : "Não está a chover"));
+                }
+            }
+            
+
             for (Automacao a : dc.getAutomacoes()) {
                 info.append(String.format(" > [%d] %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
             }
@@ -375,7 +391,13 @@ public class Menu {
                                 sensor.setEmChuva(!sensor.isEmChuva());
                 }
             } else if (opt == 3) {
-                dc.executarAutomacoes();
+                //dc.executarAutomacoes();
+                int executadas = 0;
+
+                for(Automacao a : dc.getAutomacoes()){
+                    if(a.executar(dc)) executadas++;
+                }
+                ConsoleUI.mostrarErro(executadas > 0 ? executadas + " automações executadas com successo." : "Nenhuma automação executada. Verifique se há chuva simulada");
             }
 
         }
