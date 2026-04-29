@@ -15,6 +15,6 @@ Checklist:
 
 Exemplos:
     [ ] ligar luz quando luminosidade baixa (Chamei de modo Noite)
-    [ ] fechar cortinas quando chove (Chamei de modo Chuva)
+    [X] fechar cortinas quando chove (Chamei de modo Chuva)
 
 [ ] Testar ativação automática
