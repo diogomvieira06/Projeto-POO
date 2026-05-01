@@ -49,4 +49,25 @@ public interface Condicao extends Serializable {
         };
     }
     
+
+    //para a automacao modo Noite, verificar se a luminosidade esta baixa na casa
+    static Condicao luminosidadeBaixaCasa(int idCasa){
+        return new Condicao(){
+            public boolean verificar(DomusControl dc){
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+
+                if(casa == null) return false;
+
+                for(Divisao divisao : casa.getDivisoes().values()){
+                    for(Dispositivo dispositivo : divisao.getDispositivos().values()){
+                        if(dispositivo instanceof SensorLuz sensor && sensor.isLuminosidadeBaixa())
+                            return true;
+                    }
+                } return false;
+            }
+            public Condicao clone(){
+                return luminosidadeBaixaCasa(idCasa);
+            }
+        };
+    }
 }

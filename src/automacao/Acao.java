@@ -62,4 +62,23 @@ public abstract class Acao implements Serializable{
         };
 
     }
+
+    //liga as luzes de casa quando a luminosidade esta baixa
+    public static Acao ligarLuzesCasa(int idCasa){
+        return new Acao("Ligar Luzes"){
+            public void executar(DomusControl dc){
+                
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if(casa == null)return;
+                for(Divisao divisao : casa.getDivisoes().values()){
+                    for(Dispositivo dispositivo : divisao.getDispositivos().values()){
+                        if(dispositivo instanceof Lampada l){
+                            l.ligarDispositivo();
+                        }
+                    }
+                }
+            }
+            public Acao clone(){return ligarLuzesCasa(idCasa);}
+        };
+    }
 }

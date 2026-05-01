@@ -69,21 +69,6 @@ public class DomusControl implements Serializable {
         return divisao.obterDispositivoPorId(id);
     }
 
-    /* 
-    //getter para obter sensor de agua
-    //ver melhor se precisamos ou nao
-    public SensorAgua encontrarSensorAguaPorId(Casa casa, int id) {
-        if (casa == null) return null;
-        for (Divisao divisao : casa.getDivisoes().values()) {
-            for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
-                if (dispositivo instanceof SensorAgua sensor && sensor.getId() == id) {
-                    return sensor;
-                }
-            }
-        }
-        return null;
-    }
-    */
 
     public void criarDivisao(Casa casa, String nomeDivisao) {
         if (casa == null) return;
@@ -334,7 +319,7 @@ public class DomusControl implements Serializable {
     }
 
 
-    //AUTOMACAO
+    //AUTOMACAO MODE CHUVA
     public void criarAutomacaoFecharCortinasChuva(int idCasa) {
     int id = proximoIdAutomacao++;
     Automacao auto = new Automacao(
@@ -359,6 +344,20 @@ public class DomusControl implements Serializable {
 
     public Automacao encontrarAutomacaoPorId(int id) {
         return automacoes.get(id).clone();//ns se vale a pena meter clone, mas tmb n esta mal(VER DPS)
+    }
+
+
+    //AUTOMACAO MODE NOITE
+    public void criarAutomacaoModoNoite(int idCasa){
+        int id = proximoIdAutomacao++;
+        Automacao auto = new Automacao(
+                id,
+                "Modo Noite",
+                true,
+                Condicao.luminosidadeBaixaCasa(idCasa),
+                Acao.ligarLuzesCasa(idCasa)
+        );
+        automacoes.put(id, auto);
     }
 
 

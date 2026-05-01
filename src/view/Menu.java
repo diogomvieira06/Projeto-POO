@@ -301,7 +301,7 @@ public class Menu {
     }
 
     public static void adicionarDispositivoSubmenu(Divisao div, DomusControl dc) {
-        System.out.println("1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão | 6.Sensor de Água");
+        System.out.println("1.Lâmpada | 2.Tomada | 3.Cortina | 4.Coluna | 5.Portão | 6.Sensor de Água | 7.Sensor de Luz");
         int t = InputValidator.lerInteiro();
         System.out.print("Marca: "); String ma = InputValidator.lerLinha();
         System.out.print("Modelo: "); String mo = InputValidator.lerLinha();
@@ -315,6 +315,7 @@ public class Menu {
             case 4 -> new ColunaSom(id, ma, mo, c, 50);
             case 5 -> new PortaoGaragem(id, ma, mo, c, 0);
             case 6 -> new SensorAgua(id, ma, mo, c, 0, false);//VER MELHOR PARA VER SE VALE A PENA TER A OPÇAO DE ADICIONAR SENSOR DE AGUA AQUI, OU SE DEVE FICAR APENAS PARA AUTOMACOES
+            case 7 -> new SensorLuz(id, ma, mo, c, 100.0);//ver melhor se o 100 esta bem ou n;
             default -> null;
         };
         if (d != null) div.adicionarDispositivo(d);
@@ -342,8 +343,22 @@ public class Menu {
                             chuva = true;
                         }
                     }
-                    info.append(String.format(" > %s: %s\n", c.getAlcunha(), chuva ? "Está a chover" : "Não está a chover"));
                 }
+                info.append(String.format(" > %s: %s\n", c.getAlcunha(), chuva ? "Está a chover" : "Não está a chover"));
+            }
+
+            //meter no menu se existe luminosidade baixa ou nao
+            info.append("\nLUMINOSIDADE POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean luminosidadeBaixa = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof SensorLuz sensor && sensor.isLuminosidadeBaixa()){
+                            luminosidadeBaixa = true;
+                        }
+                    }
+                }
+                info.append(String.format(" > %s: %s\n", c.getAlcunha(), luminosidadeBaixa ? "Luminosidade baixa" : "Luminosidade normal"));
             }
             
 
@@ -354,6 +369,8 @@ public class Menu {
             String opts = "1. Criar Automação (Fechar cortinas)\n" +
                           "2. Simular/ Parar chuva numa casa\n" + 
                           "3. Executar todas as automações\n" +
+                          "4. Criar Automação (Ligar luzes)\n" +
+                          "5. Simular luminosidade baixa numa casa\n" +
                           "0. Voltar para trás\n";
 
             ConsoleUI.desenharDashboard("AUTOMAÇÕES", info.toString(), opts);
@@ -374,7 +391,7 @@ public class Menu {
                     ConsoleUI.mostrarErro("Casa não encontrada.");
             }
 
-            if (opt == 2) {
+            else if (opt == 2) {
                 // Simular/parar chuva — basta alternar o estado de chuva dos sensores de água da casa selecionada
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
@@ -390,7 +407,7 @@ public class Menu {
                             if (disp instanceof SensorAgua sensor)
                                 sensor.setEmChuva(!sensor.isEmChuva());
                 }
-            } else if (opt == 3) {
+            }  else if (opt == 3) {
                 //dc.executarAutomacoes();
                 int executadas = 0;
 
@@ -399,7 +416,38 @@ public class Menu {
                 }
                 ConsoleUI.mostrarErro(executadas > 0 ? executadas + " automações executadas com successo." : "Nenhuma automação executada. Verifique se há chuva simulada");
             }
+            else if(opt == 4){
+                StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
+                for (Casa c : u.getCasasUtilizador().values())
+                    infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                ConsoleUI.desenharDashboard("CRIAR AUTOMAÇÃO", infoCasa.toString(), "ID da Casa\n0. Cancelar");
+                System.out.print("ID da Casa: ");
 
+                int idCasa = InputValidator.lerInteiro();
+                if (idCasa == 0) continue;
+                if (dc.encontrarCasaPorId(idCasa) != null)
+                    dc.criarAutomacaoModoNoite(idCasa);
+                else
+                    ConsoleUI.mostrarErro("Casa não encontrada.");
+            } 
+            else if (opt == 5) {
+                // Simular luminosidade baixa — basta alternar o estado dos sensores de luz da casa selecionada
+                StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
+                for (Casa c : u.getCasasUtilizador().values())
+                    infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                ConsoleUI.desenharDashboard("SIMULAR LUMINOSIDADE BAIXA", infoCasa.toString(), "ID da Casa\n0. Cancelar");
+                System.out.print("ID da Casa: ");
+                int idCasa = InputValidator.lerInteiro();
+                if (idCasa == 0) continue;
+
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa != null) {
+                    for (Divisao d : casa.getDivisoes().values())
+                        for (Dispositivo disp : d.getDispositivos().values())
+                            if (disp instanceof SensorLuz sensor)
+                                sensor.setNivelLuz(sensor.isLuminosidadeBaixa() ? sensor.getLimiarNoite() + 10 : sensor.getLimiarNoite() - 10);
+                }
+            }
         }
     }
 
