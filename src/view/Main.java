@@ -1,8 +1,10 @@
 package src.view;
 
+import src.automacao.Escalonamento;
 import src.controller.DomusControl;
 import src.model.*;
 import java.util.Iterator;
+import java.time.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -67,7 +69,7 @@ public class Main {
         while (!sair) {
             boolean temCasas = !utilizador_atual.getCasasUtilizador().isEmpty() || !utilizador_atual.getCasasAdministradas().isEmpty();
             String info = "Sessão: " + utilizador_atual.getNome() + "\nO que deseja fazer hoje?";
-            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações\n4. Ligar Tudo Numa Casa\n5. Desligar Tudo Numa Casa\n6. Estatisticas\n7. Mudar Utilizador\n0. Sair e Gravar";
+            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações\n4. Ligar Tudo Numa Casa\n5. Desligar Tudo Numa Casa\n6. Estatisticas\n7. Mudar Utilizador\n8. Escalonamentos\n0. Sair e Gravar";
 
             ConsoleUI.desenharDashboard("MENU PRINCIPAL", info, opts);
             System.out.print("\nOpção: ");
@@ -125,6 +127,7 @@ public class Main {
                         }
                     }
                 }
+                case 8 -> Menu.menuEscalonamentos(utilizador_atual, domusControl);
                 case 0 -> sair = true;
                 default -> { System.out.println("Opção inválida."); InputValidator.lerLinha(); }
             }
@@ -223,4 +226,5 @@ public class Main {
         }
     }
 
+    
 }

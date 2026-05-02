@@ -557,4 +557,91 @@ public class Menu {
             }
         }
     }
+
+    public static void menuEscalonamentos(Utilizador u, DomusControl dc) {
+        while (true) {
+            StringBuilder info = new StringBuilder();
+
+            info.append("TEMPO ATUAL: ")
+                .append(dc.getTempoAtual().toLocalDate())
+                .append(" ")
+                .append(dc.getTempoAtual().toLocalTime())
+                .append("\n\n");
+
+            info.append("CASAS DISPONÍVEIS:\n");
+            for (Casa c : u.getCasasUtilizador().values())
+                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+
+            info.append("\nESCALONAMENTOS CRIADOS:\n");
+            if (dc.getEscalonamentos().isEmpty()) {
+                info.append(" > (Nenhum)\n");
+            } else {
+                for (Escalonamento e : dc.getEscalonamentos()) {
+                    String tipo = e.isIntervalo()
+                        ? e.getHoraInicio() + " - " + e.getHoraFim()
+                        : e.getHoraInicio().toString();
+                    info.append(String.format(" > [%d] %s | %s | %s\n",
+                        e.getId(), e.getNome(), tipo, e.isAtivo() ? "ATIVO" : "INATIVO"));
+                }
+            }
+
+            String opts = "1. Criar: Abrir Cortinas (07:30)\n" +
+                          "2. Criar: Desligar luzes e fechar cortinas (23:00)\n" +
+                          "3. Criar: Ligar luzes (Intervalo 19:00-23:00)\n" +
+                          "4. Criar: Ligar Coluna de Som (07:00-07:45)\n" +
+                          "5. Avançar tempo (minutos)\n" +
+                          "6. Ativar/Desativar Escalonamento\n" +
+                          "0. Voltar";
+
+            ConsoleUI.desenharDashboard("ESCALONAMENTOS", info.toString(), opts);
+            System.out.print("\nEscolha a opção: ");
+            int opcao = InputValidator.lerInteiro();
+
+            if (opcao == 0) break;
+
+            if (opcao >= 1 && opcao <= 4) {
+                StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
+                for (Casa c : u.getCasasUtilizador().values())
+                    infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                ConsoleUI.desenharDashboard("CRIAR ESCALONAMENTO", infoCasa.toString(), "ID da Casa\n0. Cancelar");
+                System.out.print("ID da Casa: ");
+                int idCasa = InputValidator.lerInteiro();
+                if (idCasa == 0) continue;
+                if (dc.encontrarCasaPorId(idCasa) == null) {
+                    ConsoleUI.mostrarErro("Casa não encontrada.");
+                    continue;
+                }
+                switch (opcao) {
+                    case 1 -> dc.criarEscalonamentoAbrirCortinas(idCasa);
+                    case 2 -> dc.criarEscalonamentoModoNoturno(idCasa);
+                    case 3 -> dc.criarEscalonamentoLuzTarde(idCasa);
+                    case 4 -> dc.criarEscalonamentoMusicaManha(idCasa);
+                }
+                System.out.println("Escalonamento criado com sucesso. Prima Enter...");
+                InputValidator.lerLinha();
+
+            } else if (opcao == 5) {
+                System.out.print("Quantos minutos deseja avançar? ");
+                long minutos = InputValidator.lerInteiro();
+                dc.avancaTempo(minutos);
+                System.out.println("Prima Enter para continuar...");
+                InputValidator.lerLinha();
+
+            } else if (opcao == 6) {
+                System.out.print("ID do Escalonamento: ");
+                int idEscalonamento = InputValidator.lerInteiro();
+                boolean encontrado = false;
+                for (Escalonamento e : dc.getEscalonamentos()) {
+                    if (e.getId() == idEscalonamento) {
+                        if (e.isAtivo()) e.desativar(); else e.ativar();
+                        System.out.println("Estado alterado para: " + (e.isAtivo() ? "ATIVO" : "INATIVO"));
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) ConsoleUI.mostrarErro("Escalonamento não encontrado.");
+                InputValidator.lerLinha();
+            }
+        }
+    }
 }
