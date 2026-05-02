@@ -12,6 +12,10 @@ Checklist:
 [ ] Criar lista de ações
 
 [ ] Implementar pelo menos 4 escalonamentos
+->Abrir cortinas 100% as 7:30
+->Desligar luzes e fechar cortinas ás 23:00
+->Luz ligada entre as 19:00 e 23:00
+->coluna de som liga as 7:00 e desliga as 7:45
 
 Exemplos:
     [ ] ligar luz às 08:00
