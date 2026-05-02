@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 import java.io.Serializable;
+import java.time.*;
 
 public class DomusControl implements Serializable {
 
@@ -14,12 +15,16 @@ public class DomusControl implements Serializable {
     private HashMap<Integer, Utilizador> utilizadores = new HashMap<>();
     private HashMap<Integer, Casa> casas = new HashMap<>();
     private HashMap<Integer, Automacao> automacoes = new HashMap<>();
+    private HashMap<Integer, Escalonamento> escalonamentos = new HashMap<>();// Para armazenar os escalonamentos criados
 
     private int proximoIdUtilizador = 1;
     private int proximoIdCasa = 1;
     private int proximoIdDivisao = 1;
     private int proximoIdDispositivo = 1;
     private int proximoIdAutomacao = 1;
+    private int proximoIdEscalonamento = 1; // Para gerar IDs únicos para escalonamentos
+
+    private LocalDateTime tempoAtual = LocalDateTime.now(); // Para simular a passagem de tempo
 
     public int aumentarIdDispositivo() {
         return proximoIdDispositivo++;
@@ -194,6 +199,8 @@ public class DomusControl implements Serializable {
     private void readObject(java.io.ObjectInputStream ois) throws java.io.IOException, ClassNotFoundException {
         ois.defaultReadObject();
         if (automacoes == null) automacoes = new HashMap<>();
+        if(escalonamentos == null) escalonamentos = new HashMap<>();// Garantir que o HashMap de escalonamentos também é inicializado
+        if(tempoAtual == null) tempoAtual = LocalDateTime.now();
     }
 
     public void removerDivisao(Casa casa, Divisao divisao) {
@@ -358,6 +365,104 @@ public class DomusControl implements Serializable {
                 Acao.ligarLuzesCasa(idCasa)
         );
         automacoes.put(id, auto);
+    }
+
+    //======================================================================
+    //ESCALONAMENTOS
+    //======================================================================
+
+    public LocalDateTime getTempoAtual(){
+        return tempoAtual;
+    }
+
+    //metodo que avanca o tempo e verifica escalonamemtos
+    public void avancaTempo(long minutos){
+        tempoAtual = tempoAtual.plusMinutes(minutos);//avanca tempo
+
+        passarTempoGlobal(minutos / 60);//avanca tempo em todos os dispositivos
+        executarEscalonamentos();
+        System.out.println("Tempo avançado em " + minutos + " minutos. Tempo atual: " + tempoAtual);
+    }
+
+    public void executarEscalonamentos(){
+        LocalTime horaAtual = tempoAtual.toLocalTime();
+        LocalDate dataAtual = tempoAtual.toLocalDate();
+
+        for(Escalonamento e : escalonamentos.values()){
+            e.verificarEExecutar(this, horaAtual, dataAtual);//verifica e executa cada escalonamento
+        }
+    }
+
+
+    public Collection<Escalonamento> getEscalonamentos(){return escalonamentos.values();}
+
+    public Escalonamento encontrarEscalonamentoPorId(int id) {
+        Escalonamento e = escalonamentos.get(id);
+        return e != null ? e.clone() : null;
+    }
+
+    //ESCALONAMENTO 1 -> Abrir cortinas 100% às 7:30
+    public void criarEscalonamentoAbrirCortinas(int idCasa){
+        int id = proximoIdEscalonamento++;
+
+        Escalonamento e = new Escalonamento(
+            id,
+            "Abrir Cortinas às 7:30",
+            true,
+            LocalTime.of(7, 30),
+            null,
+            Acao.abrirCortinas(idCasa),
+            null
+        );
+        escalonamentos.put(id, e);//mete na hashmap de escalonamentos do sistema
+    }
+
+    //ESCALONAMENTO 2 -> Desliga luzes e fecha cortinas às 23:00
+    public void criarEscalonamentoModoNoturno(int idCasa){
+        int id = proximoIdEscalonamento++;
+
+        Escalonamento e = new Escalonamento(
+            id,
+            "Modo Noturno às 23:00",
+            true,
+            LocalTime.of(23, 0),
+            null,
+            Acao.fecharCortinas(idCasa),
+            Acao.ligarLuzesCasa(idCasa)
+        );
+        escalonamentos.put(id, e);
+    }
+
+    //ESCALONAMENTO 3 -> Ligar luzes às 19:00 e desligar às 23:00
+    public void criarEscalonamentoLuzTarde(int idCasa){
+        int id = proximoIdEscalonamento++;
+        
+        Escalonamento e = new Escalonamento(
+            id,
+            "Luzes Tarde",
+            true,
+            LocalTime.of(19, 0),
+            LocalTime.of(23, 0),
+            Acao.ligarLuzesCasa(idCasa),
+            Acao.fecharCortinas(idCasa)
+        );
+        escalonamentos.put(id, e);
+    }
+
+    //ESCALONAMENTO 4 -> coluna de som ligas as 7:00 e desliga as 7:45
+    public void criarEscalonamentoMusicaManha(int idCasa){
+        int id = proximoIdEscalonamento++;
+
+        Escalonamento e = new Escalonamento(
+            id,
+            "Música Manhã",
+            true,
+            LocalTime.of(7, 0),
+            LocalTime.of(7, 45),
+            Acao.ligarLuzesCasa(idCasa), //execucao inicial
+            Acao.desligarColunaSomCasa(idCasa)//execucao final
+        );
+        escalonamentos.put(id, e);
     }
 
 

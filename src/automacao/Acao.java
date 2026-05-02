@@ -81,4 +81,93 @@ public abstract class Acao implements Serializable{
             public Acao clone(){return ligarLuzesCasa(idCasa);}
         };
     }
+
+    //ESCALONAMENTOS
+
+    //abrir cortinas da casa a 100%
+    public static Acao abrirCortinas(int idCasa) {
+        return new Acao("Abrir Cortinas") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof Curtina c) {
+                            c.setNivelAbertura(100);
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return abrirCortinas(idCasa); }
+        };
+    }
+
+    //desliga todas as luzes da casa
+    public static Acao desligarLuzesCasa(int idCasa) {
+        return new Acao("Desligar Luzes") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof Lampada l) {
+                            l.desligarDispositivo();//desliga
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return desligarLuzesCasa(idCasa); }
+        };
+    }
+
+    //liga todas as colunas de som da casa
+        public static Acao ligarColunaSomCasa(int idCasa) {
+        return new Acao("Ligar Coluna de Som") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof ColunaSom c) {
+                            c.ligarDispositivo();
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return ligarColunaSomCasa(idCasa); }
+        };
+    }
+
+    //desliga todas as colunas de som da casa
+        public static Acao desligarColunaSomCasa(int idCasa) {
+        return new Acao("Desligar Coluna de Som") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof ColunaSom c) {
+                            c.desligarDispositivo();
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return desligarColunaSomCasa(idCasa); }
+        };
+    }
+
+    //desligar luzes e fechar cortinas da casa
+    public static Acao desligarLuzesEFecharCortinas(int idCasa){
+        return new Acao("Desligar Luzes e Fechar Cortinas"){
+            //desliga as luzes e fecha as cortinas da casa
+            public void executar(DomusControl dc){
+                desligarLuzesCasa(idCasa).executar(dc);
+                fecharCortinas(idCasa).executar(dc);
+            }
+            public Acao clone(){return desligarLuzesEFecharCortinas(idCasa);}
+        };
+    }
 }
