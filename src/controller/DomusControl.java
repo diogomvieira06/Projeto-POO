@@ -371,8 +371,9 @@ public class DomusControl implements Serializable {
     //ESCALONAMENTOS
     //======================================================================
 
+    //retorna com segundos no maximo
     public LocalDateTime getTempoAtual(){
-        return tempoAtual;
+        return tempoAtual.withNano(0);
     }
 
     //metodo que avanca o tempo e verifica escalonamemtos
@@ -427,8 +428,8 @@ public class DomusControl implements Serializable {
             true,
             LocalTime.of(23, 0),
             null,
-            Acao.fecharCortinas(idCasa),
-            Acao.ligarLuzesCasa(idCasa)
+            Acao.desligarLuzesEFecharCortinas(idCasa),
+            null
         );
         escalonamentos.put(id, e);
     }
@@ -444,7 +445,7 @@ public class DomusControl implements Serializable {
             LocalTime.of(19, 0),
             LocalTime.of(23, 0),
             Acao.ligarLuzesCasa(idCasa),
-            Acao.fecharCortinas(idCasa)
+            Acao.desligarLuzesCasa(idCasa)
         );
         escalonamentos.put(id, e);
     }
@@ -459,7 +460,7 @@ public class DomusControl implements Serializable {
             true,
             LocalTime.of(7, 0),
             LocalTime.of(7, 45),
-            Acao.ligarLuzesCasa(idCasa), //execucao inicial
+            Acao.ligarColunaSomCasa(idCasa), //execucao inicial
             Acao.desligarColunaSomCasa(idCasa)//execucao final
         );
         escalonamentos.put(id, e);

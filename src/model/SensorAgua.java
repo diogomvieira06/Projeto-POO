@@ -48,7 +48,7 @@ public class SensorAgua extends Dispositivo {
 
     //setters
     //public void setNivelAgua(double n){
-    //    this.nivelAguaAnterior = this.nivelAgua; // Atualiza o nível anterior antes de definir o novo nível
+    //    tSShis.nivelAguaAnterior = this.nivelAgua; // Atualiza o nível anterior antes de definir o novo nível
     //    this.nivelAgua = n;
     //}
 

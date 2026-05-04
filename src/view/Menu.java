@@ -346,9 +346,9 @@ public class Menu {
                 info.append(String.format("\n    Sensor Luz: %s\n\n", temSensorLuz ? (luminosidadeBaixa ? "Sim — LUMINOSIDADE BAIXA" : "Sim — Luminosidade normal") : "Nao possui"));
             }
 
-            String opts = "1. Criar Automação (Fechar cortinas)\n" +
-                          "2. Simular/ Parar chuva numa casa\n" + 
-                          "3. Criar Automação (Ligar luzes)\n" +
+            String opts = "1. Executar Automação (Fechar cortinas)\n" +
+                          "2. Executar Automação (Ligar luzes)\n" +
+                          "3. Simular/ Parar chuva numa casa\n" + 
                           "4. Simular luminosidade baixa numa casa\n" +
                           "0. Voltar para trás\n";
 
@@ -370,7 +370,7 @@ public class Menu {
                     ConsoleUI.mostrarErro("Casa não encontrada.");
             }
 
-            else if (opt == 2) {
+            else if (opt == 3) {
                 // Simular/parar chuva — basta alternar o estado de chuva dos sensores de água da casa selecionada
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
@@ -389,7 +389,7 @@ public class Menu {
                     for (Automacao a : dc.getAutomacoes()) a.executar(dc);
                 }
             }
-            else if(opt == 3){
+            else if(opt == 2){
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
                     infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));

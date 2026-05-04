@@ -102,13 +102,15 @@ public class Escalonamento implements Serializable{
                 ultimaExecucaoInicio = dataAtual; // Atualiza a última execução para hoje
             }
         } else {
+            LocalDate ultimaInicioAntes = this.ultimaExecucaoInicio;
             //intervalo
             if(!horaAtual.isBefore(horaInicio) && (ultimaExecucaoInicio == null || ultimaExecucaoInicio.isBefore(dataAtual))){
                 acaoInicio.executar(dc);
                 ultimaExecucaoInicio = dataAtual; // Atualiza a última execução para hoje
             }
 
-            if(acaoFim != null && !horaAtual.isBefore(horaFim) &&(ultimaExecucaoFim == null || ultimaExecucaoFim.isBefore(dataAtual))){
+            if(acaoFim != null && !horaAtual.isBefore(horaFim) &&(ultimaExecucaoFim == null || ultimaExecucaoFim.isBefore(dataAtual)) &&
+               (ultimaInicioAntes != null && !ultimaInicioAntes.isBefore(dataAtual))){ // Garante que a ação de fim só execute se a de início já tiver sido executada hoje
                 acaoFim.executar(dc);
                 ultimaExecucaoFim = dataAtual; // Atualiza a última execução para hoje
             }
