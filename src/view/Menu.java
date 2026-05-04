@@ -136,8 +136,8 @@ public class Menu {
                         .append(dispositivo.getModelo())
                         .append(" (ID: ")
                         .append(dispositivo.getId())
-                        .append(") -> ESTADO: ")
-                        .append(dispositivo.getEstado())
+                        .append(") -> ")
+                        .append(dispositivo.mostrarEstadoBase() ? "ESTADO: " + dispositivo.getEstado() : "")
                         .append(dispositivo.getDetalhesEspecificos())
                         .append("\n");
                 temDispositivos = true;

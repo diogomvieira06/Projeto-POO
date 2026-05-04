@@ -44,7 +44,10 @@ public class Curtina extends Dispositivo {
     }
 
     @Override
+    public boolean mostrarEstadoBase() { return false; }
+
+    @Override
     public String getDetalhesEspecificos(){
-        return " | Nível de Abertura: " + this.nivel_abertura + "%";
+        return "Estado: " + (this.nivel_abertura > 0 ? "Aberta" : "Fechada");
     }
 }
