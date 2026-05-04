@@ -16,6 +16,7 @@ public class DomusControl implements Serializable {
     private HashMap<Integer, Casa> casas = new HashMap<>();
     private HashMap<Integer, Automacao> automacoes = new HashMap<>();
     private HashMap<Integer, Escalonamento> escalonamentos = new HashMap<>();// Para armazenar os escalonamentos criados
+    private HashMap<Integer, Cenario> cenarios = new HashMap<>();
 
     private int proximoIdUtilizador = 1;
     private int proximoIdCasa = 1;
@@ -23,6 +24,7 @@ public class DomusControl implements Serializable {
     private int proximoIdDispositivo = 1;
     private int proximoIdAutomacao = 1;
     private int proximoIdEscalonamento = 1; // Para gerar IDs únicos para escalonamentos
+    private int proximoIdCenario = 1;
 
     private LocalDateTime tempoAtual = LocalDateTime.now(); // Para simular a passagem de tempo
 
@@ -200,7 +202,9 @@ public class DomusControl implements Serializable {
         ois.defaultReadObject();
         if (automacoes == null) automacoes = new HashMap<>();
         if(escalonamentos == null) escalonamentos = new HashMap<>();// Garantir que o HashMap de escalonamentos também é inicializado
+        if(cenarios == null) cenarios = new HashMap<>();
         if(tempoAtual == null) tempoAtual = LocalDateTime.now();
+        if(proximoIdCenario <= 0) proximoIdCenario = 1;
     }
 
     public void removerDivisao(Casa casa, Divisao divisao) {
@@ -339,22 +343,6 @@ public class DomusControl implements Serializable {
     automacoes.put(id, auto);
 }
 
-    public void executarAutomacoes() {
-        for (Automacao a : automacoes.values()) {
-            a.executar(this);
-        }
-    }
-
-    public Collection<Automacao> getAutomacoes(){
-        return automacoes.values();
-    }
-
-    public Automacao encontrarAutomacaoPorId(int id) {
-        return automacoes.get(id).clone();//ns se vale a pena meter clone, mas tmb n esta mal(VER DPS)
-    }
-
-
-    //AUTOMACAO MODE NOITE
     public void criarAutomacaoModoNoite(int idCasa){
         int id = proximoIdAutomacao++;
         Automacao auto = new Automacao(
@@ -367,11 +355,73 @@ public class DomusControl implements Serializable {
         automacoes.put(id, auto);
     }
 
+    public void executarAutomacoes() {
+        for (Automacao a : automacoes.values()) {
+            a.executar(this);
+        }
+    }
+
+    public Collection<Automacao> getAutomacoes(){
+        return automacoes.values();
+    }
+
+    public Collection<Cenario> getCenarios(){
+        return cenarios.values();
+    }
+
+    public List<Cenario> getCenariosDaCasa(int idCasa){
+        List<Cenario> lista = new ArrayList<>();
+        for(Cenario c : cenarios.values()){
+            if(c.getIdCasa() == idCasa) lista.add(c);
+        }
+        lista.sort(Comparator.comparingInt(Cenario::getId));
+        return lista;
+    }
+
+    public Cenario encontrarCenarioPorId(int id){
+        Cenario c = cenarios.get(id);
+        return c != null ? new Cenario(c) : null;
+    }
+
+    public Cenario criarCenario(Cenario cenario){
+        if(cenario == null) return null;
+        int id = proximoIdCenario++;
+        Cenario copia = new Cenario(cenario);
+        copia.setId(id);
+        cenarios.put(id, copia);
+        return copia;
+    }
+
+    public Cenario criarCenario(String nome, int idCasa, List<Acao> acoes){
+        return criarCenario(new Cenario(0, nome, idCasa, acoes));
+    }
+
+    public void criarCenariosObrigatorios(int idCasa){
+        Set<String> existentes = new HashSet<>();
+        for(Cenario c : cenarios.values()){
+            if(c.getIdCasa() == idCasa) existentes.add(c.getNome());
+        }
+
+        if(!existentes.contains("Sair de casa")) criarCenario(Cenario.sairDeCasa(0, idCasa));
+        if(!existentes.contains("Jantar com amigos")) criarCenario(Cenario.jantarComAmigos(0, idCasa));
+        if(!existentes.contains("Jantar Romantico")) criarCenario(Cenario.jantarRomantico(0, idCasa));
+        if(!existentes.contains("Cinema")) criarCenario(Cenario.cinema(0, idCasa));
+        if(!existentes.contains("Estudar")) criarCenario(Cenario.estudar(0, idCasa));
+        if(!existentes.contains("Deitar")) criarCenario(Cenario.deitar(0, idCasa));
+        if(!existentes.contains("Acordar")) criarCenario(Cenario.acordar(0, idCasa));
+    }
+
+    public boolean executarCenario(int id){
+        Cenario cenario = cenarios.get(id);
+        if(cenario == null) return false;
+        cenario.executar(this);
+        return true;
+    }
+
     //======================================================================
     //ESCALONAMENTOS
     //======================================================================
 
-    //retorna com segundos no maximo
     public LocalDateTime getTempoAtual(){
         return tempoAtual.withNano(0);
     }
@@ -468,3 +518,4 @@ public class DomusControl implements Serializable {
 
 
 }
+

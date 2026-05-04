@@ -323,32 +323,52 @@ public class Menu {
 
     public static void menuAutomacao(Utilizador u, DomusControl dc) {
         while (true) {
-            // Corpo: lista casas com informação de sensores e estado
+            // Corpo: lista casas e automações existentes
             StringBuilder info = new StringBuilder("CASAS DISPONÍVEIS:\n");
             for (Casa c : u.getCasasUtilizador().values()) {
-                boolean temSensorAgua = false, temSensorLuz = false;
+                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+            }
+            info.append("\nAUTOMAÇÕES CRIADAS:\n");
+            if (dc.getAutomacoes().isEmpty()) {
+                info.append(" > (Nenhuma)\n");
+            }
+
+            //meter no menu se existe chuva ou nao
+            info.append("\nESTADO DE CHUVA POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
                 boolean chuva = false;
-                boolean luminosidadeBaixa = false;
-                for (Divisao d : c.getDivisoes().values()) {
-                    for (Dispositivo disp : d.getDispositivos().values()) {
-                        if (disp instanceof SensorAgua sensor) {
-                            temSensorAgua = true;
-                            if (sensor.isEmChuva()) chuva = true;
-                        }
-                        if (disp instanceof SensorLuz sensor) {
-                            temSensorLuz = true;
-                            if (sensor.isLuminosidadeBaixa()) luminosidadeBaixa = true;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof SensorAgua sensor && sensor.isEmChuva()){
+                            chuva = true;
                         }
                     }
                 }
-                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
-                info.append(String.format("    Sensor Agua: %s", temSensorAgua ? (chuva ? "Sim — A CHOVER" : "Sim — Sem chuva") : "Nao possui"));
-                info.append(String.format("\n    Sensor Luz: %s\n\n", temSensorLuz ? (luminosidadeBaixa ? "Sim — LUMINOSIDADE BAIXA" : "Sim — Luminosidade normal") : "Nao possui"));
+                info.append(String.format(" > %s: %s\n", c.getAlcunha(), chuva ? "Está a chover" : "Não está a chover"));
+            }
+
+            //meter no menu se existe luminosidade baixa ou nao
+            info.append("\nLUMINOSIDADE POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean luminosidadeBaixa = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof SensorLuz sensor && sensor.isLuminosidadeBaixa()){
+                            luminosidadeBaixa = true;
+                        }
+                    }
+                }
+                info.append(String.format(" > %s: %s\n", c.getAlcunha(), luminosidadeBaixa ? "Luminosidade baixa" : "Luminosidade normal"));
+            }
+            
+
+            for (Automacao a : dc.getAutomacoes()) {
+                info.append(String.format(" > [%d] %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
             }
 
             String opts = "1. Executar Automação (Fechar cortinas)\n" +
                           "2. Executar Automação (Ligar luzes)\n" +
-                          "3. Simular/ Parar chuva numa casa\n" + 
+                          "3. Simular/Parar chuva numa casa\n" +
                           "4. Simular luminosidade baixa numa casa\n" +
                           "0. Voltar para trás\n";
 
@@ -370,7 +390,15 @@ public class Menu {
                     ConsoleUI.mostrarErro("Casa não encontrada.");
             }
 
-            else if (opt == 3) {
+            else if (opt == 2) {
+                //dc.executarAutomacoes();
+                int executadas = 0;
+
+                for(Automacao a : dc.getAutomacoes()){
+                    if(a.executar(dc)) executadas++;
+                }
+                ConsoleUI.mostrarErro(executadas > 0 ? executadas + " automações executadas com successo." : "Nenhuma automação executada. Verifique se há chuva simulada");
+            }  else if (opt == 3) {
                 // Simular/parar chuva — basta alternar o estado de chuva dos sensores de água da casa selecionada
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
@@ -385,11 +413,9 @@ public class Menu {
                         for (Dispositivo disp : d.getDispositivos().values())
                             if (disp instanceof SensorAgua sensor)
                                 sensor.setEmChuva(!sensor.isEmChuva());
-                            else if (!(disp instanceof SensorAgua)) System.out.println("A casa selecionada não possui sensores de água, então não é possível saber se está a chover ou não. Considere adicionar um sensor de água para usar esta funcionalidade.");
-                    for (Automacao a : dc.getAutomacoes()) a.executar(dc);
                 }
             }
-            else if(opt == 2){
+            else if(opt == 4){
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
                     infoCasa.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
@@ -403,7 +429,7 @@ public class Menu {
                 else
                     ConsoleUI.mostrarErro("Casa não encontrada.");
             } 
-            else if (opt == 4) {
+            else if (opt == 5) {
                 // Simular luminosidade baixa — basta alternar o estado dos sensores de luz da casa selecionada
                 StringBuilder infoCasa = new StringBuilder("Escolha a casa:\n\n");
                 for (Casa c : u.getCasasUtilizador().values())
@@ -418,9 +444,7 @@ public class Menu {
                     for (Divisao d : casa.getDivisoes().values())
                         for (Dispositivo disp : d.getDispositivos().values())
                             if (disp instanceof SensorLuz sensor)
-                                sensor.setNivelLuz(sensor.isLuminosidadeBaixa() ? 100.0 : 0.0);
-                            else if (!(disp instanceof SensorLuz)) System.out.println("A casa selecionada não possui sensores de luz, então não é possível saber se a luminosidade está baixa ou não. Considere adicionar um sensor de luz para usar esta funcionalidade.");
-                    for (Automacao a : dc.getAutomacoes()) a.executar(dc);
+                                sensor.setNivelLuz(sensor.isLuminosidadeBaixa() ? sensor.getLimiarNoite() + 10 : sensor.getLimiarNoite() - 10);
                 }
             }
         }
@@ -616,6 +640,76 @@ public class Menu {
                 }
                 if (!encontrado) ConsoleUI.mostrarErro("Escalonamento não encontrado.");
                 InputValidator.lerLinha();
+            }
+        }
+    }
+
+    public static void menuCenarios(Utilizador u, DomusControl dc) {
+        while (true) {
+            StringBuilder info = new StringBuilder("CASAS COM CENÁRIOS:\n\n");
+            for (Casa c : u.getCasasUtilizador().values()) {
+                info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
+                List<Cenario> cenariosCasa = dc.getCenariosDaCasa(c.getId());
+                if (cenariosCasa.isEmpty()) {
+                    info.append("    (Sem cenários criados)\n");
+                } else {
+                    for (Cenario cen : cenariosCasa) {
+                        info.append(String.format("    [%d] %s | %d ações\n", cen.getId(), cen.getNome(), cen.getAcoes().size()));
+                    }
+                }
+            }
+
+            String opts = "1. Criar cenários obrigatórios de uma casa\n" +
+                          "2. Executar um cenário\n" +
+                          "3. Executar todos os cenários de uma casa\n" +
+                          "0. Voltar";
+
+            ConsoleUI.desenharDashboard("CENÁRIOS", info.toString(), opts);
+            System.out.print("\nEscolha a opção: ");
+            int opcao = InputValidator.lerInteiro();
+
+            if (opcao == 0) break;
+
+            if (opcao == 1) {
+                System.out.print("ID da Casa: ");
+                int idCasa = InputValidator.lerInteiro();
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa != null && u.podeUsarCasa(casa)) {
+                    dc.criarCenariosObrigatorios(idCasa);
+                    System.out.println("Cenários obrigatórios criados com sucesso. Prima Enter...");
+                    InputValidator.lerLinha();
+                } else {
+                    ConsoleUI.mostrarErro("Casa não encontrada ou sem permissões.");
+                }
+            } else if (opcao == 2) {
+                System.out.print("ID do Cenário: ");
+                int idCenario = InputValidator.lerInteiro();
+                Cenario cenario = dc.encontrarCenarioPorId(idCenario);
+                if (cenario != null) {
+                    cenario.executar(dc);
+                    System.out.println("Cenário executado: " + cenario.getNome() + ". Prima Enter...");
+                    InputValidator.lerLinha();
+                } else {
+                    ConsoleUI.mostrarErro("Cenário não encontrado.");
+                }
+            } else if (opcao == 3) {
+                System.out.print("ID da Casa: ");
+                int idCasa = InputValidator.lerInteiro();
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa != null && u.podeUsarCasa(casa)) {
+                    dc.criarCenariosObrigatorios(idCasa);
+                    int executados = 0;
+                    for (Cenario cenario : dc.getCenariosDaCasa(idCasa)) {
+                        cenario.executar(dc);
+                        executados++;
+                    }
+                    System.out.println(executados + " cenários executados com sucesso. Prima Enter...");
+                    InputValidator.lerLinha();
+                } else {
+                    ConsoleUI.mostrarErro("Casa não encontrada ou sem permissões.");
+                }
+            } else {
+                ConsoleUI.mostrarErro("Opção inválida.");
             }
         }
     }

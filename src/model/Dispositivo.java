@@ -92,7 +92,6 @@ public abstract class Dispositivo implements Serializable { // Abstract porque n
     }
 
     public boolean mostrarEstadoBase() { return true; }
-
     public int getNumAtivacoes() { return numAtivacoes; }
     public double getTempoUsoHoras() { return tempoUsoHoras; }
 

@@ -82,6 +82,42 @@ public abstract class Acao implements Serializable{
         };
     }
 
+    public static Acao definirIntensidadeLampadasCasa(int idCasa, int intensidade) {
+        return new Acao("Definir Intensidade das Lampadas") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof Lampada l) {
+                            l.setIntensidade_Luminosidade(intensidade);
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return definirIntensidadeLampadasCasa(idCasa, intensidade); }
+        };
+    }
+
+    public static Acao definirCorLampadasCasa(int idCasa, String cor) {
+        return new Acao("Definir Cor das Lampadas") {
+            public void executar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return;
+
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof Lampada l) {
+                            l.setCor_Luz(cor);
+                        }
+                    }
+                }
+            }
+            public Acao clone() { return definirCorLampadasCasa(idCasa, cor); }
+        };
+    }
+
     //ESCALONAMENTOS
 
     //abrir cortinas da casa a 100%

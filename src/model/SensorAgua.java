@@ -18,7 +18,7 @@ public class SensorAgua extends Dispositivo {
     }
 
     public SensorAgua(int id, String marca, String modelo, double consumo, double nivelAgua, boolean emChuva) {
-        super(id, marca, modelo, consumo); 
+        super(id, marca, modelo, consumo);
         //this.nivelAgua = nivelAgua;
         //this.nivelAguaAnterior = 0.0; // Inicialmente, o nível anterior é 0
         //this.nivelAguaMaximo = 100.0; // Exemplo de valor máximo
@@ -34,13 +34,9 @@ public class SensorAgua extends Dispositivo {
     }
 
     //getters
-    //public double getNivelAgua() {
-    //    return nivelAgua;
-    //}
+    //public double getNivelAgua() { return nivelAgua; }
 
-    //public double getNivelAguaAnterior() {
-    //    return nivelAguaAnterior;
-    //}
+    // public double getNivelAguaAnterior() { return nivelAguaAnterior; }
 
     public boolean isEmChuva() {
         return emChuva;
@@ -48,9 +44,8 @@ public class SensorAgua extends Dispositivo {
 
     //setters
     //public void setNivelAgua(double n){
-    //    tSShis.nivelAguaAnterior = this.nivelAgua; // Atualiza o nível anterior antes de definir o novo nível
-    //    this.nivelAgua = n;
-    //}
+        //this.nivelAguaAnterior = this.nivelAgua; // Atualiza o nível anterior antes de definir o novo nível
+        // this.nivelAgua = n;}
 
     public void setEmChuva(boolean emChuva) {
         this.emChuva = emChuva;

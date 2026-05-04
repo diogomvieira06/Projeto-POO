@@ -5,15 +5,15 @@ Nesta fase devem ser criados cenários que executam múltiplas ações.
 
 Checklist:
 
-[ ] Criar classe Cenario
+[ X ] Criar classe Cenario
 
-[ ] Definir lista de ações
+[ X ] Definir lista de ações
 
-[ ] Implementar cenários obrigatórios:
+[ X ] Implementar cenários obrigatórios:
 
-    [ ] Sair de casa
-    [ ] Jantar com amigos
-    [ ] Deitar
-    [ ] Acordar
+    [ X ] Sair de casa
+    [ X ] Jantar com amigos
+    [ X ] Deitar
+    [ X ] Acordar
 
 [ ] Testar execução dos cenários

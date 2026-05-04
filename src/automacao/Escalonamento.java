@@ -110,7 +110,7 @@ public class Escalonamento implements Serializable{
             }
 
             if(acaoFim != null && !horaAtual.isBefore(horaFim) &&(ultimaExecucaoFim == null || ultimaExecucaoFim.isBefore(dataAtual)) &&
-               (ultimaInicioAntes != null && !ultimaInicioAntes.isBefore(dataAtual))){ // Garante que a ação de fim só execute se a de início já tiver sido executada hoje
+                    (ultimaInicioAntes != null && !ultimaInicioAntes.isBefore(dataAtual))){ // Garante que a ação de fim só execute se a de início já tiver sido executada hoje
                 acaoFim.executar(dc);
                 ultimaExecucaoFim = dataAtual; // Atualiza a última execução para hoje
             }
