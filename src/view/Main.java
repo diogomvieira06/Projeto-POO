@@ -1,9 +1,7 @@
 package src.view;
 
-import src.automacao.Escalonamento;
 import src.controller.DomusControl;
 import src.model.*;
-import java.util.Iterator;
 import java.time.*;
 
 public class Main {
@@ -141,52 +139,85 @@ public class Main {
     }
 
     private static void inicializarDadosTeste(DomusControl dc) {
-        Utilizador u1 = dc.criarUtilizador("Ana");
-        Utilizador u2 = dc.criarUtilizador("Bruno");
-        Utilizador u3 = dc.criarUtilizador("Carla");
+        Utilizador ana = dc.criarUtilizador("Ana");
+        Utilizador bruno = dc.criarUtilizador("Bruno");
+        Utilizador carla = dc.criarUtilizador("Carla");
 
-        Casa c1 = dc.criarCasa("Casa Jardim");
-        Casa c2 = dc.criarCasa("Casa Centro");
-        Casa c3 = dc.criarCasa("Casa Praia");
+        Casa casa1 = dc.criarCasa("Casa Jardim");
+        Casa casa2 = dc.criarCasa("Casa Centro");
+        Casa casa3 = dc.criarCasa("Casa Praia");
 
-        dc.adicionarCasaAAdministrador(u1, c1);
-        dc.adicionarCasaAUtilizador(u2, c1);
-        dc.adicionarCasaAUtilizador(u3, c1);
+        dc.adicionarCasaAAdministrador(ana, casa1);
+        dc.adicionarCasaAUtilizador(ana, casa2);
 
-        dc.adicionarCasaAAdministrador(u2, c2);
-        dc.adicionarCasaAUtilizador(u1, c2);
-        dc.adicionarCasaAUtilizador(u3, c2);
+        dc.adicionarCasaAAdministrador(bruno, casa2);
+        dc.adicionarCasaAUtilizador(bruno, casa3);
 
-        dc.adicionarCasaAAdministrador(u3, c3);
-        dc.adicionarCasaAUtilizador(u1, c3);
-        dc.adicionarCasaAUtilizador(u2, c3);
+        dc.adicionarCasaAAdministrador(carla, casa3);
+        dc.adicionarCasaAUtilizador(carla, casa1);
 
-        dc.criarDivisao(c1, "Sala");
-        dc.criarDivisao(c1, "Cozinha");
-        dc.criarDivisao(c1, "Quarto");
+        Divisao sala1 = criarDivisaoEObter(dc, casa1, "Sala");
+        Divisao quarto1 = criarDivisaoEObter(dc, casa1, "Quarto");
 
-        Iterator<Divisao> divisoesC1 = c1.getDivisoes().values().iterator();
-        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 10.0, 80, "Branco"));
-        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new Tomada(dc.aumentarIdDispositivo(), "Xiaomi", "Smart Plug", 5.0));
-        if (divisoesC1.hasNext()) dc.adicionarDispositivo(divisoesC1.next(), new ColunaSom(dc.aumentarIdDispositivo(), "Sony", "SRS-XB13", 12.0, 40));
+        Lampada l1 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, 75, "Branco");
+        Cortina c1 = new Cortina(dc.aumentarIdDispositivo(), "Somfy", "Smart", 18.0, 50);
+        SensorAgua sACasa1 = new SensorAgua(dc.aumentarIdDispositivo(), "Bosch", "RainSensor", 0.3, 0, false);
+        dc.adicionarDispositivo(sala1, l1);
+        dc.adicionarDispositivo(sala1, c1);
+        dc.adicionarDispositivo(sala1, sACasa1);
 
-        dc.criarDivisao(c2, "Sala");
-        dc.criarDivisao(c2, "Escritório");
-        dc.criarDivisao(c2, "Garagem");
+        Lampada l2 = new Lampada(dc.aumentarIdDispositivo(), "Osram", "Bed", 7.5, 40, "Quente");
+        Tomada t1 = new Tomada(dc.aumentarIdDispositivo(), "TP-Link", "Plug", 5.0);
+        dc.adicionarDispositivo(quarto1, l2);
+        dc.adicionarDispositivo(quarto1, t1);
 
-        Iterator<Divisao> divisoesC2 = c2.getDivisoes().values().iterator();
-        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 9.0, 70, "Amarelo"));
-        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new Curtina(dc.aumentarIdDispositivo(), "Somfy", "Curtina Pro", 20.0, 50));
-        if (divisoesC2.hasNext()) dc.adicionarDispositivo(divisoesC2.next(), new PortaoGaragem(dc.aumentarIdDispositivo(), "Nice", "Robus", 45.0, 0));
+        Divisao sala2 = criarDivisaoEObter(dc, casa2, "Sala");
+        Divisao cozinha2 = criarDivisaoEObter(dc, casa2, "Cozinha");
 
-        dc.criarDivisao(c3, "Sala");
-        dc.criarDivisao(c3, "Suite");
-        dc.criarDivisao(c3, "Varanda");
+        Lampada l3 = new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 8.0, 60, "Branco");
+        SensorLuz s1 = new SensorLuz(dc.aumentarIdDispositivo(), "Aqara", "Sensor", 0.5, 40.0);
+        dc.adicionarDispositivo(sala2, l3);
+        dc.adicionarDispositivo(sala2, s1);
 
-        Iterator<Divisao> divisoesC3 = c3.getDivisoes().values().iterator();
-        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new ColunaSom(dc.aumentarIdDispositivo(), "JBL", "Flip", 15.0, 55));
-        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new Tomada(dc.aumentarIdDispositivo(), "TP-Link", "Tapo", 6.0));
-        if (divisoesC3.hasNext()) dc.adicionarDispositivo(divisoesC3.next(), new Lampada(dc.aumentarIdDispositivo(), "Osram", "Smart+", 11.0, 90, "Branco Frio"));
+        Lampada l4 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Kitchen", 8.2, 90, "Frio");
+        SensorAgua s2 = new SensorAgua(dc.aumentarIdDispositivo(), "Bosch", "Rain", 0.3, 0, false);
+        dc.adicionarDispositivo(cozinha2, l4);
+        dc.adicionarDispositivo(cozinha2, s2);
+
+        Divisao sala3 = criarDivisaoEObter(dc, casa3, "Sala");
+        Divisao garagem3 = criarDivisaoEObter(dc, casa3, "Garagem");
+
+        Lampada l5 = new Lampada(dc.aumentarIdDispositivo(), "Nanoleaf", "Color", 9.0, 50, "Azul");
+        Cortina c2 = new Cortina(dc.aumentarIdDispositivo(), "Somfy", "Premium", 16.0, 60);
+        dc.adicionarDispositivo(sala3, l5);
+        dc.adicionarDispositivo(sala3, c2);
+
+        PortaoGaragem p1 = new PortaoGaragem(dc.aumentarIdDispositivo(), "Nice", "Gate", 50.0, 0);
+        dc.adicionarDispositivo(garagem3, p1);
+
+        l1.ligarDispositivo();
+        l3.ligarDispositivo();
+        l5.ligarDispositivo();
+
+        for (int i = 0; i < 3; i++) {
+            t1.desligarDispositivo();
+            t1.ligarDispositivo();
+        }
+
+        dc.passarTempoGlobal(1.0);
+
+        dc.criarEscalonamentoAbrirCortinas(casa1.getId());
+        dc.criarEscalonamentoModoNoturno(casa2.getId());
+
+        dc.criarCenariosObrigatorios(casa1.getId());
+    }
+
+    private static Divisao criarDivisaoEObter(DomusControl dc, Casa casa, String nomeDivisao) {
+        dc.criarDivisao(casa, nomeDivisao);
+        for (Divisao d : casa.getDivisoes().values()) {
+            if (d.getNome().equals(nomeDivisao)) return d;
+        }
+        throw new IllegalStateException("Não foi possível obter a divisão criada: " + nomeDivisao);
     }
 
     private static void gerarCenarioReal(DomusControl dc) {

@@ -50,7 +50,7 @@ public abstract class Acao implements Serializable{
                 if(casa == null) return;
                 for(Divisao divisao : casa.getDivisoes().values()){
                     for(Dispositivo dispositivo : divisao.getDispositivos().values()){
-                        if(dispositivo instanceof Curtina c){
+                        if(dispositivo instanceof Cortina c){
                             c.setNivelAbertura(0);//fechou
                         }
                     }
@@ -129,7 +129,7 @@ public abstract class Acao implements Serializable{
 
                 for (Divisao divisao : casa.getDivisoes().values()) {
                     for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
-                        if (dispositivo instanceof Curtina c) {
+                        if (dispositivo instanceof Cortina c) {
                             c.setNivelAbertura(100);
                         }
                     }
@@ -138,7 +138,7 @@ public abstract class Acao implements Serializable{
             public Acao clone() { return abrirCortinas(idCasa); }
         };
     }
-
+    
     //desliga todas as luzes da casa
     public static Acao desligarLuzesCasa(int idCasa) {
         return new Acao("Desligar Luzes") {

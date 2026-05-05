@@ -50,6 +50,27 @@ public interface Condicao extends Serializable {
     }
     
 
+    // Condição inversa: não está a chover em nenhum sensor da casa
+    static Condicao naoEstaAChuverCasa(int idCasa) {
+        return new Condicao() {
+            public boolean verificar(DomusControl dc) {
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+                if (casa == null) return false;
+                boolean temSensor = false;
+                for (Divisao divisao : casa.getDivisoes().values()) {
+                    for (Dispositivo dispositivo : divisao.getDispositivos().values()) {
+                        if (dispositivo instanceof SensorAgua sensor) {
+                            temSensor = true;
+                            if (sensor.isEmChuva()) return false; // ainda está a chover
+                        }
+                    }
+                }
+                return temSensor; // só abre se existir sensor E não estiver a chover
+            }
+            public Condicao clone() { return naoEstaAChuverCasa(idCasa); }
+        };
+    }
+
     //para a automacao modo Noite, verificar se a luminosidade esta baixa na casa
     static Condicao luminosidadeBaixaCasa(int idCasa){
         return new Condicao(){
@@ -67,6 +88,30 @@ public interface Condicao extends Serializable {
             }
             public Condicao clone(){
                 return luminosidadeBaixaCasa(idCasa);
+            }
+        };
+    }
+
+    static Condicao luminosidadeNormalCasa(int idCasa){
+        return new Condicao(){
+            public boolean verificar(DomusControl dc){
+                Casa casa = dc.encontrarCasaPorId(idCasa);
+
+                if(casa == null) return false;
+
+                boolean temSensor = false;
+                for(Divisao divisao : casa.getDivisoes().values()){
+                    for(Dispositivo dispositivo : divisao.getDispositivos().values()){
+                        if(dispositivo instanceof SensorLuz sensor){
+                            temSensor = true;
+                            if(sensor.isLuminosidadeBaixa()) return false;
+                        }
+                    }
+                }
+                return temSensor;
+            }
+            public Condicao clone(){
+                return luminosidadeNormalCasa(idCasa);
             }
         };
     }

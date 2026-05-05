@@ -1,21 +1,21 @@
 package src.model;
 
 
-public class Curtina extends Dispositivo {
+public class Cortina extends Dispositivo {
     private static final long serialVersionUID = 1L;
     private int nivel_abertura;// 0 a 100, onde 0 é completamente fechada e 100 é completamente aberta
 
-    public Curtina(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {
+    public Cortina(int id, String marca, String modelo, double consumo_Por_Hora_Wh, int nivel_abertura) {
         super(id, marca, modelo, consumo_Por_Hora_Wh);
         this.nivel_abertura = nivel_abertura;
     }
 
-    public Curtina() {
+    public Cortina() {
         super();
         this.nivel_abertura = 0;
     }
 
-    public Curtina(Curtina c) {
+    public Cortina(Cortina c) {
         super(c); // Chama o construtor de cópia da classe base
         this.nivel_abertura = c.nivel_abertura;
     }
@@ -35,19 +35,33 @@ public class Curtina extends Dispositivo {
 
     @Override
     public String getTipo() {
-        return "Curtina";
+        return "Cortina";
     }
 
     @Override
-    public Curtina clone() {
-        return new Curtina(this);
+    public Cortina clone() {
+        return new Cortina(this);
     }
 
     @Override
-    public boolean mostrarEstadoBase() { return false; }
+    public String getEstado() {
+        if (this.nivel_abertura == 0) return "FECHADA";
+        if (this.nivel_abertura == 100) return "ABERTA";
+        return "ABERTA " + this.nivel_abertura + "%";
+    }
 
     @Override
-    public String getDetalhesEspecificos(){
-        return "Estado: " + (this.nivel_abertura > 0 ? "Aberta" : "Fechada");
+    public boolean mostrarEstadoBase() { return true; }
+
+    @Override
+    public String getDetalhesEspecificos() { return ""; }
+
+    @Override
+    public void desligarDispositivo() {
+        setNivelAbertura(0); // Fechar a cortina ao desligar
+    }
+    @Override
+    public void ligarDispositivo() {
+        setNivelAbertura(100); // Abrir a cortina ao ligar  
     }
 }

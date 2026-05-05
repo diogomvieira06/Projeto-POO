@@ -54,6 +54,11 @@ public class DomusControl implements Serializable {
         Casa casa = new Casa(alcunha, id);
         casas.put(id, casa);
         System.out.println("Casa criada com sucesso, ID atribuído: " + id);
+        // Criar automações base
+        criarAutomacaoFecharCortinasChuva(id);
+        criarAutomacaoAbrirCortinasParouChuva(id);
+        criarAutomacaoModoNoite(id);
+        criarAutomacaoModoDia(id);
         return casa;
     }
     public void removerUtilizador(Utilizador u) {
@@ -332,16 +337,28 @@ public class DomusControl implements Serializable {
 
     //AUTOMACAO MODE CHUVA
     public void criarAutomacaoFecharCortinasChuva(int idCasa) {
-    int id = proximoIdAutomacao++;
-    Automacao auto = new Automacao(
-        id,
-        "Fechar Cortinas Quando Chover",
-        true,
-        Condicao.detetarChuvaCasa(idCasa),
-        Acao.fecharCortinas(idCasa)
-    );
-    automacoes.put(id, auto);
-}
+        int id = proximoIdAutomacao++;
+        Automacao auto = new Automacao(
+            id,
+            "Fechar Cortinas Quando Chover",
+            true,
+            Condicao.detetarChuvaCasa(idCasa),
+            Acao.fecharCortinas(idCasa)
+        );
+        automacoes.put(id, auto);
+    }
+
+    public void criarAutomacaoAbrirCortinasParouChuva(int idCasa) {
+        int id = proximoIdAutomacao++;
+        Automacao auto = new Automacao(
+            id,
+            "Abrir Cortinas Quando Parar de Chover",
+            true,
+            Condicao.naoEstaAChuverCasa(idCasa),
+            Acao.abrirCortinas(idCasa)
+        );
+        automacoes.put(id, auto);
+    }
 
     public void criarAutomacaoModoNoite(int idCasa){
         int id = proximoIdAutomacao++;
@@ -355,14 +372,79 @@ public class DomusControl implements Serializable {
         automacoes.put(id, auto);
     }
 
+    public void criarAutomacaoModoDia(int idCasa){
+        int id = proximoIdAutomacao++;
+        Automacao auto = new Automacao(
+                id,
+                "Modo Dia",
+                true,
+                Condicao.luminosidadeNormalCasa(idCasa),
+                Acao.desligarLuzesCasa(idCasa)
+        );
+        automacoes.put(id, auto);
+    }
+
     public void executarAutomacoes() {
         for (Automacao a : automacoes.values()) {
             a.executar(this);
         }
     }
 
+    /**
+     * Alterna o estado de chuva de todos os sensores da casa e dispara automações automaticamente.
+     */
+    public void alternarChuvaCasa(int idCasa) {
+        Casa casa = encontrarCasaPorId(idCasa);
+        if (casa == null) return;
+
+        // Determina o novo estado (inverte o primeiro sensor encontrado)
+        boolean novoEstado = false;
+        boolean encontrou = false;
+        for (Divisao d : casa.getDivisoes().values()) {
+            for (Dispositivo disp : d.getDispositivos().values()) {
+                if (disp instanceof SensorAgua sensor) {
+                    novoEstado = !sensor.isEmChuva();
+                    encontrou = true;
+                    break;
+                }
+            }
+            if (encontrou) break;
+        }
+
+        // Aplica o novo estado a todos os sensores da casa
+        for (Divisao d : casa.getDivisoes().values())
+            for (Dispositivo disp : d.getDispositivos().values())
+                if (disp instanceof SensorAgua sensor)
+                    sensor.setEmChuva(novoEstado);
+
+        // Trigger: executa automações automaticamente
+        executarAutomacoes();
+    }
+
+    /**
+     * Alterna a luminosidade de todos os sensores de luz da casa e dispara automações automaticamente.
+     */
+    public void alternarLuminosidadeCasa(int idCasa) {
+        Casa casa = encontrarCasaPorId(idCasa);
+        if (casa == null) return;
+
+        for (Divisao d : casa.getDivisoes().values())
+            for (Dispositivo disp : d.getDispositivos().values())
+                if (disp instanceof SensorLuz sensor)
+                    sensor.setNivelLuz(sensor.isLuminosidadeBaixa()
+                            ? sensor.getLimiarNoite() + 10
+                            : sensor.getLimiarNoite() - 10);
+
+        // Trigger: executa automações automaticamente
+        executarAutomacoes();
+    }
+
     public Collection<Automacao> getAutomacoes(){
         return automacoes.values();
+    }
+
+    public Automacao encontrarAutomacaoPorId(int id){
+        return automacoes.get(id);
     }
 
     public Collection<Cenario> getCenarios(){
