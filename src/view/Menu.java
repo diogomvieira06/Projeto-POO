@@ -328,22 +328,30 @@ public class Menu {
                 info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
             }
             info.append("\nAUTOMAÇÕES CRIADAS:\n");
-            if (dc.getAutomacoes().isEmpty()) {
+            boolean temAutoUtilizador = dc.getAutomacoes().stream()
+                .anyMatch(a -> u.podeAdministrarCasa(dc.encontrarCasaPorId(a.getIdCasa())));
+            if(!temAutoUtilizador){
                 info.append(" > (Nenhuma)\n");
             }
 
             //meter no menu se existe chuva ou nao
             info.append("\nESTADO DE CHUVA POR CASA:\n");
             for(Casa c : u.getCasasUtilizador().values()){
-                boolean chuva = false;
-                for(Divisao d : c.getDivisoes().values()){
-                    for(Dispositivo disp : d.getDispositivos().values()){
-                        if(disp instanceof SensorAgua sensor && sensor.isEmChuva()){
-                            chuva = true;
-                        }
+            boolean chuva = false;
+            boolean temSensorAgua = false;
+            for(Divisao d : c.getDivisoes().values()){
+                for(Dispositivo disp : d.getDispositivos().values()){
+                    if(disp instanceof SensorAgua sensor){
+                        temSensorAgua = true;
+                        if(sensor.isEmChuva()) chuva = true;
                     }
                 }
+            }
+            if(!temSensorAgua){
+                info.append(String.format(" > %s: (Sem sensor de água)\n", c.getAlcunha()));
+            } else {
                 info.append(String.format(" > %s: %s\n", c.getAlcunha(), chuva ? "Está a chover" : "Não está a chover"));
+            }
             }
 
             //meter no menu o estado das cortinas (abertas ou fechadas)
@@ -373,15 +381,21 @@ public class Menu {
             //meter no menu se existe luminosidade baixa ou nao
             info.append("\nLUMINOSIDADE POR CASA:\n");
             for(Casa c : u.getCasasUtilizador().values()){
-                boolean luminosidadeBaixa = false;
-                for(Divisao d : c.getDivisoes().values()){
-                    for(Dispositivo disp : d.getDispositivos().values()){
-                        if(disp instanceof SensorLuz sensor && sensor.isLuminosidadeBaixa()){
-                            luminosidadeBaixa = true;
-                        }
+            boolean luminosidadeBaixa = false;
+            boolean temSensorLuz = false;
+            for(Divisao d : c.getDivisoes().values()){
+                for(Dispositivo disp : d.getDispositivos().values()){
+                    if(disp instanceof SensorLuz sensor){
+                        temSensorLuz = true;
+                        if(sensor.isLuminosidadeBaixa()) luminosidadeBaixa = true;
                     }
                 }
+            }
+            if(!temSensorLuz){
+                info.append(String.format(" > %s: (Sem sensor de luz)\n", c.getAlcunha()));
+            } else {
                 info.append(String.format(" > %s: %s\n", c.getAlcunha(), luminosidadeBaixa ? "Luminosidade baixa" : "Luminosidade normal"));
+            }
             }
 
             //meter no menu o estado das lampadas (ligadas ou apagadas)
@@ -410,7 +424,11 @@ public class Menu {
             // Menu para exibir automações
             info.append("\nAUTOMAÇÕES EXISTENTES:\n");
             for (Automacao a : dc.getAutomacoes()) {
-                info.append(String.format(" > [%d] %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
+                Casa casaAuto = dc.encontrarCasaPorId(a.getIdCasa());
+                if (casaAuto == null || !u.podeUsarCasa(casaAuto)) continue;// Só mostramos automações de casas que o utilizador pode usar
+                String nomeCasa = String.format("[ID:%d] %s", casaAuto.getId(), casaAuto.getAlcunha());
+                info.append(String.format(" > [%d] %s | Casa: %s | %s\n",
+                    a.getId(), a.getNome(), nomeCasa, a.isAtiva() ? "ATIVA" : "INATIVA"));
             }
 
             String opts = "1. Simular/Parar chuva numa casa\n" +
@@ -454,7 +472,11 @@ public class Menu {
             else if (opt == 3) {
                 StringBuilder infoAuto = new StringBuilder("AUTOMAÇÕES EXISTENTES:\n\n");
                 for (Automacao a : dc.getAutomacoes()) {
-                    infoAuto.append(String.format(" > ID: %d | %s | %s\n", a.getId(), a.getNome(), a.isAtiva() ? "ATIVA" : "INATIVA"));
+                    Casa casaAuto = dc.encontrarCasaPorId(a.getIdCasa());
+                    if (casaAuto == null || !u.podeUsarCasa(casaAuto)) continue; // <-- filtro
+                    String nomeCasa = String.format("[ID:%d] %s", casaAuto.getId(), casaAuto.getAlcunha());
+                    infoAuto.append(String.format(" > ID: %d | %s | Casa: %s | %s\n",
+                        a.getId(), a.getNome(), nomeCasa, a.isAtiva() ? "ATIVA" : "INATIVA"));
                 }
                 ConsoleUI.desenharDashboard("ATIVAR/DESATIVAR AUTOMAÇÃO", infoAuto.toString(), "ID da automação para alternar estado\n0. Cancelar");
                 System.out.print("ID da automação: ");

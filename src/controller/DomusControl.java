@@ -343,7 +343,8 @@ public class DomusControl implements Serializable {
             "Fechar Cortinas Quando Chover",
             true,
             Condicao.detetarChuvaCasa(idCasa),
-            Acao.fecharCortinas(idCasa)
+            Acao.fecharCortinas(idCasa),
+            idCasa
         );
         automacoes.put(id, auto);
     }
@@ -355,7 +356,8 @@ public class DomusControl implements Serializable {
             "Abrir Cortinas Quando Parar de Chover",
             true,
             Condicao.naoEstaAChuverCasa(idCasa),
-            Acao.abrirCortinas(idCasa)
+            Acao.abrirCortinas(idCasa),
+            idCasa
         );
         automacoes.put(id, auto);
     }
@@ -367,7 +369,8 @@ public class DomusControl implements Serializable {
                 "Modo Noite",
                 true,
                 Condicao.luminosidadeBaixaCasa(idCasa),
-                Acao.ligarLuzesCasa(idCasa)
+                Acao.ligarLuzesCasa(idCasa),
+                idCasa
         );
         automacoes.put(id, auto);
     }
@@ -379,7 +382,8 @@ public class DomusControl implements Serializable {
                 "Modo Dia",
                 true,
                 Condicao.luminosidadeNormalCasa(idCasa),
-                Acao.desligarLuzesCasa(idCasa)
+                Acao.desligarLuzesCasa(idCasa),
+                idCasa
         );
         automacoes.put(id, auto);
     }

@@ -14,14 +14,16 @@ public class Automacao implements Serializable{
     private Condicao condicao;//deixar assim para ja
     private Acao acao;//deixar assim para ja
     private long ultimaExecucao;
+    private int idCasa; // ID da casa associada à automação
 
-    public Automacao(int id, String nome, boolean ativa, Condicao condicao, Acao acao) {
+    public Automacao(int id, String nome, boolean ativa, Condicao condicao, Acao acao, int idCasa) {
         this.id = id;
         this.nome = nome;
         this.ativa = ativa;
         this.condicao = condicao;
         this.acao = acao;
         this.ultimaExecucao = 0L; 
+        this.idCasa = idCasa;
     }
 
     public Automacao() {
@@ -31,6 +33,7 @@ public class Automacao implements Serializable{
         this.condicao = null;
         this.acao = null;
         this.ultimaExecucao = 0L; 
+        this.idCasa = 0;
     }
 
     public Automacao(Automacao a) {
@@ -40,6 +43,7 @@ public class Automacao implements Serializable{
         this.condicao = a.condicao; // Cópia rasa, pode ser necessário implementar clone() em Condicao e Acao para uma cópia profunda
         this.acao = a.acao; // Cópia rasa, pode ser necessário implementar clone() em Condicao e Acao para uma cópia profunda
         this.ultimaExecucao = a.ultimaExecucao;
+        this.idCasa = a.idCasa;
     }
 
     //getters
@@ -62,6 +66,11 @@ public class Automacao implements Serializable{
     public Acao getAcao(){
         return this.acao;
     }
+
+    public int getIdCasa() {
+        return this.idCasa;
+    }
+    
 
     //setters
     public void setId(int id){
