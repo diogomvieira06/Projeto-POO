@@ -100,4 +100,26 @@ public abstract class Dispositivo implements Serializable { // Abstract porque n
         if (this.getEstado().equals("LIGADO")) this.tempoUsoHoras += horas;
     }
 
+    //metodo equals
+    @Override
+    public boolean equals(Object o){
+        if(this == o)return true;
+        if(o == null || this.getClass() != o.getClass()) return false;
+        Dispositivo d = (Dispositivo) o;
+        return this.id == d.id &&
+                this.marca.equals(d.marca) &&
+                this.modelo.equals(d.modelo) &&
+                this.consumo_Por_Hora_Wh == d.consumo_Por_Hora_Wh &&
+                this.estado == d.estado &&
+                this.numAtivacoes == d.numAtivacoes &&
+                this.tempoUsoHoras == d.tempoUsoHoras;
+    }
+
+    // Método hashCode para garantir que objetos iguais tenham o mesmo hash code, baseado no ID do dispositivo
+    //retorna um integer que representa o hash code do objeto, nesse caso usando o ID do dispositivo para gerar o hash code, garantindo que dispositivos com o mesmo ID tenham o mesmo hash code    
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(this.id);
+    }
+
 }
