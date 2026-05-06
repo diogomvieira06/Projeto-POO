@@ -608,11 +608,85 @@ public class Menu {
                 .append(dc.getTempoAtual().toLocalTime())
                 .append("\n\n");
 
-            info.append("CASAS DISPONÍVEIS:\n");
+            info.append("\nCASAS DISPONÍVEIS:\n");
             for (Casa c : u.getCasasUtilizador().values())
                 info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
 
-            info.append("\nESCALONAMENTOS CRIADOS:\n");
+
+            //meter no menu o estado das cortinas (abertas ou fechadas)
+            info.append("\n\nESTADO DAS CORTINAS POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean temCortinas = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof Cortina cortina){
+                            temCortinas = true;
+                            info.append(String.format(
+                                    " > %s: [%s] -> [%d] cortina %s (%d%%)\n",
+                                    c.getAlcunha(),
+                                    d.getNome(),
+                                    cortina.getId(),
+                                    cortina.getNivelAbertura() > 0 ? "Aberta" : "Fechada",
+                                    cortina.getNivelAbertura()
+                            ));
+                        }
+                    }
+                }
+                if(!temCortinas){
+                    info.append(String.format(" > %s: (Sem cortinas)\n", c.getAlcunha()));
+                }
+            }
+
+            //meter no menu o estado das luzes (ligadas ou apagadas)
+            info.append("\nESTADO DAS LUZES POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean temLampadas = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof Lampada lampada){
+                            temLampadas = true;
+                            info.append(String.format(
+                                    " > %s: [%s] -> [%d] Lâmpada %s\n",
+                                    c.getAlcunha(),
+                                    d.getNome(),
+                                    lampada.getId(),
+                                    lampada.getEstado().equals("LIGADO") ? "Ligada" : "Desligada"
+                            ));
+                        }
+                    }
+                }
+                if(!temLampadas){
+                    info.append(String.format(" > %s: (Sem lâmpadas)\n", c.getAlcunha()));
+                }
+            }
+
+            //meter no menu informacao sobre a coluna de som (ligada ou desligada e volume)
+            info.append("\nESTADO DAS COLUNAS DE SOM POR CASA:\n");
+            for(Casa c : u.getCasasUtilizador().values()){
+                boolean temColuna = false;
+                for(Divisao d : c.getDivisoes().values()){
+                    for(Dispositivo disp : d.getDispositivos().values()){
+                        if(disp instanceof ColunaSom coluna){
+                            temColuna = true;
+                            info.append(String.format(
+                                    " > %s: [%s] -> [%d] Coluna de Som %s (Volume: %d%%)\n",
+                                    c.getAlcunha(),
+                                    d.getNome(),
+                                    coluna.getId(),
+                                    coluna.getEstado().equals("LIGADO") ? "Ligada" : "Desligada",
+                                    coluna.getIntensidadeVolume()
+                            ));
+                        }
+                    }
+                }
+                if(!temColuna){
+                    info.append(String.format(" > %s: (Sem colunas de som)\n", c.getAlcunha()));
+                }
+            }
+
+            
+
+            info.append("\n\nESCALONAMENTOS CRIADOS:\n");
             if (dc.getEscalonamentos().isEmpty()) {
                 info.append(" > (Nenhum)\n");
             } else {
@@ -620,8 +694,10 @@ public class Menu {
                     String tipo = e.isIntervalo()
                         ? e.getHoraInicio() + " - " + e.getHoraFim()
                         : e.getHoraInicio().toString();
-                    info.append(String.format(" > [%d] %s | %s | %s\n",
-                        e.getId(), e.getNome(), tipo, e.isAtivo() ? "ATIVO" : "INATIVO"));
+                    Casa casaEsc = dc.encontrarCasaPorId(e.getIdCasa());
+                    String nomeCasaEsc = casaEsc != null ? String.format("[ID:%d] %s", casaEsc.getId(), casaEsc.getAlcunha()) : "?";
+                    info.append(String.format(" > [%d] %s | Casa: %s | %s | %s\n",
+                        e.getId(), e.getNome(), nomeCasaEsc, tipo, e.isAtivo() ? "ATIVO" : "INATIVO"));
                 }
             }
 

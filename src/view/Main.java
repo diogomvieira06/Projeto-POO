@@ -67,7 +67,7 @@ public class Main {
         while (!sair) {
             boolean temCasas = !utilizador_atual.getCasasUtilizador().isEmpty() || !utilizador_atual.getCasasAdministradas().isEmpty();
             String info = "Sessão: " + utilizador_atual.getNome() + "\nO que deseja fazer hoje?";
-            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações\n4. Ligar Tudo Numa Casa\n5. Desligar Tudo Numa Casa\n6. Estatisticas\n7. Mudar Utilizador\n8. Escalonamentos\n9. Cenários\n0. Sair e Gravar";
+            String opts = "1. Gestão de Casas\n2. Criar Nova Casa\n3. Automações\n4. Estatisticas\n5. Mudar Utilizador\n6. Escalonamentos\n7. Cenários\n0. Sair e Gravar";
 
             ConsoleUI.desenharDashboard("MENU PRINCIPAL", info, opts);
             System.out.print("\nOpção: ");
@@ -82,16 +82,14 @@ public class Main {
                     domusControl.adicionarCasaAAdministrador(utilizador_atual, nova);
                 }
                 case 3 -> Menu.menuAutomacao(utilizador_atual, domusControl);
-                case 4 -> Menu.menuLigarDispositivo(utilizador_atual, domusControl);
-                case 5 -> Menu.menuDesligarDispositivo(utilizador_atual, domusControl);
-                case 6 -> {
+                case 4 -> {
                     if (!temCasas) {
                         ConsoleUI.mostrarErro("Sem permissões: não tem casas associadas.");
                     } else {
                         Menu.menuEstatisticas(utilizador_atual, domusControl);
                     }
                 }
-                case 7 -> {
+                case 5 -> {
                     // Mudar de utilizador: volta ao ecrã de login
                     utilizador_atual = null;
                     while (utilizador_atual == null) {
@@ -125,8 +123,8 @@ public class Main {
                         }
                     }
                 }
-                case 8 -> Menu.menuEscalonamentos(utilizador_atual, domusControl);
-                case 9 -> Menu.menuCenarios(utilizador_atual, domusControl);
+                case 6 -> Menu.menuEscalonamentos(utilizador_atual, domusControl);
+                case 7 -> Menu.menuCenarios(utilizador_atual, domusControl);
                 case 0 -> sair = true;
                 default -> { System.out.println("Opção inválida."); InputValidator.lerLinha(); }
             }

@@ -549,7 +549,8 @@ public class DomusControl implements Serializable {
             LocalTime.of(7, 30),
             null,
             Acao.abrirCortinas(idCasa),
-            null
+            null,
+            idCasa
         );
         escalonamentos.put(id, e);//mete na hashmap de escalonamentos do sistema
     }
@@ -565,7 +566,8 @@ public class DomusControl implements Serializable {
             LocalTime.of(23, 0),
             null,
             Acao.desligarLuzesEFecharCortinas(idCasa),
-            null
+            null,
+            idCasa
         );
         escalonamentos.put(id, e);
     }
@@ -581,7 +583,8 @@ public class DomusControl implements Serializable {
             LocalTime.of(19, 0),
             LocalTime.of(23, 0),
             Acao.ligarLuzesCasa(idCasa),
-            Acao.desligarLuzesCasa(idCasa)
+            Acao.desligarLuzesCasa(idCasa),
+            idCasa
         );
         escalonamentos.put(id, e);
     }
@@ -597,7 +600,8 @@ public class DomusControl implements Serializable {
             LocalTime.of(7, 0),
             LocalTime.of(7, 45),
             Acao.ligarColunaSomCasa(idCasa), //execucao inicial
-            Acao.desligarColunaSomCasa(idCasa)//execucao final
+            Acao.desligarColunaSomCasa(idCasa),//execucao final
+            idCasa
         );
         escalonamentos.put(id, e);
     }

@@ -15,8 +15,9 @@ public class Escalonamento implements Serializable{
     private Acao acaoFim;
     private LocalDate ultimaExecucaoInicio; //dia
     private LocalDate ultimaExecucaoFim;
+    private int idCasa;
 
-    public Escalonamento(int id, String nome, boolean ativo, LocalTime horaInicio, LocalTime horaFim, Acao acaoInicio, Acao acaoFim) {
+    public Escalonamento(int id, String nome, boolean ativo, LocalTime horaInicio, LocalTime horaFim, Acao acaoInicio, Acao acaoFim, int idCasa) {
         this.id = id;
         this.nome = nome;
         this.ativo = ativo;
@@ -26,6 +27,7 @@ public class Escalonamento implements Serializable{
         this.acaoFim = acaoFim;
         this.ultimaExecucaoInicio = null; // Inicialmente sem execução
         this.ultimaExecucaoFim = null; // Inicialmente sem execução
+        this.idCasa = idCasa;
     }
 
     public Escalonamento(){
@@ -38,6 +40,7 @@ public class Escalonamento implements Serializable{
         this.acaoFim = null;
         this.ultimaExecucaoInicio = null; // Inicialmente sem execução
         this.ultimaExecucaoFim = null; // Inicialmente sem execução
+        this.idCasa = 0;
     }
 
     public Escalonamento(Escalonamento e){
@@ -50,11 +53,13 @@ public class Escalonamento implements Serializable{
         this.acaoFim = e.acaoFim != null ? e.acaoFim.clone() : null;
         this.ultimaExecucaoInicio = e.ultimaExecucaoInicio;
         this.ultimaExecucaoFim = e.ultimaExecucaoFim;
+        this.idCasa = e.idCasa;
     }
 
     //getters
     public int getId(){return this.id;}
     public String getNome(){return this.nome;}
+    public int getIdCasa(){return this.idCasa;}
     public boolean isAtivo(){return this.ativo;}
     public LocalTime getHoraInicio(){return this.horaInicio;}
     public LocalTime getHoraFim(){return this.horaFim;}
