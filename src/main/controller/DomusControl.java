@@ -3,11 +3,9 @@ package src.main.controller;
 import src.main.model.*;
 import src.main.automacao.*;
 import src.main.Exceptions.*;
-
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
-
 import java.io.Serializable;
 import java.time.*;
 
@@ -69,28 +67,24 @@ public class DomusControl implements Serializable {
     }
 
     public void removerUtilizador(Utilizador u) {
-        if (u == null)
-            return;
+        if (u == null) return;
         // Remove o utilizador do registo central do sistema
         utilizadores.remove(u.getId()); //
     }
 
     public Casa encontrarCasaPorId(int id) {
         Casa casa = casas.get(id);
-        if (casa == null)
-            throw new CasaNaoEncontradaException();
+        if (casa == null) throw new CasaNaoEncontradaException();
         return casa;
     }
 
     public Divisao encontrarDivisaoPorId(Casa casa, int id) {
-        if (casa == null)
-            return null;
+        if (casa == null) return null;
         return casa.obterDivisaoPorId(id);
     }
 
     public Dispositivo encontrarDispositivoPorId(Divisao divisao, int id) {
-        if (divisao == null)
-            return null;
+        if (divisao == null) return null;
         return divisao.obterDispositivoPorId(id);
     }
 
@@ -282,9 +276,25 @@ public class DomusControl implements Serializable {
             u.removerCasaUtilizador(casa); //
         }
 
+        // Remover automações, cenários e escalonamentos associados
+        automacoes.values().removeIf(a -> a.getIdCasa() == casa.getId());
+        escalonamentos.values().removeIf(e -> e.getIdCasa() == casa.getId());
+        cenarios.values().removeIf(c -> c.getIdCasa() == casa.getId());
+
         // 2. Remove a casa do registo central do sistema
         casas.remove(casa.getId()); //
         System.out.println("Casa '" + casa.getAlcunha() + "' foi eliminada com sucesso.");
+    }
+
+    public String encontrarLocalizacaoDispositivo(Dispositivo dispProc) {
+        for (Casa c : casas.values()) {
+            for (Divisao d : c.getDivisoes().values()) {
+                if (d.getDispositivos().containsValue(dispProc)) {
+                    return c.getAlcunha() + " -> " + d.getNome();
+                }
+            }
+        }
+        return "Desconhecido";
     }
 
     // Casa que mais consome (Soma consumos de dispositivos ligados)
@@ -388,7 +398,7 @@ public class DomusControl implements Serializable {
                 id,
                 "Abrir Cortinas Quando Parar de Chover",
                 true,
-                Condicao.naoEstaAChuverCasa(idCasa),
+                Condicao.naoEstaAChoverCasa(idCasa),
                 Acao.abrirCortinas(idCasa),
                 idCasa);
         automacoes.put(id, auto);
@@ -508,6 +518,13 @@ public class DomusControl implements Serializable {
     public Cenario criarCenario(Cenario cenario) {
         if (cenario == null)
             return null;
+
+        for (Cenario c : cenarios.values()) {
+            if (c.getIdCasa() == cenario.getIdCasa() && c.getNome().equalsIgnoreCase(cenario.getNome())) {
+                throw new DomusControlException("Já existe um cenário com o nome '" + cenario.getNome() + "' nesta casa.");
+            }
+        }
+
         int id = proximoIdCenario++;
         Cenario copia = new Cenario(cenario);
         copia.setId(id);
@@ -551,23 +568,27 @@ public class DomusControl implements Serializable {
         Set<String> existentes = new HashSet<>();
         for (Cenario c : cenarios.values()) {
             if (c.getIdCasa() == idCasa)
-                existentes.add(c.getNome());
+                existentes.add(c.getNome().toLowerCase());
         }
 
-        if (!existentes.contains("Sair de casa"))
-            criarCenario(Cenario.sairDeCasa(0, idCasa));
-        if (!existentes.contains("Jantar com amigos"))
-            criarCenario(Cenario.jantarComAmigos(0, idCasa));
-        if (!existentes.contains("Jantar Romantico"))
-            criarCenario(Cenario.jantarRomantico(0, idCasa));
-        if (!existentes.contains("Cinema"))
-            criarCenario(Cenario.cinema(0, idCasa));
-        if (!existentes.contains("Estudar"))
-            criarCenario(Cenario.estudar(0, idCasa));
-        if (!existentes.contains("Deitar"))
-            criarCenario(Cenario.deitar(0, idCasa));
-        if (!existentes.contains("Acordar"))
-            criarCenario(Cenario.acordar(0, idCasa));
+        try {
+            if (!existentes.contains("Sair de casa".toLowerCase()))
+                criarCenario(Cenario.sairDeCasa(0, idCasa));
+            if (!existentes.contains("Jantar com amigos".toLowerCase()))
+                criarCenario(Cenario.jantarComAmigos(0, idCasa));
+            if (!existentes.contains("Jantar Romantico".toLowerCase()))
+                criarCenario(Cenario.jantarRomantico(0, idCasa));
+            if (!existentes.contains("Cinema".toLowerCase()))
+                criarCenario(Cenario.cinema(0, idCasa));
+            if (!existentes.contains("Estudar".toLowerCase()))
+                criarCenario(Cenario.estudar(0, idCasa));
+            if (!existentes.contains("Deitar".toLowerCase()))
+                criarCenario(Cenario.deitar(0, idCasa));
+            if (!existentes.contains("Acordar".toLowerCase()))
+                criarCenario(Cenario.acordar(0, idCasa));
+        } catch (DomusControlException ignored) {
+            // Ignora a exceção se ocorrer conflito de nomes inesperado na inicialização
+        }
     }
 
     public boolean executarCenario(int id) {
@@ -588,10 +609,11 @@ public class DomusControl implements Serializable {
 
     // metodo que avanca o tempo e verifica escalonamemtos
     public void avancaTempo(long minutos) {
-        tempoAtual = tempoAtual.plusMinutes(minutos);// avanca tempo
-
-        passarTempoGlobal(minutos / 60);// avanca tempo em todos os dispositivos
-        executarEscalonamentos();
+        passarTempoGlobal(minutos / 60.0);// avanca tempo em todos os dispositivos
+        for (long i = 0; i < minutos; i++) {
+            tempoAtual = tempoAtual.plusMinutes(1);// avanca tempo 1 minuto de cada vez
+            executarEscalonamentos();
+        }
         System.out.println("Tempo avançado em " + minutos + " minutos. Tempo atual: " + tempoAtual);
     }
 

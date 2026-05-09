@@ -46,7 +46,8 @@ class CasaTest {
 
     @Test
     void testCopyConstructorFazCopiaProfunda() {
-        // Valida que o construtor de cópia preserva os dados e cria uma cópia independente.
+        // Valida que o construtor de cópia preserva os dados e cria uma cópia
+        // independente.
         casa.adicionarDivisao(sala);
         Casa copia = new Casa(casa);
 
@@ -64,4 +65,3 @@ class CasaTest {
         assertEquals(casa.hashCode(), casaMesmoId.hashCode());
     }
 }
-

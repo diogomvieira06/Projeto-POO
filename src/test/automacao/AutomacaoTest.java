@@ -71,7 +71,7 @@ class AutomacaoTest {
         // Valida a condição de detecção de chuva na casa.
         sensorAgua.setEmChuva(true);
         assertTrue(Condicao.detetarChuvaCasa(casa.getId()).verificar(dc));
-        assertFalse(Condicao.naoEstaAChuverCasa(casa.getId()).verificar(dc));
+        assertFalse(Condicao.naoEstaAChoverCasa(casa.getId()).verificar(dc));
     }
 
     @Test

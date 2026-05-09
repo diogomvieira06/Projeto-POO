@@ -125,7 +125,9 @@ public class Menu {
                     InputValidator.lerLinha();
                 }
                 // --- CORRECÇÃO: Agora chama o novo submenu ---
-                case 2 -> submenuGestaoUtilizadores(casa, u, dc);
+                case 2 -> {
+                    if (submenuGestaoUtilizadores(casa, u, dc)) return;
+                }
                 case 3 -> {
                     System.out.print("ID Divisão: ");
                     Divisao d = obterDivisao(dc, casa, InputValidator.lerInteiro());
@@ -181,7 +183,7 @@ public class Menu {
         return estado.toString().stripTrailing();
     }
 
-    public static void submenuGestaoUtilizadores(Casa casa, Utilizador u_sessao, DomusControl dc) {
+    public static boolean submenuGestaoUtilizadores(Casa casa, Utilizador u_sessao, DomusControl dc) {
         boolean eAdmin = u_sessao.serAdmin(casa); //
         while (true) {
             StringBuilder info = new StringBuilder("UTILIZADORES COM ACESSO A: " + casa.getAlcunha() + "\n\n");
@@ -259,7 +261,7 @@ public class Menu {
                         } else {
                             dc.removerCasaDeUtilizador(rem, casa);
                             if (rem.getId() == u_sessao.getId())
-                                return;
+                                return true;
                         }
                     }
                     // Se utilizador nao tiver casas removemos o utilizador
@@ -297,6 +299,7 @@ public class Menu {
                 }
             }
         }
+        return false;
     }
 
     public static void menuDispositivos(Divisao div, boolean eAdmin, DomusControl dc) {
@@ -306,7 +309,7 @@ public class Menu {
                 info.append(String.format(" ID:%-3d | %-12s | %s %s | %s%s\n",
                         d.getId(), d.getTipo(), d.getMarca(), d.getModelo(), d.getEstado(), d.getDetalhesEspecificos()));
             }
-            String opts = "1. Alternar Estado\n" + (eAdmin ? "2. Adicionar\n3. Remover\n" : "") + "0. Voltar";
+            String opts = "1. Alternar Estado\n2. Configurar (Volume/Intensidade/Cor/Abertura)\n" + (eAdmin ? "3. Adicionar\n4. Remover\n" : "") + "0. Voltar";
             ConsoleUI.desenharDashboard("DISPOSITIVOS", info.toString(), opts);
             int opt = InputValidator.lerInteiro();
             if (opt == 0) break;
@@ -314,9 +317,30 @@ public class Menu {
                 System.out.print("ID: ");
                 Dispositivo d = obterDispositivo(dc, div, InputValidator.lerInteiro());
                 if (d != null) { if (d.isLigado()) d.desligarDispositivo(); else d.ligarDispositivo(); }
-            } else if (opt == 2 && eAdmin) {
-                adicionarDispositivoSubmenu(div, dc);
+            } else if (opt == 2) {
+                System.out.print("ID do Dispositivo: ");
+                Dispositivo d = obterDispositivo(dc, div, InputValidator.lerInteiro());
+                if (d != null && d.isLigado()) {
+                    if (d instanceof Lampada lamp) {
+                        System.out.print("Intensidade (0-100): ");
+                        lamp.setIntensidade_Luminosidade(InputValidator.lerInteiro());
+                        System.out.print("Cor: ");
+                        lamp.setCor_Luz(InputValidator.lerLinha());
+                    } else if (d instanceof ColunaSom coluna) {
+                        System.out.print("Volume (0-100): ");
+                        coluna.setIntensidadeVolume(InputValidator.lerInteiro());
+                    } else if (d instanceof Cortina cortina) {
+                        System.out.print("Nível de Abertura (0-100): ");
+                        cortina.setNivelAbertura(InputValidator.lerInteiro());
+                    } else {
+                        ConsoleUI.mostrarErro("Este dispositivo não possui configurações adicionais.");
+                    }
+                } else if (d != null) {
+                    ConsoleUI.mostrarErro("O dispositivo precisa estar ligado para ser configurado.");
+                }
             } else if (opt == 3 && eAdmin) {
+                adicionarDispositivoSubmenu(div, dc);
+            } else if (opt == 4 && eAdmin) {
                 System.out.print("ID para remover: ");
                 Dispositivo r = null;
                 try {
@@ -364,12 +388,15 @@ public class Menu {
             for (Casa c : u.getCasasUtilizador().values()) {
                 info.append(String.format(" > ID: %d | %s\n", c.getId(), c.getAlcunha()));
             }
-            info.append("\nAUTOMAÇÕES CRIADAS:\n");
-            boolean temAutoUtilizador = dc.getAutomacoes().stream()
-                    .anyMatch(a -> {
-                        Casa c2 = obterCasa(dc, a.getIdCasa());
-                        return c2 != null && u.podeAdministrarCasa(c2);
-                    });
+            info.append("\nAUTOMAÇÕES CRIADAS (Admin):\n");
+            boolean temAutoUtilizador = false;
+            for (Automacao a : dc.getAutomacoes()) {
+                Casa c2 = obterCasa(dc, a.getIdCasa());
+                if (c2 != null && u.podeAdministrarCasa(c2)) {
+                    info.append(String.format(" > [%d] %s | Casa: %s\n", a.getId(), a.getNome(), c2.getAlcunha()));
+                    temAutoUtilizador = true;
+                }
+            }
             if (!temAutoUtilizador) {
                 info.append(" > (Nenhuma)\n");
             }
@@ -597,7 +624,8 @@ public class Menu {
             if (topAtiv.isEmpty())
                 sb.append(" > (Sem dados de ativação)\n");
             for (Dispositivo d : topAtiv) {
-                sb.append(String.format(" > %-15s | %d ativ.\n", d.getModelo(), d.getNumAtivacoes()));
+                String loc = dc.encontrarLocalizacaoDispositivo(d);
+                sb.append(String.format(" > ID:%-3d | %-12s | %-15s | %-25s | %d ativ.\n", d.getId(), d.getTipo(), d.getModelo(), loc, d.getNumAtivacoes()));
             }
 
             // 4. ADICIONAR: Top 3 Dispositivos por Tempo
@@ -606,7 +634,8 @@ public class Menu {
             if (topTempo.isEmpty())
                 sb.append(" > (Sem dados de tempo)\n");
             for (Dispositivo d : topTempo) {
-                sb.append(String.format(" > %-15s | %.2f horas\n", d.getModelo(), d.getTempoUsoHoras()));
+                String loc = dc.encontrarLocalizacaoDispositivo(d);
+                sb.append(String.format(" > ID:%-3d | %-12s | %-15s | %-25s | %.2f horas\n", d.getId(), d.getTipo(), d.getModelo(), loc, d.getTempoUsoHoras()));
             }
 
             // Menu de opções para o Dashboard
@@ -878,7 +907,9 @@ public class Menu {
                             System.out.print("Nome: "); String nome = InputValidator.lerLinha();
                             List<Acao> acoes = new ArrayList<>();
                             while (true) {
-                                System.out.println("1.Luz ON 2.Luz OFF 3.Cortina Open 4.Cortina Close 0.Gravar");
+                                System.out.println("1.Luz ON       2.Luz OFF      3.Cortina Open  4.Cortina Close");
+                                System.out.println("5.Coluna ON    6.Coluna OFF   7.Tomada ON     8.Tomada OFF");
+                                System.out.println("9.Portão Open 10.Portão Close 0.Gravar");
                                 int ac = InputValidator.lerInteiro();
                                 if (ac == 0) break;
                                 switch(ac) {
@@ -886,6 +917,12 @@ public class Menu {
                                     case 2 -> acoes.add(Acao.desligarLuzesCasa(casa.getId()));
                                     case 3 -> acoes.add(Acao.abrirCortinas(casa.getId()));
                                     case 4 -> acoes.add(Acao.fecharCortinas(casa.getId()));
+                                    case 5 -> acoes.add(Acao.ligarColunaSomCasa(casa.getId()));
+                                    case 6 -> acoes.add(Acao.desligarColunaSomCasa(casa.getId()));
+                                    case 7 -> acoes.add(Acao.ligarTomadasCasa(casa.getId()));
+                                    case 8 -> acoes.add(Acao.desligarTomadasCasa(casa.getId()));
+                                    case 9 -> acoes.add(Acao.abrirPortoesCasa(casa.getId()));
+                                    case 10 -> acoes.add(Acao.fecharPortoesCasa(casa.getId()));
                                 }
                             }
                             if (!acoes.isEmpty()) dc.criarCenario(nome, casa.getId(), acoes);

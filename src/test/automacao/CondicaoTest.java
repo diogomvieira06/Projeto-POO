@@ -45,10 +45,10 @@ class CondicaoTest {
     }
 
     @Test
-    void testCondicaoNaoEstaAChuverCasa() {
+    void testCondicaoNaoEstaAChoverCasa() {
         // Valida que a condição verifica se não está a chover.
         sensorAgua.setEmChuva(true);
-        Condicao condicao = Condicao.naoEstaAChuverCasa(casa.getId());
+        Condicao condicao = Condicao.naoEstaAChoverCasa(casa.getId());
         assertFalse(condicao.verificar(dc));
 
         sensorAgua.setEmChuva(false);
@@ -56,12 +56,12 @@ class CondicaoTest {
     }
 
     @Test
-    void testCondicaoNaoEstaAChuverCasaSemSensor() {
+    void testCondicaoNaoEstaAChoverCasaSemSensor() {
         // Valida que sem sensor, a condição retorna false.
         Casa casaSemSensor = dc.criarCasa("Casa Sem Sensor");
         dc.criarDivisao(casaSemSensor, "Sala");
 
-        Condicao condicao = Condicao.naoEstaAChuverCasa(casaSemSensor.getId());
+        Condicao condicao = Condicao.naoEstaAChoverCasa(casaSemSensor.getId());
         assertFalse(condicao.verificar(dc));
     }
 
@@ -97,23 +97,23 @@ class CondicaoTest {
         assertFalse(condicao.verificar(dc));
     }
 
-    //@Test
-    //void testCondicaoDetetarChuvaComDivisaoESensor() {
-    //    // Valida a condição de detectar chuva com IDs específicos.
-    //    sensorAgua.setEmChuva(false);
-    //    Condicao condicao = Condicao.detetarChuva(casa.getId(), sala.getId(), sensorAgua.getId());
-    //    assertFalse(condicao.verificar(dc));
-//
-    //    sensorAgua.setEmChuva(true);
-    //    assertTrue(condicao.verificar(dc));
-    //}
+    @Test
+    void testCondicaoDetetarChuvaComDivisaoESensor() {
+        // Valida a condição de detectar chuva com IDs específicos.
+        sensorAgua.setEmChuva(false);
+        Condicao condicao = Condicao.detetarChuva(casa.getId(), sala.getId(), sensorAgua.getId());
+        assertFalse(condicao.verificar(dc));
 
-    //@Test
-    //void testCondicaoDetetarChuvaSensorInvalido() {
-    //    // Valida que com sensor inválido, a condição retorna false.
-    //    Condicao condicao = Condicao.detetarChuva(casa.getId(), sala.getId(), 99999);
-    //    assertFalse(condicao.verificar(dc));
-    //}
+        sensorAgua.setEmChuva(true);
+        assertTrue(condicao.verificar(dc));
+    }
+
+    @Test
+    void testCondicaoDetetarChuvaSensorInvalido() {
+        // Valida que com sensor inválido, a condição retorna false.
+        Condicao condicao = Condicao.detetarChuva(casa.getId(), sala.getId(), 99999);
+        assertFalse(condicao.verificar(dc));
+    }
 
     @Test
     void testCondicaoDetetarChuvaCasaInvalida() {
@@ -184,4 +184,3 @@ class CondicaoTest {
         assertTrue(condicao.verificar(dc));
     }
 }
-

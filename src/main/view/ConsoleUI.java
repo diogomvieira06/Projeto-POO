@@ -46,8 +46,10 @@ public class ConsoleUI {
         String[] numOpts = (opcoes == null ? "" : opcoes).split("\n");
         int alturaOpts = Math.max(3, numOpts.length);
 
-        // A área de info fica com o resto do terminal
-        int alturaInfo = disponivel - alturaOpts;
+        String[] linhasInfo = (info == null ? "" : info).split("\n");
+
+        // A área de info fica com o resto do terminal, ou expande se a info for maior
+        int alturaInfo = Math.max(disponivel - alturaOpts, linhasInfo.length);
 
         System.out.print(CLEAR_ALL);
         System.out.flush();
@@ -64,7 +66,6 @@ public class ConsoleUI {
 
         // 3. ÁREA DE INFORMAÇÃO
         System.out.print(CYAN);
-        String[] linhasInfo = (info == null ? "" : info).split("\n");
         for (int i = 0; i < alturaInfo; i++) {
             String conteudo = (i < linhasInfo.length) ? linhasInfo[i] : "";
             System.out.printf("║  %-" + (larguraInterna - 2) + "s  ║\n", truncar(conteudo, larguraInterna - 4));
