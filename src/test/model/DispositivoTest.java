@@ -70,7 +70,7 @@ class DispositivoTest {
         // Teste de intensidade removido, pois não existe mais
         assertEquals("Azul", lampada.getCor_Luz());
         lampada.ligarDispositivo();
-        assertTrue(lampada.getDetalhesEspecificos().contains("Intensidade"));
+        //assertTrue(lampada.getDetalhesEspecificos().contains("Intensidade"));
     }
 
     @Test
