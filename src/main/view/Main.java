@@ -171,14 +171,14 @@ public class Main {
         Divisao sala1 = criarDivisaoEObter(dc, casa1, "Sala");
         Divisao quarto1 = criarDivisaoEObter(dc, casa1, "Quarto");
 
-        Lampada l1 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, 75, "Branco");
+        Lampada l1 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, "Branco");
         Cortina c1 = new Cortina(dc.aumentarIdDispositivo(), "Somfy", "Smart", 18.0, 50);
         SensorAgua sACasa1 = new SensorAgua(dc.aumentarIdDispositivo(), "Bosch", "RainSensor", 0.3, 0, false);
         dc.adicionarDispositivo(sala1, l1);
         dc.adicionarDispositivo(sala1, c1);
         dc.adicionarDispositivo(sala1, sACasa1);
 
-        Lampada l2 = new Lampada(dc.aumentarIdDispositivo(), "Osram", "Bed", 7.5, 40, "Quente");
+        Lampada l2 = new Lampada(dc.aumentarIdDispositivo(), "Osram", "Bed", 7.5, "Quente");
         Tomada t1 = new Tomada(dc.aumentarIdDispositivo(), "TP-Link", "Plug", 5.0);
         dc.adicionarDispositivo(quarto1, l2);
         dc.adicionarDispositivo(quarto1, t1);
@@ -186,12 +186,12 @@ public class Main {
         Divisao sala2 = criarDivisaoEObter(dc, casa2, "Sala");
         Divisao cozinha2 = criarDivisaoEObter(dc, casa2, "Cozinha");
 
-        Lampada l3 = new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 8.0, 60, "Branco");
+        Lampada l3 = new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 8.0, "Branco");
         SensorLuz s1 = new SensorLuz(dc.aumentarIdDispositivo(), "Aqara", "Sensor", 0.5, 40.0);
         dc.adicionarDispositivo(sala2, l3);
         dc.adicionarDispositivo(sala2, s1);
 
-        Lampada l4 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Kitchen", 8.2, 90, "Frio");
+        Lampada l4 = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Kitchen", 8.2, "Frio");
         SensorAgua s2 = new SensorAgua(dc.aumentarIdDispositivo(), "Bosch", "Rain", 0.3, 0, false);
         dc.adicionarDispositivo(cozinha2, l4);
         dc.adicionarDispositivo(cozinha2, s2);
@@ -199,7 +199,7 @@ public class Main {
         Divisao sala3 = criarDivisaoEObter(dc, casa3, "Sala");
         Divisao garagem3 = criarDivisaoEObter(dc, casa3, "Garagem");
 
-        Lampada l5 = new Lampada(dc.aumentarIdDispositivo(), "Nanoleaf", "Color", 9.0, 50, "Azul");
+        Lampada l5 = new Lampada(dc.aumentarIdDispositivo(), "Nanoleaf", "Color", 9.0, "Azul");
         Cortina c2 = new Cortina(dc.aumentarIdDispositivo(), "Somfy", "Premium", 16.0, 60);
         dc.adicionarDispositivo(sala3, l5);
         dc.adicionarDispositivo(sala3, c2);
@@ -241,7 +241,7 @@ public class Main {
 
         // Adicionar 5 dispositivos no escritório para garantir o 1º lugar no Top
         for(int i = 0; i < 5; i++) {
-            escritorio.adicionarDispositivo(new Lampada(dc.aumentarIdDispositivo(), "Xiaomi", "SmartLight V" + i, 8.5, 100, "Branco"));
+            escritorio.adicionarDispositivo(new Lampada(dc.aumentarIdDispositivo(), "Xiaomi", "SmartLight V" + i, 8.5, "Branco"));
         }
 
         // 3. CENÁRIO PARA "CASA QUE MAIS CONSOME": Criar uma casa com consumo elevado

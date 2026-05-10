@@ -217,8 +217,14 @@ public class Menu {
             if (opt == 0)
                 break;
 
-            if (!eAdmin)
-                continue;
+
+            // Atualiza o estado de admin a cada iteração
+            eAdmin = u_sessao.serAdmin(casa);
+            if (!eAdmin) {
+                // Se perdeu permissões de admin, expulsa do menu
+                ConsoleUI.mostrarErro("Deixou de ser administrador desta casa. A voltar ao menu anterior.");
+                return true;
+            }
 
             switch (opt) {
                 case 1 -> {
@@ -323,7 +329,7 @@ public class Menu {
                 if (d != null && d.isLigado()) {
                     if (d instanceof Lampada lamp) {
                         System.out.print("Intensidade (0-100): ");
-                        lamp.setIntensidade_Luminosidade(InputValidator.lerInteiro());
+                        // Removido: intensidade não existe mais
                         System.out.print("Cor: ");
                         lamp.setCor_Luz(InputValidator.lerLinha());
                     } else if (d instanceof ColunaSom coluna) {
@@ -366,14 +372,12 @@ public class Menu {
         int id = dc.aumentarIdDispositivo();
 
         Dispositivo d = switch (t) {
-            case 1 -> new Lampada(id, ma, mo, c, 80, "Branco");
+            case 1 -> new Lampada(id, ma, mo, c, "Branco");
             case 2 -> new Tomada(id, ma, mo, c);
             case 3 -> new Cortina(id, ma, mo, c, 0);
             case 4 -> new ColunaSom(id, ma, mo, c, 50);
             case 5 -> new PortaoGaragem(id, ma, mo, c, 0);
-            case 6 -> new SensorAgua(id, ma, mo, c, 0, false);// VER MELHOR PARA VER SE VALE A PENA TER A OPÇAO DE
-                                                              // ADICIONAR SENSOR DE AGUA AQUI, OU SE DEVE FICAR APENAS
-                                                              // PARA AUTOMACOES
+            case 6 -> new SensorAgua(id, ma, mo, c, 0, false);
             case 7 -> new SensorLuz(id, ma, mo, c, 100.0);
             default -> null;
         };
@@ -392,7 +396,8 @@ public class Menu {
             boolean temAutoUtilizador = false;
             for (Automacao a : dc.getAutomacoes()) {
                 Casa c2 = obterCasa(dc, a.getIdCasa());
-                if (c2 != null && u.podeAdministrarCasa(c2)) {
+                if (c2 == null) continue;
+                if (u.podeAdministrarCasa(c2)) {
                     info.append(String.format(" > [%d] %s | Casa: %s\n", a.getId(), a.getNome(), c2.getAlcunha()));
                     temAutoUtilizador = true;
                 }
@@ -494,8 +499,8 @@ public class Menu {
             info.append("\nAUTOMAÇÕES EXISTENTES:\n");
             for (Automacao a : dc.getAutomacoes()) {
                 Casa casaAuto = obterCasa(dc, a.getIdCasa());
-                if (casaAuto == null || !u.podeUsarCasa(casaAuto))
-                    continue;// Só mostramos automações de casas que o utilizador pode usar
+                if (casaAuto == null) continue;
+                if (!u.podeUsarCasa(casaAuto)) continue;
                 String nomeCasa = String.format("[ID:%d] %s", casaAuto.getId(), casaAuto.getAlcunha());
                 info.append(String.format(" > [%d] %s | Casa: %s | %s\n",
                         a.getId(), a.getNome(), nomeCasa, a.isAtiva() ? "ATIVA" : "INATIVA"));
@@ -547,8 +552,8 @@ public class Menu {
                 StringBuilder infoAuto = new StringBuilder("AUTOMAÇÕES EXISTENTES:\n\n");
                 for (Automacao a : dc.getAutomacoes()) {
                     Casa casaAuto = obterCasa(dc, a.getIdCasa());
-                    if (casaAuto == null || !u.podeUsarCasa(casaAuto))
-                        continue; // <-- filtro
+                    if (casaAuto == null) continue;
+                    if (!u.podeUsarCasa(casaAuto)) continue;
                     String nomeCasa = String.format("[ID:%d] %s", casaAuto.getId(), casaAuto.getAlcunha());
                     infoAuto.append(String.format(" > ID: %d | %s | Casa: %s | %s\n",
                             a.getId(), a.getNome(), nomeCasa, a.isAtiva() ? "ATIVA" : "INATIVA"));

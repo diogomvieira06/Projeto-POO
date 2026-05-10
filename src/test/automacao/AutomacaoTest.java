@@ -29,7 +29,7 @@ class AutomacaoTest {
         dc.criarDivisao(casa, "Sala");
         sala = casa.obterDivisaoPorId(1);
 
-        lampada = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, 70, "Branco");
+        lampada = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, "Branco");
         sensorLuz = new SensorLuz(dc.aumentarIdDispositivo(), "Aqara", "Lux", 0.5, 10.0);
         sensorAgua = new SensorAgua(dc.aumentarIdDispositivo(), "Bosch", "Rain", 0.3, 0, false);
 
@@ -53,7 +53,7 @@ class AutomacaoTest {
         // Valida que as ações de cor e intensidade afetam todas as lâmpadas da casa.
         Acao.definirIntensidadeLampadasCasa(casa.getId(), 35).executar(dc);
         Acao.definirCorLampadasCasa(casa.getId(), "Azul").executar(dc);
-        assertEquals(35, lampada.getIntesidade_Luminosidade());
+        // Removido: intensidade não existe mais
         assertEquals("Azul", lampada.getCor_Luz());
     }
 

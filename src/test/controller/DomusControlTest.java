@@ -45,8 +45,8 @@ class DomusControlTest {
         salaJardim = casaJardim.obterDivisaoPorId(1);
         salaCentro = casaCentro.obterDivisaoPorId(2);
 
-        lampJardim = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, 75, "Branco");
-        lampCentro = new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 8.0, 60, "Branco");
+        lampJardim = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, "Branco");
+        lampCentro = new Lampada(dc.aumentarIdDispositivo(), "IKEA", "Tradfri", 8.0, "Branco");
         tomada = new Tomada(dc.aumentarIdDispositivo(), "TP-Link", "Plug", 5.0);
 
         dc.adicionarDispositivo(salaJardim, lampJardim);

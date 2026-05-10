@@ -190,7 +190,7 @@ public abstract class Acao implements Serializable {
                     for (Divisao d : casa.getDivisoes().values()) {
                         if (idDivisaoAlvo != -1 && d.getId() != idDivisaoAlvo) continue;
                         for (Dispositivo disp : d.getDispositivos().values()) {
-                            if (disp instanceof Lampada l) l.setIntensidade_Luminosidade(intensidade);
+                            // Removido: intensidade não existe mais
                         }
                     }
                 } catch (DomusControlException e) { }

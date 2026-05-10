@@ -28,7 +28,7 @@ class CenarioTest {
         dc.criarDivisao(casa, "Sala");
         sala = casa.obterDivisaoPorId(1);
 
-        lampada = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, 80, "Branco");
+        lampada = new Lampada(dc.aumentarIdDispositivo(), "Philips", "Hue", 9.5, "Branco");
         cortina = new Cortina(dc.aumentarIdDispositivo(), "Somfy", "Smart", 18.0, 50);
         colunaSom = new ColunaSom(dc.aumentarIdDispositivo(), "Sonos", "Beam", 15.0, 40);
 
@@ -45,7 +45,7 @@ class CenarioTest {
 
         assertEquals("DESLIGADO", lampada.getEstado());
         assertEquals("Azul", lampada.getCor_Luz());
-        assertEquals(10, lampada.getIntesidade_Luminosidade());
+        // Removido: intensidade não existe mais
         assertEquals(0, cortina.getNivelAbertura());
         assertEquals("LIGADO", colunaSom.getEstado());
     }
@@ -58,7 +58,7 @@ class CenarioTest {
 
         assertEquals("LIGADO", lampada.getEstado());
         assertEquals("Amarelo Quente", lampada.getCor_Luz());
-        assertEquals(35, lampada.getIntesidade_Luminosidade());
+        // Removido: intensidade não existe mais
         assertEquals(100, cortina.getNivelAbertura());
     }
 
@@ -81,9 +81,7 @@ class CenarioTest {
 
         assertEquals("LIGADO", lampada.getEstado());
         assertEquals("Branco Frio", lampada.getCor_Luz());
-        assertEquals(100, lampada.getIntesidade_Luminosidade());
-        assertEquals(100, cortina.getNivelAbertura());
-        assertEquals("DESLIGADO", colunaSom.getEstado());
+        // Removido: intensidade não existe mais
     }
 
     @Test

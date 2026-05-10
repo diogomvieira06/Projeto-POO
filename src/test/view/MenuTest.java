@@ -84,7 +84,7 @@ public class MenuTest {
     @DisplayName("montarEstadoGlobalCasa() deve listar dispositivos")
     public void testMontarEstadoGlobalCasaComDispositivos() throws Exception {
         // Adicionar uma lâmpada
-        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, 80, "Branco");
+        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, "Branco");
         divisao.adicionarDispositivo(lampada);
 
         var method = Menu.class.getDeclaredMethod("montarEstadoGlobalCasa", Casa.class);
@@ -107,7 +107,7 @@ public class MenuTest {
     @DisplayName("montarEstadoGlobalCasa() deve listar múltiplos dispositivos")
     public void testMontarEstadoGlobalCasaComMultiplosDispositivos() throws Exception {
         // Adicionar vários dispositivos
-        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, 80, "Branco");
+        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, "Branco");
         Tomada tomada = new Tomada(2, "Intelbras", "Smart", 15.0);
         divisao.adicionarDispositivo(lampada);
         divisao.adicionarDispositivo(tomada);
@@ -133,8 +133,8 @@ public class MenuTest {
         Divisao divisao2 = dc.criarDivisao(casa, "Quarto");
 
         // Adicionar dispositivos
-        Lampada lampada1 = new Lampada(1, "Philips", "LED", 10.0, 80, "Branco");
-        Lampada lampada2 = new Lampada(2, "Osram", "Hue", 12.0, 75, "Branco");
+        Lampada lampada1 = new Lampada(1, "Philips", "LED", 10.0, "Branco");
+        Lampada lampada2 = new Lampada(2, "Osram", "Hue", 12.0, "Branco");
         divisao.adicionarDispositivo(lampada1);
         divisao2.adicionarDispositivo(lampada2);
 
@@ -280,7 +280,7 @@ public class MenuTest {
     @Test
     @DisplayName("montarEstadoGlobalCasa() deve incluir estado dos dispositivos")
     public void testMontarEstadoGlobalCasaComEstadoDispositivos() throws Exception {
-        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, 80, "Branco");
+        Lampada lampada = new Lampada(1, "Philips", "LED", 10.0, "Branco");
         lampada.ligarDispositivo();
         divisao.adicionarDispositivo(lampada);
 

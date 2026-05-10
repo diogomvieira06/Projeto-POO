@@ -66,9 +66,8 @@ class DispositivoTest {
     @Test
     void testLampadaEspecifica() {
         // Valida intensidade/cor e o detalhe específico da lâmpada.
-        Lampada lampada = new Lampada(10, "Philips", "Hue", 9.5, 70, "Azul");
-        lampada.setIntensidade_Luminosidade(150);
-        assertEquals(100, lampada.getIntesidade_Luminosidade());
+        Lampada lampada = new Lampada(10, "Philips", "Hue", 9.5, "Azul");
+        // Teste de intensidade removido, pois não existe mais
         assertEquals("Azul", lampada.getCor_Luz());
         lampada.ligarDispositivo();
         assertTrue(lampada.getDetalhesEspecificos().contains("Intensidade"));

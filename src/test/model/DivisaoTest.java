@@ -19,7 +19,7 @@ class DivisaoTest {
         divisao = new Divisao("Sala", 1);
         divisaoMesmoId = new Divisao("Quarto", 1);
         divisaoOutroId = new Divisao("Cozinha", 2);
-        lampada = new Lampada(10, "Philips", "Hue", 9.5, 80, "Branco");
+        lampada = new Lampada(10, "Philips", "Hue", 9.5, "Branco");
     }
 
     @Test

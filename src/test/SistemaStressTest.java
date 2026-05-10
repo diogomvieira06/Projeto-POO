@@ -37,7 +37,7 @@ public class SistemaStressTest {
             Divisao quarto = dc.criarDivisao(casa, "Quarto " + i);
 
             for (int j = 0; j < 5; j++) {
-                Lampada l = new Lampada(dc.aumentarIdDispositivo(), "MarcaX", "ModeloY", 10.0, 100, "Branco");
+                Lampada l = new Lampada(dc.aumentarIdDispositivo(), "MarcaX", "ModeloY", 10.0, "Branco");
                 Tomada t = new Tomada(dc.aumentarIdDispositivo(), "MarcaZ", "ModeloW", 50.0);
                 dc.adicionarDispositivo(sala, l);
                 dc.adicionarDispositivo(quarto, t);
